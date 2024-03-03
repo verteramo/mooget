@@ -27,6 +27,8 @@
     }
   ],
   "permissions": [
-    "scripting"
+    "webNavigation",
+    "activeTab",
+    "tabs"
   ]
 }

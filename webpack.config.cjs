@@ -1,16 +1,16 @@
+const path = require("path");
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 const WebpackExtReloader = require("webpack-ext-reloader");
-const path = require("path");
 
 module.exports = {
   watch: true,
   mode: "development",
   devtool: "inline-source-map",
   entry: {
-    popup: "./src/popup/index.tsx",
-    content: "./src/content/index.ts",
-    background: "./src/background/index.ts",
+    popup: "./src/scripts/popup.tsx",
+    content: "./src/scripts/content.ts",
+    background: "./src/scripts/background.ts",
   },
   output: {
     path: path.resolve(__dirname, "dist"),
@@ -36,7 +36,7 @@ module.exports = {
       {
         test: /\.css$/,
         use: ["style-loader", "css-loader"],
-      }
+      },
     ],
   },
   resolve: {

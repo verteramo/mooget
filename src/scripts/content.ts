@@ -11,4 +11,8 @@ console.log(test.title);
 
 for (const question of test.questions()) {
     console.log(question.text);
+
+    for (const choice of question.answer.choices()) {
+        console.log(choice.text);
+    }
 }

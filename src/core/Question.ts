@@ -1,3 +1,5 @@
+import Answer from "./Answer";
+
 export default class Question {
     private root: cheerio.Root
 
@@ -7,5 +9,9 @@ export default class Question {
 
     get text(): string {
         return this.root('.qtext').text();
+    }
+
+    get answer(): Answer {
+        return new Answer(this.root('.answer'));
     }
 }

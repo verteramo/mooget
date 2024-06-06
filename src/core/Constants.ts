@@ -6,9 +6,14 @@ export enum Subject {
   GetTheme,
   SetTheme,
   SetBadge,
+  GetVersion,
 }
 
 export enum Storage {
   Tests = 'tests',
   Theme = 'theme',
+}
+
+export enum Script {
+  Background = 'background',
 }

@@ -1,5 +1,6 @@
 body {
-  width: max-content;
+  width: 600px;
   height: max-content;
   padding: 1px;
+  font-size: small;
 }

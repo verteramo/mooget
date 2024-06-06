@@ -27,6 +27,10 @@
     }
   ],
   "permissions": [
+    "tabs",
     "storage"
+  ],
+  "optional_host_permissions": [
+    "https://*/*"
   ]
 }

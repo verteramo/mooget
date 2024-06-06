@@ -1,32 +1,11 @@
+
 export interface IQuestion {
-  text: string
-  images: string[]
-  answer: any[]
+  html: string | null
 }
 
 export interface ITest {
   title: string
   questions: IQuestion[]
-}
-
-export class Question {
-  private $: cheerio.Cheerio
-
-  constructor($: cheerio.Cheerio) {
-    this.$ = $
-  }
-
-  get text(): string {
-    return this.$('.qtext').text()
-  }
-
-  get images(): string[] {
-    return [...this.$('.qtext img').map((_, element) => this.$(element).attr('src'))]
-  }
-
-  get answer(): any[] {
-    return [...this.$('.answer').map((_, element) => this.$(element).text())]
-  }
 }
 
 export class Test {
@@ -40,22 +19,16 @@ export class Test {
     return this.$('.breadcrumb-item:last').text()
   }
 
-  *questions() {
-    for (const element of this.$('.que')) {
-      yield new Question(this.$(element))
+  *questions(): Iterable<IQuestion> { 
+    for (const question of this.$('.que')) {
+      yield { html: this.$(question).find('.qtext').html() }
     }
   }
 
   getITest(): ITest {
     return {
       title: this.title,
-      questions: [...this.questions()].map((question) => {
-        return {
-          text: question.text,
-          images: question.images,
-          answer: question.answer,
-        }
-      })
+      questions: [...this.questions()]
     }
   }
 }

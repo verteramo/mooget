@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Subject } from '../core/Constants';
+import { Storage } from '../core/Constants';
 
 type Theme = 'light' | 'dark'
 
@@ -8,28 +8,36 @@ export function ThemeHook() {
 
   const isDark = () => theme === 'dark'
 
-  const initTheme = async () => {
-    setTheme(await chrome.runtime.sendMessage({
-      subject: Subject.GetTheme,
-    }))
+  // Toggle theme and save it to storage
+  const toggleTheme = () => {
+    chrome.storage.sync.set({
+      theme: isDark() ? 'light' : 'dark'
+    })
   }
 
-  const toggleTheme = async () => {
-    setTheme(await chrome.runtime.sendMessage({
-      subject: Subject.SetTheme,
-      theme: isDark() ? 'light' : 'dark',
-    }))
-  }
+  // On mount, get theme from storage
+  useEffect(() => {
+    chrome.storage.sync.get(
+      [Storage.Theme],
+      ({ theme }) => {
+        if (theme) {
+          setTheme(theme)
+        }
+      }
+    )
+  }, [])
 
-  const applyTheme = (theme: Theme) => {
+  // On theme change, apply it to document
+  useEffect(() => {
     document.documentElement.setAttribute('data-bs-theme', theme)
-  }
+  }, [theme])
 
-  // Get theme from storage
-  useEffect(() => { initTheme() }, [])
-
-  // Set theme on document
-  useEffect(() => applyTheme(theme), [theme])
+  // Listen for theme changes
+  chrome.storage.onChanged.addListener((changes) => {
+    if (changes[Storage.Theme]) {
+      setTheme(changes[Storage.Theme].newValue)
+    }
+  })
 
   return {
     isDark,

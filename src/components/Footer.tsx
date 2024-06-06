@@ -11,8 +11,9 @@ interface FooterProps {
 export function Footer({ links }: FooterProps): JSX.Element {
   return (
     <div className="float-end text-muted">
-      {links.map((link) => (
+      {links.map((link, index) => (
         <a
+          key={index}
           title={link.name}
           href={link.href}
           target="_blank"

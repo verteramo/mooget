@@ -1,18 +1,16 @@
-import * as cheerio from 'cheerio';
-import Test from '../core/Test';
-import Question from '../core/Question';
+/**
+ * Acceso al DOM de la página
+ */
 
-const $ = cheerio.load(document.body.innerHTML);
+import { load } from 'cheerio'
+import { Subject } from "../core/Constants"
+import { Test } from '../core/Models'
 
-var test: Test = new Test($);
+chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+  switch (message.subject) {
+    case Subject.GetTest:
+      sendResponse(new Test(load(document.body.innerHTML)))
+      break
+  }
+})
 
-console.log("Initializing test...");
-console.log(test.title);
-
-for (const question of test.questions()) {
-    console.log(question.text);
-
-    for (const choice of question.answer.choices()) {
-        console.log(choice.text);
-    }
-}

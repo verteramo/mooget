@@ -8,36 +8,35 @@
  * @link https://github.com/verteramo/mooget-ext
  */
 
-import {
-  Subject,
-  convertImageToBase64,
-  getSiteVersion,
-} from "../core/Utils"
+import { Subject, convertImageToBase64, getSiteVersion, } from "../core/Utils"
 
-// Listens for messages
+// Listen for messages
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   switch (message.subject) {
 
-    // Sets badge
+    // Set badge
     case Subject.SetBadge:
+      const count: number = message.count
       chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
         chrome.action.setBadgeText({
           tabId: tab.id,
-          text: message.count ? message.count.toString() : ''
+          text: count ? count.toString() : ''
         })
       })
       break
 
-    // Gets site version
+    // Get site version
     case Subject.GetVersion:
-      if (message.url) {
-        getSiteVersion(message.url).then(sendResponse)
+      const url: string = message.url
+      if (url) {
+        getSiteVersion(url).then(sendResponse)
       }
       break
 
-    // Converts image to base64
+    // Convert image to base64
     case Subject.ConvertImage:
-      convertImageToBase64(message.src).then(sendResponse)
+      const src: string = message.src
+      convertImageToBase64(src).then(sendResponse)
       break
   }
 })

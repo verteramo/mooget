@@ -19,7 +19,7 @@ export function usePageContext(): [Context | undefined, (name: string) => void] 
   const [context, setContext] = useState<Context>()
 
   /**
-   * Sets the test name
+   * Set the test name
    * @param name Test name
    */
   const setTestName = (name: string) => {
@@ -33,7 +33,7 @@ export function usePageContext(): [Context | undefined, (name: string) => void] 
   }
 
   /**
-   * Initializes the context
+   * Initialize the context
    * @returns Context
    */
   const initContext = async (): Promise<Context> => {
@@ -42,10 +42,10 @@ export function usePageContext(): [Context | undefined, (name: string) => void] 
   }
 
   useEffect(() => {
-    // Initializes the context
+    // Initialize the context
     initContext().then(setContext)
   }, [])
 
-  // Exposes hooks
+  // Expose hooks
   return [context, setTestName]
 }

@@ -23,13 +23,13 @@ export function useTheme(): [() => boolean, () => void] {
   const [theme, setTheme] = useState<Theme>('light')
 
   /**
-   * Verifies if the theme is dark
+   * Verify if the theme is dark
    * @returns true if the theme is dark, false otherwise
    */
   const isDark = () => theme === 'dark'
 
   /**
-   * Toggles the theme
+   * Toggle the theme
    */
   const toggleTheme = () => {
     chrome.storage.sync.set({
@@ -38,19 +38,19 @@ export function useTheme(): [() => boolean, () => void] {
   }
 
   useEffect(() => {
-    // Sets the theme in the DOM when it changes
+    // Set the theme in the DOM when it changes
     document.documentElement.setAttribute('data-bs-theme', theme)
   }, [theme])
 
   useEffect(() => {
-    // Listens for changes in the storage variable
+    // Listen for changes in the storage variable
     chrome.storage.onChanged.addListener((changes) => {
       if (changes[StorageVariable]) {
         setTheme(changes[StorageVariable].newValue)
       }
     })
 
-    // Gets the theme from the storage
+    // Get the theme from the storage
     chrome.storage.sync.get([StorageVariable], ({ theme }) => {
       if (theme) {
         setTheme(theme)
@@ -58,6 +58,6 @@ export function useTheme(): [() => boolean, () => void] {
     })
   }, [])
 
-  // Exposes hooks
+  // Expose hooks
   return [isDark, toggleTheme]
 }

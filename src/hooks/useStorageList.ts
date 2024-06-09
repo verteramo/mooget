@@ -9,7 +9,6 @@ import { useEffect, useState } from "react";
 
 /**
  * StorageHookProps interface
- * 
  * @property variable Storage variable
  * @property area Storage area
  */
@@ -34,7 +33,7 @@ export function useStorageList<T>({ variable, area }: StorageHookProps): [
   const [list, setList] = useState<T[]>([])
 
   /**
-   * Inserts element
+   * Insert element
    * @param element Element
    * @param comparison Function to compare
    * @param merge Function to merge
@@ -60,7 +59,7 @@ export function useStorageList<T>({ variable, area }: StorageHookProps): [
   }
 
   /**
-   * Updates element
+   * Update element
    * @param index Element index
    * @param element New element
    */
@@ -73,7 +72,7 @@ export function useStorageList<T>({ variable, area }: StorageHookProps): [
   }
 
   /**
-   * Removes element
+   * Remove element
    * @param index Element index
    */
   const remove = (index: number) => {
@@ -85,17 +84,17 @@ export function useStorageList<T>({ variable, area }: StorageHookProps): [
   }
 
   useEffect(() => {
-    // Listens for changes
+    // Listen for changes
     chrome.storage.onChanged.addListener((changes) => {
       if (changes[variable]) {
         setList(changes[variable].newValue)
       }
     })
 
-    // Gets list from storage
+    // Get list from storage
     area.get([variable], result => setList(result[variable]))
   }, [])
 
-  // Exposes hooks
+  // Expose hooks
   return [list, insert, update, remove]
 }

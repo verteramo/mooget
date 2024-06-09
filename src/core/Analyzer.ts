@@ -51,21 +51,20 @@ export interface Context {
 }
 
 /**
- * Extracts context from DOM
+ * Extract context from DOM
  */
 export class Analyzer {
-  // Cheerio instance
+
+  /** Cheerio instance */
   private readonly $: cheerio.Root
 
-  /**
-   * Constructor
-   */
+  /** Constructor */
   constructor() {
     this.$ = cheerio.load(document.body.innerHTML)
   }
 
   /**
-   * Gets the page type
+   * Get the page type
    * @returns Page type
    */
   get type(): string {
@@ -73,7 +72,7 @@ export class Analyzer {
   }
 
   /**
-   * Gets the home URL
+   * Get the home URL
    * @returns Home URL
    */
   get url(): string {
@@ -81,7 +80,7 @@ export class Analyzer {
   }
 
   /**
-   * Gets the test name
+   * Get the test name
    * @returns Test name
    */
   get name(): string {
@@ -89,7 +88,7 @@ export class Analyzer {
   }
 
   /**
-   * Gets the questions
+   * Get the questions
    * @returns Questions
    */
   async *questions(): AsyncIterable<Question> {
@@ -97,7 +96,7 @@ export class Analyzer {
       // Question HTML
       let html = this.$(question).find('.qtext').html() as string
 
-      // Replaces all images URLs with their Base64 representation
+      // Replace all images URLs with their Base64 representation
       for (const image of this.$(question).find('.qtext img')) {
         const src = this.$(image).attr('src') as string
         html = html.replace(src, await chrome.runtime.sendMessage({
@@ -108,18 +107,18 @@ export class Analyzer {
       // Question answers
       const answer = []
 
-      // Gets the right answer
+      // Get the right answer
       const rightanswer = this.$(question).find('.rightanswer').text()
 
-      // Checks if the question is correct by its classes
+      // Check if the question is correct by its classes
       const classes = (this.$(question).attr('class') as string).split(' ')
       let correct = classes.includes('correct')
 
-      // If the question doesn't have the correct class, checks the grades
+      // If the question doesn't have the correct class, check the grades
       if (!correct) {
         // If the question has two grades,
         // the second one is the max grade,
-        // so checks if they are equal
+        // so check if they are equal
         const grade = this.$(question).find('.grade').text().match(
           /\d+[.,]\d+/g
         )
@@ -130,27 +129,28 @@ export class Analyzer {
         }
       }
 
-      // Gets the question type as the second class
+      // Get the question type as the second class
       const [, type] = classes
       switch (type) {
-        // Description question
+
+        /** Description questions */
         case 'description':
           yield { html }
           continue
 
-        // Multiple choice questions
+        /** Multiple choice questions */
         case 'truefalse':
         case 'multichoice':
         case 'calculatedmulti':
           for (const option of this.$(question).find('.answer > div')) {
             const checked = this.$(option).find('input').attr('checked') === 'checked'
 
-            // Deletes list item enumerations (ex: a. B. 1. ...)
+            // Delete list item enumerations (ex: a. B. 1. ...)
             const [, , optionText] = this.$(option).text().match(
               /([\w\d]\.\s)?(.+)\s/
             ) as string[]
 
-            // Pushes the answer with its correctness
+            // Push the answer with its correctness
             answer.push({
               text: optionText,
               correct: (correct && checked) ||
@@ -161,7 +161,7 @@ export class Analyzer {
           break
 
         /** TODO */
-        // Matching questions
+        /** Matching questions */
         case 'match':
         case 'randomsamatch':
           console.log("Match")
@@ -175,18 +175,19 @@ export class Analyzer {
 
           break
 
-        // Short answer questions
+        /** Text questions */
         case 'shortanswer':
         case 'numerical':
         case 'calculated':
         case 'calculatedsimple':
+        case 'essay':
           if (rightanswer) {
-            // If the question has a right answer, gets it
+            // If the question has a right answer, get it
             const [, rightanswerText] = rightanswer.split(/\:\s/, 2) as string[]
             answer.push({ text: rightanswerText })
           }
           else if (correct) {
-            // Else, if the answer is correct, gets it
+            // Else, if the answer is correct, get it
             const answerText = this.$(question).find('.answer > input').text()
             answer.push({ text: answerText })
           }
@@ -194,13 +195,13 @@ export class Analyzer {
           break
       }
 
-      // Generates the question
+      // Generate the question
       yield { html, answer }
     }
   }
 
   /**
-   * Gets the context
+   * Get the context
    * @returns Context
    */
   async getContext(): Promise<Context> {
@@ -209,20 +210,20 @@ export class Analyzer {
     const name = this.name
     const questions: Question[] = []
 
-    // Minifies the test name and generates its ID
+    // Minify the test name as kebab-case and use it as its ID
     const id = name.toLowerCase().replace(/\s/g, '-')
 
-    // Gets the site version from the upgrade.txt file
+    // Get the site version from the upgrade.txt file
     const version = await chrome.runtime.sendMessage({
       subject: Subject.GetVersion, url
     })
 
-    // Generates the test questions
+    // Generate the test questions
     for await (const question of this.questions()) {
       questions.push(question)
     }
 
-    // Returns the context
+    // Return the context
     return {
       url,
       version,

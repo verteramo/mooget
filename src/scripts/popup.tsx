@@ -52,5 +52,5 @@ function Popup(): JSX.Element {
   );
 }
 
-/** Render */
+// Render the popup
 createRoot(document.getElementById("root") as HTMLElement).render(<Popup />);

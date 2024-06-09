@@ -16,7 +16,7 @@ export enum Subject {
 }
 
 /**
- * Gets the site version
+ * Get the site version
  * @param url Site URL
  * @returns Site version
  */
@@ -28,7 +28,7 @@ export const getSiteVersion =
   ).match(/\d+\.\d+\.\d+/g) as string[]).shift() as string
 
 /**
- * Converts image to base64
+ * Convert image to base64
  * @param src Image link
  * @returns Image as base64
  */

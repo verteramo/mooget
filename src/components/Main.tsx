@@ -26,9 +26,9 @@ import { useState } from "react";
  * @returns Main component
  */
 export function Main(): JSX.Element {
-  
+
   /** Page context */
-  const [context, setTestTag] = usePageContext();
+  const [context, setTestName] = usePageContext();
 
   /** Storage list */
   const [list, insert, update, remove] = useStorageList<Test>({
@@ -46,7 +46,7 @@ export function Main(): JSX.Element {
   const [showModal, setShowModal] = useState(false);
 
   /**
-   * Finds a test by ID
+   * Find test by ID
    * @param id Test ID
    * @returns Test
    */
@@ -64,7 +64,7 @@ export function Main(): JSX.Element {
           <FormControl
             type="text"
             value={context.test.name}
-            onChange={(e) => setTestTag(e.target.value)}
+            onChange={(e) => setTestName(e.target.value)}
           />
           <InputGroup.Text>
             {context.test.questions.length} Questions

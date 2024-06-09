@@ -1,25 +1,28 @@
 /**
- * Popup de la extensión
+ * Popup
+ *
+ * @link https://github.com/verteramo
+ * @license GNU GPLv3
  */
 
 import { createRoot } from "react-dom/client";
 import { Card, Form } from "react-bootstrap";
-import { ThemeHook } from "../hooks/ThemeHook";
-import { Footer } from "../components/Footer";
 import { Github } from "react-bootstrap-icons";
-import { TestsTable } from "../components/TestsTable";
+import { useTheme } from "../hooks/useTheme";
+import { Main } from "../components/Main";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../static/popup.css";
 
 export function Popup(): JSX.Element {
-  const { isDark, toggleTheme } = ThemeHook();
+  const manifest = chrome.runtime.getManifest();
+  const [isDark, toggleTheme] = useTheme();
 
   return (
     <Card>
       <Card.Header>
         <div className="d-flex justify-content-between">
-          <Card.Title>Mooget</Card.Title>
+          <Card.Title>{manifest.name}</Card.Title>
           <Form.Check
             type="switch"
             label="Dark"
@@ -31,20 +34,16 @@ export function Popup(): JSX.Element {
         </div>
       </Card.Header>
       <Card.Body>
-        <Card.Text>
-          <TestsTable />
-        </Card.Text>
+        <Main />
       </Card.Body>
-      <Card.Footer>
-        <Footer
-          links={[
-            {
-              name: "GitHub",
-              href: "https://github.com/verteramo",
-              icon: Github,
-            },
-          ]}
-        />
+      <Card.Footer className="d-flex justify-content-end">
+        <a
+          title={manifest.name}
+          href={manifest.homepage_url}
+          target="_blank"
+        >
+          <Github />
+        </a>
       </Card.Footer>
     </Card>
   );

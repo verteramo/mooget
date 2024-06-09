@@ -1,22 +1,41 @@
-export async function toBase64(url: string): Promise<string> {
-  try {
-    const response = await fetch(url);
-    const blob = await response.blob();
-    const mimeType = blob.type;
+/** Messages subjects */
+export enum Subject {
+  GetContext,
+  GetVersion,
+  SetBadge,
+  ConvertImage,
+}
 
-    // Read the Blob as a Base64 string
+/**
+ * Get site version
+ * @param url Site URL
+ * @returns Site version
+ */
+export const getSiteVersion =
+  async (url: string): Promise<string> => (
+    (await
+      (await
+        fetch(`${url}/lib/upgrade.txt`)
+      ).text()
+    ).match(/\d+\.\d+\.\d+/g) as string[])[0]
+
+/**
+ * Convert image to base64
+ * @param src Image source
+ * @returns Image as base64
+ */
+export const convertImageToBase64 =
+  async (src: string): Promise<string> => {
+    const blob = await (await fetch(src)).blob();
     const reader = new FileReader();
-    return new Promise<string>((resolve, reject) => {
+
+    return new Promise((resolve, reject) => {
       reader.onload = () => {
-        const [_, base64] = (reader.result as string).split(',');
-        console.log(`data:${mimeType};base64,${base64}`)
-        resolve(`data:${mimeType};base64,${base64}`);
+        const [, base64] = (reader.result as string).split(',');
+        resolve(`data:${blob.type};base64,${base64}`);
       };
+
       reader.onerror = reject;
       reader.readAsDataURL(blob);
     });
-  } catch (error) {
-    console.error(`Error converting image at ${url} to Base64:`, error);
-    throw error;
   }
-}

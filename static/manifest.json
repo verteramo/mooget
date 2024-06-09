@@ -4,6 +4,7 @@
   "version": "1.0.0",
   "author": "verteramo",
   "description": "Descarga cuestionarios de Moodle",
+  "homepage_url": "https://github.com/verteramo",
   "icons": {
     "16": "icon.png",
     "32": "icon.png",
@@ -28,7 +29,8 @@
   ],
   "permissions": [
     "tabs",
-    "storage"
+    "storage",
+    "webRequest"
   ],
   "optional_host_permissions": [
     "https://*/*"

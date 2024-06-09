@@ -1,50 +1,39 @@
 /**
- * Acceso al almacenamiento de Chrome
- * Acceso al badge de la extensión
+ * Background script
+ * HTTP requests
+ * Badge access
+ * 
+ * @link https://github.com/verteramo
+ * @license GNU GPLv3
  */
 
-import { Storage, Subject } from "../core/Constants"
+import {
+  Subject,
+  getSiteVersion,
+  convertImageToBase64,
+} from "../core/Utils"
 
-export function setBadge(count: number): void {
-  chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-    chrome.action.setBadgeText({
-      tabId: tab.id,
-      text: count.toString()
-    })
-  })
-}
-
+// Listen for messages
 chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
   switch (message.subject) {
-    case Subject.GetTests:
-      chrome.storage.sync.get([Storage.Tests], ({ tests }) => {
-        sendResponse(tests)
-      })
-      break
-
-    case Subject.GetVersion:
-      chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-        if (tab.url) {
-          const url = new URL(tab.url)
-          console.log(url)
-          if (url.protocol === 'https:') {
-            console.log(url)
-            const data = fetch(`https://${url.host}/lib/upgrade.txt`).then(
-              response => response.text() as Promise<string>
-            )
-
-            console.log(data)
-          }
-        }
-        sendResponse(undefined)
-      })
-
-      break
-
+    // Set badge
     case Subject.SetBadge:
-      if (message.count) {
-        setBadge(message.count)
+      chrome.action.setBadgeText({
+        tabId: message.tabId,
+        text: message.count ? message.count.toString() : ''
+      })
+      break
+
+    // Get site version
+    case Subject.GetVersion:
+      if (message.url) {
+        getSiteVersion(message.url).then(sendResponse)
       }
+      break
+
+    // Convert image to base64
+    case Subject.ConvertImage:
+      convertImageToBase64(message.src).then(sendResponse)
       break
   }
 })

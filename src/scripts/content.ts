@@ -1,22 +1,47 @@
 /**
- * Acceso al DOM de la página
+ * Content script
+ * DOM access
+ * 
+ * @link https://github.com/verteramo
+ * @license GNU GPLv3
  */
 
-import { load } from 'cheerio'
-import { Test } from '../core/Models'
-import { Subject } from '../core/Constants'
+import { Subject } from '../core/Utils'
+import { Analyzer, TestType } from '../core/Analyzer'
 
-const itest = new Test(load(document.body.innerHTML)).getITest()
+// Analyzer instance
+const analyzer = new Analyzer()
 
-chrome.runtime.sendMessage({
-  subject: Subject.SetBadge,
-  count: itest.questions.length
-})
+// Get context
+analyzer.getContext().then(context => {
 
-chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
-  switch (message.subject) {
-    case Subject.GetTest:
-      sendResponse(itest.title ? itest : undefined)
-      break
-  }
+  console.log(context)
+
+  chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+    if (context.type === TestType.Review) {
+      // Set badge
+      chrome.runtime.sendMessage({
+        subject: Subject.SetBadge,
+        tabId: tab.id,
+        count: context.test.questions.length
+      })
+    } else {
+      // Remove badge
+      chrome.runtime.sendMessage({
+        subject: Subject.SetBadge,
+        tabId: tab.id,
+        count: 0
+      })
+    }
+  })
+
+  // Listen for messages
+  chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
+    switch (message.subject) {
+      case Subject.GetContext:
+        sendResponse(context)
+        break
+    }
+  })
+
 })

@@ -1,8 +1,8 @@
 /**
  * Main component
  *
- * @link https://github.com/verteramo
  * @license GNU GPLv3
+ * @link https://github.com/verteramo/mooget-ext
  */
 
 import {
@@ -16,36 +16,50 @@ import {
 import { Download, Floppy, XLg } from "react-bootstrap-icons";
 
 import { Test } from "../core/Analyzer";
-import { useContext } from "../hooks/useContext";
+import { usePageContext } from "../hooks/usePageContext";
 import { useStorageList } from "../hooks/useStorageList";
 import { Confirm } from "./Confirm";
 import { useState } from "react";
 
+/**
+ * Body card content component
+ * @returns Main component
+ */
 export function Main(): JSX.Element {
-  const [context, setTestTag] = useContext();
+  
+  /** Page context */
+  const [context, setTestTag] = usePageContext();
+
+  /** Storage list */
   const [list, insert, update, remove] = useStorageList<Test>({
     variable: "tests",
     area: chrome.storage.local,
   });
 
+  /** Selected test for deletion */
   const [selected, setSelected] = useState<{
     index: number;
     name: string;
   }>();
 
+  /** Modal visibility */
   const [showModal, setShowModal] = useState(false);
 
-  const download = (index: number) => {
-    const element = list[index];
-  };
-
+  /**
+   * Finds a test by ID
+   * @param id Test ID
+   * @returns Test
+   */
   const find = (id: string) => {
     return list && list.find((element) => element.id === id);
-  }
+  };
+
+  console.log("Main render");
+  console.log(context);
 
   return (
     <>
-      {context?.test.id && !find(context.test.id) && (
+      {context?.test && !find(context.test.id) && (
         <InputGroup size="sm">
           <FormControl
             type="text"
@@ -59,12 +73,15 @@ export function Main(): JSX.Element {
             title="Save"
             onClick={() =>
               insert(
-                context.test,
-                (element) => element.id === context.test.id,
+                context.test as Test,
+                (element) => element.id === context.test?.id,
                 (current) => ({
                   ...current,
-                  name: context.test.name,
-                  questions: [...current.questions, ...context.test.questions],
+                  name: context.test?.name as string,
+                  questions: [
+                    ...current.questions,
+                    ...(context.test?.questions ?? []),
+                  ],
                 })
               )
             }

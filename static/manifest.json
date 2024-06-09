@@ -4,7 +4,7 @@
   "version": "1.0.0",
   "author": "verteramo",
   "description": "Descarga cuestionarios de Moodle",
-  "homepage_url": "https://github.com/verteramo",
+  "homepage_url": "https://github.com/verteramo/mooget-ext",
   "icons": {
     "16": "icon.png",
     "32": "icon.png",

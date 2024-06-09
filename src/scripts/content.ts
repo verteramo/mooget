@@ -1,13 +1,14 @@
 /**
  * Content script
- * DOM access
  * 
- * @link https://github.com/verteramo
+ * - DOM access
+ * 
  * @license GNU GPLv3
+ * @link https://github.com/verteramo/mooget-ext
  */
 
 import { Subject } from '../core/Utils'
-import { Analyzer, TestType } from '../core/Analyzer'
+import { Analyzer } from '../core/Analyzer'
 
 // Analyzer instance
 const analyzer = new Analyzer()
@@ -15,30 +16,18 @@ const analyzer = new Analyzer()
 // Get context
 analyzer.getContext().then(context => {
 
-  console.log(context)
-
-  chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-    if (context.type === TestType.Review) {
-      // Set badge
-      chrome.runtime.sendMessage({
-        subject: Subject.SetBadge,
-        tabId: tab.id,
-        count: context.test.questions.length
-      })
-    } else {
-      // Remove badge
-      chrome.runtime.sendMessage({
-        subject: Subject.SetBadge,
-        tabId: tab.id,
-        count: 0
-      })
-    }
+  chrome.runtime.sendMessage({
+    subject: Subject.SetBadge,
+    count: context.test?.questions.length
   })
+
 
   // Listen for messages
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     switch (message.subject) {
       case Subject.GetContext:
+
+      console.log('GetContext')
         sendResponse(context)
         break
     }

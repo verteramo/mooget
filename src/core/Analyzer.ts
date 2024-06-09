@@ -1,15 +1,15 @@
 /**
  * Analyzer
- * Extracts the context from DOM
  *
- * @link https://github.com/verteramo
  * @license GNU GPLv3
+ * @link https://github.com/verteramo/mooget-ext
  */
 
 import * as cheerio from 'cheerio'
 import { Subject } from "./Utils"
 
-export enum TestType {
+/** Page type */
+export enum PageType {
   Attempt = 'page-mod-quiz-attempt',
   Review = 'page-mod-quiz-review',
 }
@@ -17,7 +17,7 @@ export enum TestType {
 /**
  * Question interface
  * @property html Question HTML
- * @property answer Question answers
+ * @property answer Question answer
  */
 export interface Question {
   html: string
@@ -38,30 +38,38 @@ export interface Test {
 
 /**
  * Context interface
+ * @property type Page type
  * @property url Page URL
  * @property version Moodle version
  * @property test Test
  */
 export interface Context {
+  type: PageType
   url: string
   version: string
-  type: TestType
-  test: Test
+  test?: Test
 }
 
 /**
- * Analyzer
  * Extracts context from DOM
  */
 export class Analyzer {
   // Cheerio instance
-  private $: cheerio.Root
+  private readonly $: cheerio.Root
 
   /**
    * Constructor
    */
   constructor() {
     this.$ = cheerio.load(document.body.innerHTML)
+  }
+
+  /**
+   * Gets the page type
+   * @returns Page type
+   */
+  get type(): string {
+    return document.body.id
   }
 
   /**
@@ -89,7 +97,7 @@ export class Analyzer {
       // Question HTML
       let html = this.$(question).find('.qtext').html() as string
 
-      // Replaces all images URL with their Base64 representation
+      // Replaces all images URLs with their Base64 representation
       for (const image of this.$(question).find('.qtext img')) {
         const src = this.$(image).attr('src') as string
         html = html.replace(src, await chrome.runtime.sendMessage({
@@ -109,19 +117,16 @@ export class Analyzer {
 
       // If the question doesn't have the correct class, checks the grades
       if (!correct) {
-        // Gets the grades
+        // If the question has two grades,
+        // the second one is the max grade,
+        // so checks if they are equal
         const grade = this.$(question).find('.grade').text().match(
           /\d+[.,]\d+/g
         )
 
-        // If the question has two grades,
-        // the second one is the max grade,
-        // so checks if they are equal
-        if (!correct && grade?.length == 2) {
+        if (grade?.length === 2) {
           const [grade1, grade2] = grade
-          if (grade1 === grade2) {
-            correct = true
-          }
+          correct = grade1 === grade2
         }
       }
 
@@ -140,7 +145,7 @@ export class Analyzer {
           for (const option of this.$(question).find('.answer > div')) {
             const checked = this.$(option).find('input').attr('checked') === 'checked'
 
-            // Deletes list item letters (ex: a. B. 1. ...)
+            // Deletes list item enumerations (ex: a. B. 1. ...)
             const [, , optionText] = this.$(option).text().match(
               /([\w\d]\.\s)?(.+)\s/
             ) as string[]
@@ -155,6 +160,7 @@ export class Analyzer {
 
           break
 
+        /** TODO */
         // Matching questions
         case 'match':
         case 'randomsamatch':
@@ -175,10 +181,12 @@ export class Analyzer {
         case 'calculated':
         case 'calculatedsimple':
           if (rightanswer) {
+            // If the question has a right answer, gets it
             const [, rightanswerText] = rightanswer.split(/\:\s/, 2) as string[]
             answer.push({ text: rightanswerText })
           }
           else if (correct) {
+            // Else, if the answer is correct, gets it
             const answerText = this.$(question).find('.answer > input').text()
             answer.push({ text: answerText })
           }
@@ -196,22 +204,25 @@ export class Analyzer {
    * @returns Context
    */
   async getContext(): Promise<Context> {
+    const type = this.type as PageType
     const url = this.url
     const name = this.name
     const questions: Question[] = []
 
-    const type = document.body.id as TestType
-
+    // Minifies the test name and generates its ID
     const id = name.toLowerCase().replace(/\s/g, '-')
 
+    // Gets the site version from the upgrade.txt file
     const version = await chrome.runtime.sendMessage({
       subject: Subject.GetVersion, url
     })
 
+    // Generates the test questions
     for await (const question of this.questions()) {
       questions.push(question)
     }
 
+    // Returns the context
     return {
       url,
       version,

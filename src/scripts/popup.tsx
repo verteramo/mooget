@@ -1,8 +1,8 @@
 /**
- * Popup
+ * Popup script
  *
- * @link https://github.com/verteramo
  * @license GNU GPLv3
+ * @link https://github.com/verteramo/mooget-ext
  */
 
 import { createRoot } from "react-dom/client";
@@ -14,8 +14,15 @@ import { Main } from "../components/Main";
 import "bootstrap/dist/css/bootstrap.min.css";
 import "../../static/popup.css";
 
-export function Popup(): JSX.Element {
+/**
+ * Main card of the popup
+ * @returns Card component
+ */
+function Popup(): JSX.Element {
+  /** Manifest */
   const manifest = chrome.runtime.getManifest();
+
+  /** Theme hook */
   const [isDark, toggleTheme] = useTheme();
 
   return (
@@ -37,11 +44,7 @@ export function Popup(): JSX.Element {
         <Main />
       </Card.Body>
       <Card.Footer className="d-flex justify-content-end">
-        <a
-          title={manifest.name}
-          href={manifest.homepage_url}
-          target="_blank"
-        >
+        <a title={manifest.name} href={manifest.homepage_url} target="_blank">
           <Github />
         </a>
       </Card.Footer>
@@ -49,4 +52,5 @@ export function Popup(): JSX.Element {
   );
 }
 
+/** Render */
 createRoot(document.getElementById("root") as HTMLElement).render(<Popup />);

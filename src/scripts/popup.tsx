@@ -23,7 +23,7 @@ function Popup(): JSX.Element {
   const manifest = chrome.runtime.getManifest();
 
   /** Theme hook */
-  const [isDark, toggleTheme] = useTheme();
+  const [dark, toggleTheme] = useTheme();
 
   return (
     <Card>
@@ -35,7 +35,7 @@ function Popup(): JSX.Element {
             label="Dark"
             title="Dark"
             placeholder="Dark"
-            checked={isDark()}
+            checked={dark}
             onChange={toggleTheme}
           />
         </div>

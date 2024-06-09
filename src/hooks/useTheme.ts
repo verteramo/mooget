@@ -14,7 +14,7 @@ type Theme = 'light' | 'dark'
  * Hook to manage the theme of the extension
  * @returns [isDark, toggleTheme]
  */
-export function useTheme(): [() => boolean, () => void] {
+export function useTheme(): [boolean, () => void] {
 
   /** Storage variable */
   const StorageVariable = 'theme'
@@ -22,18 +22,13 @@ export function useTheme(): [() => boolean, () => void] {
   /** Theme state */
   const [theme, setTheme] = useState<Theme>('light')
 
-  /**
-   * Verify if the theme is dark
-   * @returns true if the theme is dark, false otherwise
-   */
-  const isDark = () => theme === 'dark'
+  /** Dark theme flag */
+  const dark = theme === 'dark'
 
-  /**
-   * Toggle the theme
-   */
+  /** Toggle the theme */
   const toggleTheme = () => {
     chrome.storage.sync.set({
-      theme: isDark() ? 'light' : 'dark'
+      theme: dark ? 'light' : 'dark'
     })
   }
 
@@ -59,5 +54,5 @@ export function useTheme(): [() => boolean, () => void] {
   }, [])
 
   // Expose hooks
-  return [isDark, toggleTheme]
+  return [dark, toggleTheme]
 }

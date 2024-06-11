@@ -23,13 +23,15 @@ export function usePageContext(): [Context | undefined, (name: string) => void] 
    * @param name Test name
    */
   const setTestName = (name: string) => {
-    const newContext = context
-
-    if (newContext?.test) {
-      newContext.test.name = name
+    if (context?.test) {
+      setContext({
+        ...context,
+        test: {
+          ...context.test,
+          name
+        }
+      })
     }
-
-    setContext(newContext)
   }
 
   /**

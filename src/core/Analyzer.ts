@@ -5,14 +5,15 @@
  * @link https://github.com/verteramo/mooget-ext
  */
 
+import jquery from 'jquery'
 import * as cheerio from 'cheerio'
+import { Md5 } from 'ts-md5'
 import { Subject } from "./Utils"
+import { getCssSelector } from './Utils'
 
-/** Page type */
-export enum PageType {
-  Attempt = 'page-mod-quiz-attempt',
-  Review = 'page-mod-quiz-review',
-}
+const ChoiceRegex = /([\w\d]\.\s)?(.+)\s/
+const RightanswerRegex = /\:\s/
+const GradeRegex = /\d+[.,]\d+/g
 
 /**
  * Question interface
@@ -20,6 +21,7 @@ export enum PageType {
  * @property answer Question answer
  */
 export interface Question {
+  id: string
   html: string
   answer?: any[]
 }
@@ -44,7 +46,7 @@ export interface Test {
  * @property test Test
  */
 export interface Context {
-  type: PageType
+  type: string
   url: string
   version: string
   test?: Test
@@ -84,7 +86,7 @@ export class Analyzer {
    * @returns Test name
    */
   get name(): string {
-    return this.$('.breadcrumb-item:last').text().replace(/\\n/g, '').trim()
+    return this.$('.breadcrumb-item:last').text().trim()
   }
 
   /**
@@ -94,7 +96,9 @@ export class Analyzer {
   async *questions(): AsyncIterable<Question> {
     for (const question of this.$('.que')) {
       // Question HTML
-      let html = this.$(question).find('.qtext').html() as string
+      const qtext = this.$(question).find('.qtext')
+      const id = Md5.hashStr(qtext.text() as string) as string
+      let html = qtext.html() as string
 
       // Replace all images URLs with their Base64 representation
       for (const image of this.$(question).find('.qtext img')) {
@@ -119,9 +123,8 @@ export class Analyzer {
         // If the question has two grades,
         // the second one is the max grade,
         // so check if they are equal
-        const grade = this.$(question).find('.grade').text().match(
-          /\d+[.,]\d+/g
-        )
+        const grade =
+          this.$(question).find('.grade').text().match(GradeRegex)
 
         if (grade?.length === 2) {
           const [grade1, grade2] = grade
@@ -135,7 +138,8 @@ export class Analyzer {
 
         /** Description questions */
         case 'description':
-          yield { html }
+          yield { id, html }
+
           continue
 
         /** Multiple choice questions */
@@ -146,9 +150,8 @@ export class Analyzer {
             const checked = this.$(option).find('input').attr('checked') === 'checked'
 
             // Delete list item enumerations (ex: a. B. 1. ...)
-            const [, , optionText] = this.$(option).text().match(
-              /([\w\d]\.\s)?(.+)\s/
-            ) as string[]
+            const [, , optionText] =
+              this.$(option).text().match(ChoiceRegex) as string[]
 
             // Push the answer with its correctness
             answer.push({
@@ -183,7 +186,7 @@ export class Analyzer {
         case 'essay':
           if (rightanswer) {
             // If the question has a right answer, get it
-            const [, rightanswerText] = rightanswer.split(/\:\s/, 2) as string[]
+            const [, rightanswerText] = rightanswer.split(RightanswerRegex, 2) as string[]
             answer.push({ text: rightanswerText })
           }
           else if (correct) {
@@ -196,7 +199,7 @@ export class Analyzer {
       }
 
       // Generate the question
-      yield { html, answer }
+      yield { id, html, answer }
     }
   }
 
@@ -205,13 +208,11 @@ export class Analyzer {
    * @returns Context
    */
   async getContext(): Promise<Context> {
-    const type = this.type as PageType
+    const type = this.type
     const url = this.url
     const name = this.name
+    const id = Md5.hashStr(name) as string
     const questions: Question[] = []
-
-    // Minify the test name as kebab-case and use it as its ID
-    const id = name.toLowerCase().replace(/\s/g, '-')
 
     // Get the site version from the upgrade.txt file
     const version = await chrome.runtime.sendMessage({
@@ -232,6 +233,42 @@ export class Analyzer {
         id,
         name,
         questions
+      }
+    }
+  }
+
+  answerTest(test: Test) {
+    for (const question of this.$('.que')) {
+      const questionId = Md5.hashStr(this.$(question).find('.qtext').text() as string) as string
+
+      // Get the question from the storage
+      const storageQuestion = test.questions.find(({ id }) => id === questionId)
+
+      // If the question is in the storage, answer it
+      if (storageQuestion) {
+        // Get the question type as the second class
+        const [, type] = (this.$(question).attr('class') as string).split(' ')
+        switch (type) {
+          /** Multiple choice questions */
+          case 'truefalse':
+          case 'multichoice':
+          case 'calculatedmulti':
+            for (const option of this.$(question).find('.answer > div')) {
+              const [, , optionText] =
+                this.$(option).text().match(ChoiceRegex) as string[]
+
+              // Get the answer from the storage
+              const storageAnswer = storageQuestion.answer?.find(({ text }) => text === optionText)
+
+              // If the answer is correct, check it
+              if (storageAnswer?.correct) {
+                const cssSelector = getCssSelector(this.$, option)
+                jquery(cssSelector).addClass('mooget-correct-answer')
+              }
+            }
+
+            break
+        }
       }
     }
   }

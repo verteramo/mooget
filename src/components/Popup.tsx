@@ -8,7 +8,7 @@
 import { Card, Form } from "react-bootstrap";
 import { Github } from "react-bootstrap-icons";
 import { useTheme } from "../hooks/useTheme";
-import { Main } from "../components/Main";
+import { Main } from "./Main";
 
 /**
  * Main card of the popup

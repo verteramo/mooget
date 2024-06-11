@@ -8,26 +8,68 @@
  */
 
 import { Subject } from '../core/Utils'
-import { Analyzer } from '../core/Analyzer'
+import { Analyzer, Question, Test } from '../core/Analyzer'
 
-// Instantiate Analyzer and get context
-new Analyzer().getContext().then(context => {
-
-  // Send questions length to background to set badge
-  chrome.runtime.sendMessage({
-    subject: Subject.SetBadge,
-    count: context.test?.questions.length
+function filterNewQuestions(test: Test): Question[] {
+  const newQuestions: Question[] = []
+  chrome.storage.local.get('tests', ({ tests }) => {
+    for (const currentTest of (tests as Test[])) {
+      if (currentTest.id === test.id) {
+        for (const question of test.questions) {
+          if (!currentTest.questions.some(currentQuestion => currentQuestion.html === question.html)) {
+            newQuestions.push(question)
+          }
+        }
+        break
+      }
+    }
   })
 
+  return newQuestions
+}
+
+const analyzer = new Analyzer()
+
+// Instantiate Analyzer and get context
+analyzer.getContext().then(context => {
   // Listen for messages
   chrome.runtime.onMessage.addListener((message, _sender, sendResponse) => {
     switch (message.subject) {
-
       // Send context to popup
       case Subject.GetContext:
         sendResponse(context)
         break
     }
   })
+
+  switch (context.type) {
+    // Attempt page
+    // Answer questions in DOM
+    case 'page-mod-quiz-attempt':
+      console.log('Attempt page')
+      chrome.storage.local.get('tests', (data) => {
+        const tests: Test[] = data.tests || []
+        for (const test of tests) {
+          if (test.id === context.test?.id) {
+            analyzer.answerTest(test)
+          }
+        }
+      })
+      break
+
+    case 'page-mod-quiz-review':
+      console.log('Review page')
+      // Get new questions
+      let test = context.test as Test
+      test = {
+        ...test,
+        questions: filterNewQuestions(test)
+      }
+      // Send new questions to background to set badge
+      chrome.runtime.sendMessage({
+        subject: Subject.SetBadge,
+        count: test.questions.length
+      })
+  }
 
 })

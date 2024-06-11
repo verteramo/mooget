@@ -8,38 +8,21 @@
 import { Button, Modal } from "react-bootstrap";
 import { CheckLg, XLg } from "react-bootstrap-icons";
 
-/**
- * Confirm properties
- * @property title Modal title
- * @property show Modal visibility
- * @property onAccept Accept event
- * @property onCancel Cancel event
- * @property children Modal children
- */
-interface ConfirmProps {
+interface MessageModalProps {
   title: string;
   show: boolean;
   onAccept: () => void;
-  onCancel?: () => void;
+  onCancel: () => void;
   children: React.ReactNode;
 }
 
-/**
- * Confirm component
- * @param title Modal title
- * @param show Modal visibility
- * @param onAccept Accept event
- * @param onCancel Cancel event
- * @param children Modal children
- * @returns Modal component
- */
-export function Confirm({
+export function MessageModal({
   title,
   show,
   onAccept,
   onCancel,
   children,
-}: ConfirmProps) {
+}: MessageModalProps) {
   return (
     <>
       <Modal centered size="sm" backdrop="static" show={show} onHide={onCancel}>

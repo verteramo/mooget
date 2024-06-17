@@ -1,11 +1,11 @@
 /**
  * useStorageList
- * 
+ *
  * @license GNU GPLv3
  * @link https://github.com/verteramo/mooget-ext
  */
 
-import { useEffect, useState } from "react";
+import { useEffect, useState } from 'react'
 
 /**
  * StorageHookProps interface
@@ -13,8 +13,8 @@ import { useEffect, useState } from "react";
  * @property area Storage area
  */
 interface StorageHookProps {
-  variable: string;
-  area: chrome.storage.StorageArea;
+  variable: string
+  area: chrome.storage.StorageArea
 }
 
 /**
@@ -23,12 +23,19 @@ interface StorageHookProps {
  * @param area Storage area
  * @returns Hook functions
  */
-export function useStorageList<T>({ variable, area }: StorageHookProps): [
-  T[],
-  (element: T, comparison: (current: T) => boolean, merge: (current: T) => T) => void,
-  (index: number, element: T) => void,
-  (index: number) => void
-] {
+export function useStorageList<T> ({
+  variable,
+  area
+}: StorageHookProps): [
+    T[],
+    (
+      element: T,
+      comparison: (current: T) => boolean,
+      merge: (current: T) => T
+    ) => void,
+    (index: number, element: T) => void,
+    (index: number) => void
+  ] {
   /** List state */
   const [list, setList] = useState<T[]>([])
 
@@ -42,9 +49,9 @@ export function useStorageList<T>({ variable, area }: StorageHookProps): [
     element: T,
     comparison: (current: T) => boolean,
     merge: (current: T) => T
-  ) => {
-    area.get([variable], data => {
-      const currentList: T[] = data[variable] || []
+  ): void => {
+    area.get([variable], (data) => {
+      const currentList = data[variable] as T[]
       for (let index = 0; index < currentList.length; index++) {
         // If element exists, merge it
         if (comparison(currentList[index])) {
@@ -54,7 +61,7 @@ export function useStorageList<T>({ variable, area }: StorageHookProps): [
       }
 
       // Otherwise, insert it
-      area.set({ [variable]: [...currentList, element] })
+      area.set({ [variable]: [...currentList, element] }).catch(console.error)
     })
   }
 
@@ -63,11 +70,11 @@ export function useStorageList<T>({ variable, area }: StorageHookProps): [
    * @param index Element index
    * @param element New element
    */
-  const update = (index: number, element: T) => {
-    area.get([variable], data => {
-      const currentList: T[] = data[variable] || []
+  const update = (index: number, element: T): void => {
+    area.get([variable], (data) => {
+      const currentList = data[variable] as T[]
       currentList[index] = element
-      area.set({ [variable]: currentList })
+      area.set({ [variable]: currentList }).catch(console.error)
     })
   }
 
@@ -75,24 +82,24 @@ export function useStorageList<T>({ variable, area }: StorageHookProps): [
    * Remove element
    * @param index Element index
    */
-  const remove = (index: number) => {
-    area.get([variable], data => {
-      const currentList: T[] = data[variable] || []
+  const remove = (index: number): void => {
+    area.get([variable], (data) => {
+      const currentList = data[variable] as T[]
       currentList.splice(index, 1)
-      area.set({ [variable]: currentList })
+      area.set({ [variable]: currentList }).catch(console.error)
     })
   }
 
   useEffect(() => {
     // Listen for changes
     chrome.storage.onChanged.addListener((changes) => {
-      if (changes[variable]) {
+      if (changes[variable] != null) {
         setList(changes[variable].newValue)
       }
     })
 
     // Get list from storage
-    area.get([variable], result => setList(result[variable]))
+    area.get([variable], (result) => setList(result[variable]))
   }, [])
 
   // Expose hooks

@@ -1,60 +1,60 @@
 class StorageList<T> {
-  private list: T[] = [];
-  private variable: string;
-  private area: chrome.storage.StorageArea;
+  private list: T[] = []
+  private readonly variable: string
+  private readonly area: chrome.storage.StorageArea
 
-  constructor(variable: string, area: chrome.storage.StorageArea = chrome.storage.local) {
-    this.variable = variable;
-    this.area = area;
+  constructor (variable: string, area: chrome.storage.StorageArea = chrome.storage.local) {
+    this.variable = variable
+    this.area = area
   }
 
-  get length() {
-    return this.list.length;
+  get length (): number {
+    return this.list.length
   }
 
-  load() {
+  load (): void {
     this.area.get([this.variable], (data) => {
-      this.list = data[this.variable] || [];
-    });
+      this.list = data[this.variable] || []
+    })
   }
 
-  save() {
-    this.area.set({ [this.variable]: this.list });
+  save (): void {
+    this.area.set({ [this.variable]: this.list })
   }
 
-  change(changes: {
-    [key: string]: chrome.storage.StorageChange;
-  }) {
+  change (changes: {
+    [key: string]: chrome.storage.StorageChange
+  }): void {
     if (changes[this.variable]) {
-      this.list = changes[this.variable].newValue;
+      this.list = changes[this.variable].newValue
     }
   }
 
-  add(item: T) {
-    this.list.push(item);
+  add (item: T) {
+    this.list.push(item)
   }
 
-  get(index: number): T {
-    return this.list[index];
+  get (index: number): T {
+    return this.list[index]
   }
 
-  getAll(): T[] {
-    return this.list;
+  getAll (): T[] {
+    return this.list
   }
 
-  remove(index: number) {
-    this.list.splice(index, 1);
+  remove (index: number) {
+    this.list.splice(index, 1)
   }
 
-  update(index: number, item: T) {
-    this.list[index] = item;
+  update (index: number, item: T) {
+    this.list[index] = item
   }
 
-  find(predicate: (element: T) => boolean): T | undefined {
-    return this.list.find(predicate);
+  find (predicate: (element: T) => boolean): T | undefined {
+    return this.list.find(predicate)
   }
 
-  clear() {
-    this.list = [];
+  clear () {
+    this.list = []
   }
 }

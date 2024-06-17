@@ -1,20 +1,22 @@
 /**
  * usePageContext
- * 
+ *
  * @license GNU GPLv3
  * @link https://github.com/verteramo/mooget-ext
  */
 
-import { useEffect, useState } from "react";
-import { Context } from "../core/Analyzer";
-import { Subject } from "../core/Utils";
+import { useEffect, useState } from 'react'
+import { Context } from '../core/Analyzer'
+import { Subject } from '../core/Utils'
 
 /**
  * Hook to manage the context of the page
  * @returns Context and setTestName function
  */
-export function usePageContext(): [Context | undefined, (name: string) => void] {
-
+export function usePageContext (): [
+  Context | undefined,
+  (name: string) => void
+] {
   /** Context state */
   const [context, setContext] = useState<Context>()
 
@@ -22,8 +24,8 @@ export function usePageContext(): [Context | undefined, (name: string) => void] 
    * Set the test name
    * @param name Test name
    */
-  const setTestName = (name: string) => {
-    if (context?.test) {
+  const setTestName = (name: string): void => {
+    if ((context?.test) != null) {
       setContext({
         ...context,
         test: {
@@ -39,13 +41,18 @@ export function usePageContext(): [Context | undefined, (name: string) => void] 
    * @returns Context
    */
   const initContext = async (): Promise<Context> => {
-    const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
-    return chrome.tabs.sendMessage(tab.id as number, { subject: Subject.GetContext })
+    const [tab] = await chrome.tabs.query({
+      active: true,
+      currentWindow: true
+    })
+    return await chrome.tabs.sendMessage(tab.id as number, {
+      subject: Subject.GetContext
+    })
   }
 
   useEffect(() => {
     // Initialize the context
-    initContext().then(setContext)
+    initContext().then(setContext).catch(console.error)
   }, [])
 
   // Expose hooks

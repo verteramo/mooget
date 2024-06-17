@@ -5,12 +5,15 @@
  * @link https://github.com/verteramo/mooget-ext
  */
 
-import { createRoot } from "react-dom/client";
-import { Popup } from "../components/Popup";
+import { StrictMode } from 'react'
+import { createRoot } from 'react-dom/client'
+import { Main } from '../components/Main'
 
-import "bootstrap/dist/css/bootstrap.min.css";
-import "../../static/popup.css";
+import 'bootstrap/dist/css/bootstrap.min.css'
+import '../../static/popup.css'
 
-const container = document.getElementById("root");
-const root = createRoot(container as HTMLElement);
-root.render(<Popup />);
+createRoot(document.getElementById('root') as HTMLElement).render(
+  <StrictMode>
+    <Main />
+  </StrictMode>
+)

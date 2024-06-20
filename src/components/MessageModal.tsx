@@ -2,7 +2,7 @@
  * Confirm component
  *
  * @license GNU GPLv3
- * @link https://github.com/verteramo/mooget-ext
+ * @link https://github.com/verteramo/mooget
  */
 
 import { Button, Modal } from 'react-bootstrap'

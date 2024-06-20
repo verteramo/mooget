@@ -1,6 +1,5 @@
 {
   "recommendations": [
-    "standard.vscode-standard",
-    "usernamehw.errorlens"
+    "standard.vscode-standard"
   ]
 }

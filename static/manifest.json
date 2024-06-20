@@ -2,16 +2,17 @@
   "manifest_version": 3,
   "name": "Mooget",
   "version": "1.0.0",
+  "license": "GPL-3.0",
   "author": "verteramo",
   "description": "Manage Moodle's tests",
-  "homepage_url": "https://github.com/verteramo/mooget-ext",
+  "homepage_url": "https://github.com/verteramo/mooget",
   "icons": {
     "16": "icon.png",
     "48": "icon.png",
     "128": "icon.png"
   },
   "action": {
-    "default_popup": "index.html"
+    "default_popup": "popup.html"
   },
   "background": {
     "service_worker": "background.js"

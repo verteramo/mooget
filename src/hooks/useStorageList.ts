@@ -2,31 +2,18 @@
  * useStorageList
  *
  * @license GNU GPLv3
- * @link https://github.com/verteramo/mooget-ext
+ * @link https://github.com/verteramo/mooget
  */
 
 import { useEffect, useState } from 'react'
 
-/**
- * StorageHookProps interface
- * @property variable Storage variable
- * @property area Storage area
- */
-interface StorageHookProps {
-  variable: string
-  area: chrome.storage.StorageArea
-}
-
-/**
- * Hook to manage a list in storage
- * @param variable Storage variable
- * @param area Storage area
- * @returns Hook functions
- */
 export function useStorageList<T> ({
   variable,
   area
-}: StorageHookProps): [
+}: {
+  variable: string
+  area: chrome.storage.StorageArea
+}): [
     T[],
     (
       element: T,

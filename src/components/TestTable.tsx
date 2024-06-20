@@ -1,12 +1,12 @@
-import { Button, Form, Table } from 'react-bootstrap'
-import { Test } from '../core/Analyzer'
-import { Floppy, XLg } from 'react-bootstrap-icons'
+import { FloatingLabel, FormControl, Table } from 'react-bootstrap'
+import { ITest } from '../core/Scraping'
+import { FileEarmarkCodeFill, FileEarmarkPdfFill, PenFill, TrashFill } from 'react-bootstrap-icons'
 import { MessageModal } from './MessageModal'
 import { useState } from 'react'
 
 interface TestTableProps {
-  list: Test[]
-  onUpdate: (index: number, test: Test) => void
+  list: ITest[]
+  onUpdate: (index: number, test: ITest) => void
   onDelete: (index: number) => void
   onDownload: (index: number) => void
 }
@@ -19,13 +19,14 @@ export function TestTable ({
 }: TestTableProps): JSX.Element {
   const [selected, setSelected] = useState<{
     index: number
-    name: string
+    id: string
   }>()
 
   const [show, setShow] = useState(false)
+  const [edit, setEdit] = useState(false)
 
   const onDeleting = (index: number): void => {
-    setSelected({ index, name: list[index].name })
+    setSelected({ index, id: list[index].id })
     setShow(true)
   }
 
@@ -39,7 +40,7 @@ export function TestTable ({
       <Table className='mt-2' striped bordered hover>
         <thead>
           <tr>
-            <th className='col-9'>Test</th>
+            <th className='col-6'>Test</th>
             <th className='col-1'>Questions</th>
             <th className='col-2'>Actions</th>
           </tr>
@@ -47,36 +48,51 @@ export function TestTable ({
         <tbody>
           {list.map((test, index) => (
             <tr key={index}>
-              <td align='center' className='align-middle'>
-                <Form.Control
-                  size='sm'
-                  type='text'
-                  value={test.name}
-                  onChange={e => onUpdate(index, { ...test, name: e.target.value })}
-                />
+              <td className='align-middle'>
+                {edit
+                  ? (
+                    <FloatingLabel label={test.category}>
+                      <FormControl
+                        type='text'
+                        value={test.id}
+                        onChange={(e) =>
+                          onUpdate(index, { ...test, id: e.target.value })}
+                      />
+                    </FloatingLabel>
+                    )
+                  : (
+                    <a href={test.link} target='_blank' rel='noreferrer'>
+                      {test.id}
+                    </a>
+                    )}
               </td>
               <td align='center' className='align-middle'>
                 {test.questions.length}
               </td>
               <td align='center' className='align-middle'>
-                <Button
-                  size='sm'
-                  variant='info'
-                  className='rounded-circle me-2'
-                  title='Download'
-                  onClick={() => onDownload(index)}
-                >
-                  <Floppy />
-                </Button>
-                <Button
-                  size='sm'
-                  variant='danger'
-                  className='rounded-circle'
+                <PenFill
+                  role='button'
+                  className='me-2'
+                  title='Edit'
+                  onClick={() => setEdit(!edit)}
+                />
+                <TrashFill
+                  role='button'
+                  className='me-2'
                   title='Delete'
                   onClick={() => onDeleting(index)}
-                >
-                  <XLg />
-                </Button>
+                />
+                <FileEarmarkCodeFill
+                  role='button'
+                  className='me-2'
+                  title='Download as JSON'
+                  onClick={() => onDownload(index)}
+                />
+                <FileEarmarkPdfFill
+                  role='button'
+                  title='Download as PDF'
+                  onClick={() => onDownload(index)}
+                />
               </td>
             </tr>
           ))}

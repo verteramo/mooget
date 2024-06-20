@@ -2,7 +2,7 @@
  * Popup script
  *
  * @license GNU GPLv3
- * @link https://github.com/verteramo/mooget-ext
+ * @link https://github.com/verteramo/mooget
  */
 
 import { StrictMode } from 'react'
@@ -12,7 +12,9 @@ import { Main } from '../components/Main'
 import 'bootstrap/dist/css/bootstrap.min.css'
 import '../../static/popup.css'
 
-createRoot(document.getElementById('root') as HTMLElement).render(
+createRoot(
+  document.getElementById('root') as HTMLElement
+).render(
   <StrictMode>
     <Main />
   </StrictMode>

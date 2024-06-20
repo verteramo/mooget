@@ -9,12 +9,13 @@ module.exports = {
   devtool: 'inline-source-map',
   entry: {
     popup: './src/scripts/popup.tsx',
+    options: './src/scripts/options.tsx',
     content: './src/scripts/content.ts',
     background: './src/scripts/background.ts'
   },
   output: {
     path: path.resolve(__dirname, 'dist'),
-    filename: '[name].js',
+    filename: 'src/[name].js',
     clean: true
   },
   module: {
@@ -44,7 +45,7 @@ module.exports = {
   },
   plugins: [
     new HtmlWebpackPlugin({
-      template: './src/index.html'
+      template: './src/popup.html'
     }),
     new CopyWebpackPlugin({
       patterns: [

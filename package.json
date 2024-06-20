@@ -1,22 +1,29 @@
 {
-  "name": "mooget-ext",
+  "name": "mooget",
   "version": "1.0.0",
-  "description": "",
-  "main": "app.js",
+  "description": "Manage Moodle's tests",
+  "main": "popup.tsx",
   "type": "module",
-  "license": "MIT",
-  "private": false,
+  "license": "GPL-3.0",
+  "private": true,
   "engines": {
     "node": ">= 14.0.0",
     "npm": ">= 6.0.0"
   },
-  "homepage": "http://github.com/verteramo/mooget-ext",
+  "homepage": "http://github.com/verteramo/mooget",
   "repository": {
     "type": "git",
-    "url": "http://github.com/verteramo/mooget-ext.git"
+    "url": "http://github.com/verteramo/mooget.git"
   },
-  "bugs": "",
-  "keywords": [],
+  "bugs": "https://github.com/verteramo/mooget/issues",
+  "keywords": [
+    "moodle",
+    "tests",
+    "automation",
+    "chrome",
+    "extension",
+    "scraper"
+  ],
   "author": {
     "name": "verteramo",
     "email": "verteramo@outlook.com",

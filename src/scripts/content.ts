@@ -24,6 +24,8 @@ export async function getITest (): Promise<ITest> {
   })
 }
 
+console.log('Content script')
+
 getTest().then((test) => {
   console.log(test)
 

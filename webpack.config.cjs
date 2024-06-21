@@ -1,7 +1,5 @@
-const path = require('path')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const WebpackExtReloader = require('webpack-ext-reloader')
+const ExtReloaderPlugin = require('webpack-ext-reloader')
 
 module.exports = {
   watch: true,
@@ -14,10 +12,19 @@ module.exports = {
     background: './src/scripts/background.ts'
   },
   output: {
-    path: path.resolve(__dirname, 'dist'),
-    filename: 'src/[name].js',
-    clean: true
+    filename: 'src/[name].js'
   },
+  plugins: [
+    new CopyWebpackPlugin({ patterns: [{ from: 'src/static' }] }),
+    new ExtReloaderPlugin({
+      reloadPage: true,
+      entries: {
+        extensionPage: ['popup', 'options'],
+        contentScript: 'content',
+        background: 'background'
+      }
+    })
+  ],
   module: {
     rules: [
       {
@@ -28,8 +35,8 @@ module.exports = {
           options: {
             presets: [
               '@babel/preset-env',
-              ['@babel/preset-react', { runtime: 'automatic' }],
-              '@babel/preset-typescript'
+              '@babel/preset-typescript',
+              ['@babel/preset-react', { runtime: 'automatic' }]
             ]
           }
         }
@@ -42,25 +49,5 @@ module.exports = {
   },
   resolve: {
     extensions: ['.tsx', '.ts', '.js']
-  },
-  plugins: [
-    new HtmlWebpackPlugin({
-      template: './src/popup.html'
-    }),
-    new CopyWebpackPlugin({
-      patterns: [
-        {
-          from: path.resolve('static'),
-          to: path.resolve('dist')
-        }
-      ]
-    }),
-    new WebpackExtReloader({
-      entries: {
-        extensionPage: 'popup',
-        contentScript: 'content',
-        background: 'background'
-      }
-    })
-  ]
+  }
 }

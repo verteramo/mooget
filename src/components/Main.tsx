@@ -46,7 +46,7 @@ export function Main (): JSX.Element {
             onChange={setTestId}
           />
         )}
-        {testList.length > 0 && (
+        {testList?.length > 0 && (
           <TestTable
             list={testList}
             onUpdate={updateTest}

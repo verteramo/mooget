@@ -100,7 +100,7 @@
   },
   "include": [
     "src/**/*"
-  ],
+, "webpack.dev.cjs"  ],
   "exclude": [
     "dist",
     "node_modules"

@@ -2,20 +2,22 @@
   "manifest_version": 3,
   "name": "Mooget",
   "version": "1.0.0",
-  "license": "GPL-3.0",
   "author": "verteramo",
   "description": "Manage Moodle's tests",
   "homepage_url": "https://github.com/verteramo/mooget",
   "icons": {
-    "16": "icon.png",
-    "48": "icon.png",
-    "128": "icon.png"
+    "128": "assets/icon.png"
   },
   "action": {
     "default_popup": "popup.html"
   },
+  "options_page": "options.html",
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
+  },
   "background": {
-    "service_worker": "background.js"
+    "service_worker": "src/background.js"
   },
   "content_scripts": [
     {
@@ -23,7 +25,7 @@
         "<all_urls>"
       ],
       "js": [
-        "content.js"
+        "src/content.js"
       ]
     }
   ],

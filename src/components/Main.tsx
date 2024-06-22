@@ -7,12 +7,9 @@
 
 import { Card, Form } from 'react-bootstrap'
 import { Github } from 'react-bootstrap-icons'
-import { TestControl } from './TestControl'
-import { ITest } from '../core/Scraping'
-import { useTheme } from '../hooks/useTheme'
-import { useTest } from '../hooks/useTest'
-import { useStorageList } from '../hooks/useStorageList'
-import { TestTable } from './TestTable'
+import { Test } from '@/models'
+import { useStorageList, useTest, useTheme } from '@/hooks'
+import { TestControl, TestTable } from '@/components'
 
 /**
  * Main card of the popup
@@ -22,7 +19,7 @@ export function Main (): JSX.Element {
   const manifest = chrome.runtime.getManifest()
   const [theme, toggleTheme] = useTheme()
   const [test, setTestId] = useTest()
-  const [testList, insertTest, updateTest, deleteTest] = useStorageList<ITest>({
+  const [testList, insertTest, updateTest, deleteTest] = useStorageList<Test>({
     variable: 'tests',
     area: chrome.storage.local
   })

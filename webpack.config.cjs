@@ -6,20 +6,21 @@ module.exports = {
   mode: 'development',
   devtool: 'inline-source-map',
   entry: {
-    popup: './src/scripts/popup.tsx',
-    options: './src/scripts/options.tsx',
-    content: './src/scripts/content.ts',
-    background: './src/scripts/background.ts'
+    popup: '@/scripts/popup.tsx',
+    options: '@/scripts/options.tsx',
+    side_panel: '@/scripts/side_panel.tsx',
+    content: '@/scripts/content.ts',
+    background: '@/scripts/background.ts'
   },
   output: {
     filename: 'src/[name].js'
   },
   plugins: [
-    new CopyWebpackPlugin({ patterns: [{ from: 'src/static' }] }),
+    new CopyWebpackPlugin({ patterns: [{ from: '@/static' }] }),
     new ExtReloaderPlugin({
       reloadPage: true,
       entries: {
-        extensionPage: ['popup', 'options'],
+        extensionPage: ['popup', 'options', 'side_panel'],
         contentScript: 'content',
         background: 'background'
       }
@@ -48,6 +49,9 @@ module.exports = {
     ]
   },
   resolve: {
+    alias: {
+      '@': require('path').resolve(__dirname, 'src')
+    },
     extensions: ['.tsx', '.ts', '.js']
   }
 }

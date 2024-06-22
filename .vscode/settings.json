@@ -4,5 +4,6 @@
   "editor.detectIndentation": false,
   "editor.formatOnSave": false,
   "standard.autoFixOnSave": true,
-  "standard.engine": "ts-standard"
+  "standard.engine": "ts-standard",
+  "autoBarrel.formatting.excludeSemiColonAtEndOfLine": true,
 }

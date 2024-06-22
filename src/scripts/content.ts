@@ -7,14 +7,15 @@
  * @link https://github.com/verteramo/mooget
  */
 
-import { ITest, TestType, getTest } from '../core/Scraping'
+import { Test, TestType } from '@/models'
 import { setBadge } from './background'
+import { getTest } from '@/core/Scraping'
 
 enum ContentSubject {
   GetTest,
 }
 
-export async function getITest (): Promise<ITest> {
+export async function getITest (): Promise<Test> {
   const [tab] = await chrome.tabs.query({
     active: true,
     currentWindow: true

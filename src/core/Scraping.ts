@@ -8,70 +8,13 @@
 import $ from 'jquery'
 import { Md5 } from 'ts-md5'
 import { replaceImages, getVersion } from '../scripts/background'
-
-export enum TestType {
-  Unknown,
-  Attempt,
-  Review,
-}
-
-enum QuestionType {
-  Unknown,
-  Description,
-  MultipleChoice,
-  Matching,
-  Text,
-}
-
-const RightanswerRegex = /:\s/
-const GradeRegex = /\d+[.,]\d+/g
-
-/**
- * Answer interface
- * @property content Answer content
- * @property correct Answer correctness
- */
-interface IAnswer {
-  content: string
-  correct: boolean | undefined
-}
-
-/**
- * Question interface
- * @property id Question ID
- * @property html Question HTML
- * @property answer Question answer
- */
-interface IQuestion {
-  id: string
-  content: string
-  answer?: IAnswer[]
-}
-
-/**
- * Test interface
- * @property type Test type
- * @property home Site URL
- * @property link Quiz URL
- * @property name Quiz name
- * @property version Site version
- * @property questions Questions
- */
-export interface ITest {
-  id: string
-  category: string
-  type: TestType
-  home: string
-  link: string
-  version: string
-  questions: IQuestion[]
-}
+import { Answer, Question, QuestionType, Test, TestType } from '@/models'
 
 /**
  * Question class
  * Extract questions from DOM
  */
-class Question {
+class BaseQuestion {
   /** Question element */
   protected readonly element: JQuery<HTMLElement>
 
@@ -80,7 +23,7 @@ class Question {
    * @returns Right answer
    */
   protected get rightanswer (): string | undefined {
-    const [, rightanswer] = this.element.find('div.rightanswer').text().split(RightanswerRegex, 2)
+    const [, rightanswer] = this.element.find('div.rightanswer').text().split(/:\s/, 2)
     return rightanswer
   }
 
@@ -100,7 +43,7 @@ class Question {
         // If the question has two grades,
         // the second one is the max grade,
         // so check if they are equal
-        const grade = this.element.find('div.grade').text().match(GradeRegex)
+        const grade = this.element.find('div.grade').text().match(/\d+[.,]\d+/g)
 
         if (grade?.length === 2) {
           const [grade1, grade2] = grade
@@ -180,12 +123,12 @@ class Question {
   }
 }
 
-class DescriptionQuestion extends Question {}
+class DescriptionQuestion extends BaseQuestion {}
 
-class MultipleChoiceQuestion extends Question {
-  get answer (): Promise<IAnswer[]> {
+class MultipleChoiceQuestion extends BaseQuestion {
+  get answer (): Promise<Answer[]> {
     return (async () => {
-      const answer: IAnswer[] = []
+      const answer: Answer[] = []
 
       for (const option of this.element.find('div.answer > div')) {
         const checked = $(option).find('input').attr('checked') === 'checked'
@@ -206,8 +149,8 @@ class MultipleChoiceQuestion extends Question {
   }
 }
 
-class MatchingQuestion extends Question {
-  get answer (): IAnswer[] {
+class MatchingQuestion extends BaseQuestion {
+  get answer (): Answer[] {
     const optionsSelector = 'table.answer > tbody > tr:first-child > td.control > select > option:not(:first-child)'
     const options = this.element.find(optionsSelector).map((_, option) => $(option).html()).get()
 
@@ -221,9 +164,9 @@ class MatchingQuestion extends Question {
   }
 }
 
-class TextQuestion extends Question {
-  get answer (): IAnswer[] {
-    const answer: IAnswer[] = []
+class TextQuestion extends BaseQuestion {
+  get answer (): Answer[] {
+    const answer: Answer[] = []
 
     if (this.rightanswer !== undefined) {
       answer.push({
@@ -250,7 +193,7 @@ class TextQuestion extends Question {
  * Test class
  * Extract context from DOM
  */
-export class Test {
+export class Analyzer {
   /**
    * Get the quiz name
    * @returns Quiz name
@@ -322,11 +265,11 @@ export class Test {
    * Get the questions
    * @returns Questions
    */
-  get questions (): Promise<IQuestion[]> {
+  get questions (): Promise<Question[]> {
     return (async function () {
-      const questions: IQuestion[] = []
+      const questions: Question[] = []
       for (const element of $('div.que')) {
-        switch (new Question($(element)).getType()) {
+        switch (new BaseQuestion($(element)).getType()) {
           case QuestionType.Description:{
             const question = new DescriptionQuestion($(element))
             questions.push({
@@ -385,15 +328,15 @@ export class Test {
   }
 }
 
-export async function getTest (): Promise<ITest> {
-  const test = new Test()
+export async function getTest (): Promise<Test> {
+  const analyzer = new Analyzer()
   return {
-    id: test.id,
-    category: test.category,
-    type: test.getType(),
-    home: test.home,
-    link: test.link,
-    version: await test.version,
-    questions: await test.questions
+    id: analyzer.id,
+    category: analyzer.category,
+    type: analyzer.getType(),
+    home: analyzer.home,
+    link: analyzer.link,
+    version: await analyzer.version,
+    questions: await analyzer.questions
   }
 }

@@ -6,15 +6,21 @@
   "description": "Manage Moodle's tests",
   "homepage_url": "https://github.com/verteramo/mooget",
   "icons": {
+    "16": "assets/icon.png",
+    "48": "assets/icon.png",
     "128": "assets/icon.png"
   },
   "action": {
+    "default_icon": "assets/icon.png",
     "default_popup": "popup.html"
   },
   "options_page": "options.html",
   "options_ui": {
     "page": "options.html",
     "open_in_tab": true
+  },
+  "side_panel": {
+    "default_path": "side_panel.html"
   },
   "background": {
     "service_worker": "src/background.js"
@@ -32,7 +38,8 @@
   "permissions": [
     "tabs",
     "storage",
-    "webRequest"
+    "webRequest",
+    "sidePanel"
   ],
   "optional_host_permissions": [
     "https://*/*"

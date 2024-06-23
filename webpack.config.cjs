@@ -1,22 +1,58 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin')
+const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtReloaderPlugin = require('webpack-ext-reloader')
+const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 
 module.exports = {
   watch: true,
   mode: 'development',
   devtool: 'inline-source-map',
+  resolve: {
+    extensions: ['.ts', '.tsx'],
+    plugins: [new TSConfigPathsPlugin()]
+  },
   entry: {
-    popup: '@/scripts/popup.tsx',
-    options: '@/scripts/options.tsx',
-    side_panel: '@/scripts/side_panel.tsx',
-    content: '@/scripts/content.ts',
-    background: '@/scripts/background.ts'
+    // Pages
+    popup: '@/pages/popup/Popup',
+    options: '@/pages/options/Options',
+    side_panel: '@/pages/side_panel/SidePanel',
+
+    // Scripts
+    content: '@/scripts/content',
+    background: '@/scripts/background'
   },
   output: {
-    filename: 'src/[name].js'
+    clean: true,
+    filename: 'scripts/[name].js'
   },
   plugins: [
-    new CopyWebpackPlugin({ patterns: [{ from: '@/static' }] }),
+    // Copy static files
+    new CopyWebpackPlugin({ patterns: [{ from: './src/static' }] }),
+
+    // Popup page
+    new HtmlWebpackPlugin({
+      template: './src/templates/page.html',
+      filename: 'pages/popup.html',
+      chunks: ['popup'],
+      title: 'Popup'
+    }),
+
+    // Options page
+    new HtmlWebpackPlugin({
+      template: './src/templates/page.html',
+      filename: 'pages/options.html',
+      chunks: ['options'],
+      title: 'Options'
+    }),
+
+    // Side panel page
+    new HtmlWebpackPlugin({
+      template: './src/templates/page.html',
+      filename: 'pages/side_panel.html',
+      chunks: ['side_panel'],
+      title: 'Side Panel'
+    }),
+
     new ExtReloaderPlugin({
       reloadPage: true,
       entries: {
@@ -41,17 +77,7 @@ module.exports = {
             ]
           }
         }
-      },
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader']
       }
     ]
-  },
-  resolve: {
-    alias: {
-      '@': require('path').resolve(__dirname, 'src')
-    },
-    extensions: ['.tsx', '.ts', '.js']
   }
 }

@@ -1,3 +1,3 @@
-export * from './useStorageList'
-export * from './useTest'
-export * from './useTheme'
+export * from './useStorageList.hook'
+export * from './useTest.hook'
+export * from './useTheme.hook'

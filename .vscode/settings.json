@@ -6,4 +6,7 @@
   "standard.autoFixOnSave": true,
   "standard.engine": "ts-standard",
   "autoBarrel.formatting.excludeSemiColonAtEndOfLine": true,
+  "reactCreateComponent.settings.disableHistory": true,
+  "reactCreateComponent.settings.disableQuickSuggestions": true,
+  "reactCreateComponent.settings.web.directive": "none",
 }

@@ -5,16 +5,16 @@
  * @link https://github.com/verteramo/mooget
  */
 
+import { Test } from '@/models'
 import { useEffect, useState } from 'react'
-import { ITest } from '../core/Scraping'
 import { getITest } from '../scripts/content'
 
 /**
  * Hook to manage the context of the page
  * @returns Context and setTestName function
  */
-export function useTest (): [ITest | undefined, (id: string) => void] {
-  const [test, setTest] = useState<ITest | undefined>(undefined)
+export function useTest (): [Test | undefined, (id: string) => void] {
+  const [test, setTest] = useState<Test | undefined>(undefined)
 
   /**
    * Set test ID

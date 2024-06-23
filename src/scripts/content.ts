@@ -9,7 +9,6 @@
 
 import { Test, TestType } from '@/models'
 import { setBadge } from './background'
-import { getTest } from '@/core/Scraping'
 
 enum ContentSubject {
   GetTest,
@@ -27,7 +26,7 @@ export async function getITest (): Promise<Test> {
 
 console.log('Content script')
 
-getTest().then((test) => {
+getITest().then((test) => {
   console.log(test)
 
   chrome.runtime.onMessage.addListener((

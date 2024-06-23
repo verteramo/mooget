@@ -5,11 +5,11 @@
  * @link https://github.com/verteramo/mooget
  */
 
+import { TestControl, TestTable } from '@/components'
+import { useStorageList, useTest, useTheme } from '@/hooks'
+import { Test } from '@/models'
 import { Card, Form } from 'react-bootstrap'
 import { Github } from 'react-bootstrap-icons'
-import { Test } from '@/models'
-import { useStorageList, useTest, useTheme } from '@/hooks'
-import { TestControl, TestTable } from '@/components'
 
 /**
  * Main card of the popup

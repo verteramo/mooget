@@ -102,7 +102,7 @@
   },
   "include": [
     "src/**/*"
-  ],
+, "src/redux/test.slice.ts"  ],
   "exclude": [
     "dist",
     "node_modules"

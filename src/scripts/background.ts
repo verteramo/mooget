@@ -1,90 +1,52 @@
-/**
- * Background script
- *
- * - HTTP requests
- * - Badge access
- *
- * @license GNU GPLv3
- * @link https://github.com/verteramo/mooget
- */
+import { fetchVersion, replaceImages } from '@/utilities'
+import { getMessage } from '@extend-chrome/messages'
 
-import { fetchImage, fetchVersion } from '@/services'
+// Messages
+const [setBadge, setBadgeObserver] = getMessage<number>('setBadge')
+const [disablePopup, disablePopupObserver] = getMessage<undefined>('disablePopup')
+const [getVersion, getVersionObserver] = getMessage<string, string>('getVersion', { async: true })
+const [getImages, getImagesObserver] = getMessage<JQuery<HTMLElement>, string>('replaceImages', { async: true })
 
-/**
- * Background script subject
- */
-enum BackgroundSubject {
-  SetBadge,
-  GetVersion,
-  GetImage,
-}
+// Set badge observer
+setBadgeObserver.subscribe(([count]) => {
+  console.log('setBadgeObserver')
+  chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
+    chrome.action.setBadgeText({ text: count.toString(), tabId: tab.id }).then(() => {
 
-/**
- * Get version from URL
- * @param url Site URL
- * @returns Version
- */
-export async function getVersion (url: string): Promise<string> {
-  return await chrome.runtime.sendMessage({
-    subject: BackgroundSubject.GetVersion, data: url
+    }).catch((error) => {
+      console.log('chrome.action.setBadgeText error', error)
+    })
+  }).catch((error) => {
+    console.log('chrome.tabs.query error', error)
   })
-}
-
-/**
- * Replace images in HTML content with base64
- * @param element HTML element
- * @returns HTML content with base64 images
- */
-export async function replaceImages (element: JQuery<HTMLElement>): Promise<string> {
-  return await (async function () {
-    let html = element.html()
-
-    for (const img of element.find('img')) {
-      html = html.replace(img.src, await chrome.runtime.sendMessage({
-        subject: BackgroundSubject.GetImage, data: img.src
-      }))
-    }
-
-    return html
-  })()
-}
-
-export async function setBadge (text: number): Promise<void> {
-  await chrome.runtime.sendMessage({
-    subject: BackgroundSubject.SetBadge, data: text
-  })
-}
-// Listen for messages
-chrome.runtime.onMessage.addListener((
-  { subject, data }: {
-    subject: BackgroundSubject
-    data?: any
-  },
-  _sender: chrome.runtime.MessageSender,
-  sendResponse: (response?: any) => void
-): void => {
-  switch (subject) {
-    // Set badge text
-    case BackgroundSubject.SetBadge:{
-      chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-        chrome.action.setBadgeText({
-          tabId: tab.id,
-          text: data > 0 ? data.toString() : ''
-        }).catch(console.error)
-      })
-      break
-    }
-
-    // Get version from URL
-    case BackgroundSubject.GetVersion:{
-      fetchVersion(data).then(sendResponse).catch(console.error)
-      break
-    }
-
-    // Get image from URL
-    case BackgroundSubject.GetImage:{
-      fetchImage(data).then(sendResponse).catch(console.error)
-      break
-    }
-  }
 })
+
+// Disable popup observer
+disablePopupObserver.subscribe(() => {
+  console.log('disablePopupObserver')
+  chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
+    chrome.action.disable(tab.id).catch((error) => {
+      console.log('chrome.action.disable error', error)
+    })
+  }).catch((error) => {
+    console.log('chrome.tabs.query error', error)
+  })
+})
+
+// Get version observer
+getVersionObserver.subscribe(([url,,sendResponse]) => {
+  console.log('getVersionObserver')
+  fetchVersion(url).then(sendResponse).catch((error) => {
+    console.log('fetchVersion error', error)
+  })
+})
+
+// Get images observer
+getImagesObserver.subscribe(([element,,sendResponse]) => {
+  console.log('getImageObserver')
+  replaceImages(element).then(sendResponse).catch((error) => {
+    console.log('replaceImages error', error)
+  })
+})
+
+export { setBadge, disablePopup, getVersion, getImages }

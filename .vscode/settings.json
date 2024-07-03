@@ -9,4 +9,7 @@
   "reactCreateComponent.settings.disableHistory": true,
   "reactCreateComponent.settings.disableQuickSuggestions": true,
   "reactCreateComponent.settings.web.directive": "none",
+  "files.associations": {
+    "*.json": "jsonc"
+  },
 }

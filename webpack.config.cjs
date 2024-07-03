@@ -8,14 +8,14 @@ module.exports = {
   mode: 'development',
   devtool: 'inline-source-map',
   resolve: {
-    extensions: ['.ts', '.tsx'],
+    extensions: ['.js', '.ts', '.tsx'],
     plugins: [new TSConfigPathsPlugin()]
   },
   entry: {
     // Pages
-    popup: '@/pages/popup/Popup',
-    options: '@/pages/options/Options',
-    side_panel: '@/pages/side_panel/SidePanel',
+    popup: '@/pages/Popup',
+    options: '@/pages/Options',
+    side_panel: '@/pages/SidePanel',
 
     // Scripts
     content: '@/scripts/content',
@@ -33,26 +33,24 @@ module.exports = {
     new HtmlWebpackPlugin({
       template: './src/templates/page.html',
       filename: 'pages/popup.html',
-      chunks: ['popup'],
-      title: 'Popup'
+      chunks: ['popup']
     }),
 
     // Options page
     new HtmlWebpackPlugin({
       template: './src/templates/page.html',
       filename: 'pages/options.html',
-      chunks: ['options'],
-      title: 'Options'
+      chunks: ['options']
     }),
 
     // Side panel page
     new HtmlWebpackPlugin({
       template: './src/templates/page.html',
       filename: 'pages/side_panel.html',
-      chunks: ['side_panel'],
-      title: 'Side Panel'
+      chunks: ['side_panel']
     }),
 
+    // Extension reloader
     new ExtReloaderPlugin({
       reloadPage: true,
       entries: {

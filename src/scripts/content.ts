@@ -8,47 +8,31 @@
  */
 
 import { Test, TestType } from '@/models'
+import { getTestFromContent } from '@/utilities'
+import { getMessage } from '@extend-chrome/messages'
 import { setBadge } from './background'
 
-enum ContentSubject {
-  GetTest,
-}
+export const [getTest, getTestStream] = getMessage<undefined, Test>('getTest', { async: true })
 
-export async function getITest (): Promise<Test> {
-  const [tab] = await chrome.tabs.query({
-    active: true,
-    currentWindow: true
-  })
-  return await chrome.tabs.sendMessage(tab.id as number, {
-    subject: ContentSubject.GetTest
-  })
-}
+getTestFromContent().then((test) => {
+  if (test !== undefined) {
+    getTestStream.subscribe(([,,sendResponse]) => {
+      sendResponse(test)
+    })
 
-console.log('Content script')
+    switch (test.type) {
+      case TestType.Review:
+        console.log('Review', test)
+        setBadge(test.questions.length).catch((error) => {
+          console.log('setBadge error', error)
+        })
+        break
 
-getITest().then((test) => {
-  console.log(test)
-
-  chrome.runtime.onMessage.addListener((
-    { subject }: { subject: ContentSubject },
-    _sender: chrome.runtime.MessageSender,
-    sendResponse: (response?: any) => void
-  ): void => {
-    switch (subject) {
-      case ContentSubject.GetTest:
-        sendResponse(test)
+      case TestType.Attempt:
+        console.log('Attempt', test)
         break
     }
-  })
-
-  switch (test.type) {
-    case TestType.Attempt:
-      console.log('Attempt page')
-      break
-
-    case TestType.Review:
-      console.log('Review page')
-      setBadge(test.questions.length).catch(console.error)
-      break
   }
-}).catch(console.error)
+}).catch((error) => {
+  console.log('getTestFromContent error', error)
+})

@@ -5,10 +5,11 @@
  * @link https://github.com/verteramo/mooget
  */
 
+import { Answer, Question, QuestionType, TestType } from '@/models'
+import { getVersion } from '@/scripts/background'
+import { replaceImages } from '@/utilities'
 import $ from 'jquery'
 import { Md5 } from 'ts-md5'
-import { replaceImages, getVersion } from '../scripts/background'
-import { Answer, Question, QuestionType, Test, TestType } from '@/models'
 
 /**
  * Question class
@@ -19,12 +20,36 @@ class BaseQuestion {
   protected readonly element: JQuery<HTMLElement>
 
   /**
+   * Construct the question from the element
+   * @param element Question element
+   */
+  constructor (element: JQuery<HTMLElement>) {
+    this.element = element
+  }
+
+  /**
+   * Get the question ID
+   * It's the MD5 hash of the question text content
+   * @returns Question ID
+   */
+  get id (): string {
+    return Md5.hashStr(this.element.find('div.qtext').text())
+  }
+
+  /**
+   * Get the question content with images replaced as base64
+   * @returns Question content
+   */
+  get content (): Promise<string> {
+    return replaceImages(this.element.find('div.qtext'))
+  }
+
+  /**
    * Get the right answer
    * @returns Right answer
    */
-  protected get rightanswer (): string | undefined {
-    const [, rightanswer] = this.element.find('div.rightanswer').text().split(/:\s/, 2)
-    return rightanswer
+  protected get rightanswer (): string {
+    return this.element.find('div.rightanswer').text().split(/:\s/, 2)[1]
   }
 
   /**
@@ -56,76 +81,46 @@ class BaseQuestion {
   }
 
   /**
-   * Construct the question from the element
-   * @param element Question element
-   */
-  constructor (element: JQuery<HTMLElement>) {
-    this.element = element
-  }
-
-  /**
    * Get the question type
    * @returns Question type
    */
-  get type (): string {
-    const [, type] = (this.element.attr('class') as string).split(' ')
-    return type
-  }
+  get type (): QuestionType {
+    const classes = (this.element.attr('class') as string).split(' ')
 
-  /**
-   * Get the question ID
-   * @returns Question ID
-   */
-  get id (): string {
-    return Md5.hashStr(this.element.find('div.qtext').text())
-  }
+    if (classes.length > 1) {
+      switch (classes[1]) {
+        // Description question
+        case 'description':
+          return QuestionType.Description
 
-  /**
-   * Get the question content
-   * @returns Question content
-   */
-  get content (): Promise<string> {
-    return (async () => await replaceImages(this.element.find('div.qtext')))()
-  }
+        // Multiple choice question
+        case 'truefalse':
+        case 'multichoice':
+        case 'calculatedmulti':
+          return QuestionType.Multichoice
 
-  /**
-   * Get the question answer
-   * @returns Question answer
-   */
-  getType (): QuestionType {
-    switch (this.type) {
-      // Description question
-      case 'description':
-        return QuestionType.Description
+        // Matching question
+        case 'match':
+        case 'randomsamatch':
+          return QuestionType.Match
 
-      // Multiple choice question
-      case 'truefalse':
-      case 'multichoice':
-      case 'calculatedmulti':
-        return QuestionType.MultipleChoice
-
-      // Matching question
-      case 'match':
-      case 'randomsamatch':
-        return QuestionType.Matching
-
-      // Text question
-      case 'shortanswer':
-      case 'numerical':
-      case 'calculated':
-      case 'calculatedsimple':
-      case 'essay':
-        return QuestionType.Text
+        // Text question
+        case 'shortanswer':
+        case 'numerical':
+        case 'calculated':
+        case 'calculatedsimple':
+        case 'essay':
+          return QuestionType.Text
+      }
     }
 
-    // Unknown question type
     return QuestionType.Unknown
   }
 }
 
 class DescriptionQuestion extends BaseQuestion {}
 
-class MultipleChoiceQuestion extends BaseQuestion {
+class MultichoiceQuestion extends BaseQuestion {
   get answer (): Promise<Answer[]> {
     return (async () => {
       const answer: Answer[] = []
@@ -149,7 +144,7 @@ class MultipleChoiceQuestion extends BaseQuestion {
   }
 }
 
-class MatchingQuestion extends BaseQuestion {
+class MatchQuestion extends BaseQuestion {
   get answer (): Answer[] {
     const optionsSelector = 'table.answer > tbody > tr:first-child > td.control > select > option:not(:first-child)'
     const options = this.element.find(optionsSelector).map((_, option) => $(option).html()).get()
@@ -193,7 +188,24 @@ class TextQuestion extends BaseQuestion {
  * Test class
  * Extract context from DOM
  */
-export class Analyzer {
+export class TestDOM {
+  /**
+   * Get the page type
+   * @returns Page type
+   */
+  get type (): TestType {
+    switch (document.body.id) {
+      case 'page-mod-quiz-attempt':
+        return TestType.Attempt
+
+      case 'page-mod-quiz-review':
+        return TestType.Review
+
+      default:
+        return TestType.Unknown
+    }
+  }
+
   /**
    * Get the quiz name
    * @returns Quiz name
@@ -216,14 +228,6 @@ export class Analyzer {
       .trim()
       // Collapse spaces
       .replace(/\s+/g, ' ')
-  }
-
-  /**
-   * Get the page type
-   * @returns Page type
-   */
-  get type (): string {
-    return document.body.id
   }
 
   /**
@@ -269,7 +273,7 @@ export class Analyzer {
     return (async function () {
       const questions: Question[] = []
       for (const element of $('div.que')) {
-        switch (new BaseQuestion($(element)).getType()) {
+        switch (new BaseQuestion($(element)).type) {
           case QuestionType.Description:{
             const question = new DescriptionQuestion($(element))
             questions.push({
@@ -279,8 +283,8 @@ export class Analyzer {
             break
           }
 
-          case QuestionType.MultipleChoice:{
-            const question = new MultipleChoiceQuestion($(element))
+          case QuestionType.Multichoice:{
+            const question = new MultichoiceQuestion($(element))
             questions.push({
               id: question.id,
               content: await question.content,
@@ -289,12 +293,12 @@ export class Analyzer {
             break
           }
 
-          case QuestionType.Matching:{
-            const question = new MatchingQuestion($(element))
+          case QuestionType.Match:{
+            const question = new MatchQuestion($(element))
             questions.push({
               id: question.id,
               content: await question.content,
-              answer: await question.answer
+              answer: question.answer
             })
             break
           }
@@ -304,7 +308,7 @@ export class Analyzer {
             questions.push({
               id: question.id,
               content: await question.content,
-              answer: await question.answer
+              answer: question.answer
             })
             break
           }
@@ -313,30 +317,5 @@ export class Analyzer {
 
       return questions
     })()
-  }
-
-  getType (): TestType {
-    switch (this.type) {
-      case 'page-mod-quiz-attempt':
-        return TestType.Attempt
-
-      case 'page-mod-quiz-review':
-        return TestType.Review
-    }
-
-    return TestType.Unknown
-  }
-}
-
-export async function getTest (): Promise<Test> {
-  const analyzer = new Analyzer()
-  return {
-    id: analyzer.id,
-    category: analyzer.category,
-    type: analyzer.getType(),
-    home: analyzer.home,
-    link: analyzer.link,
-    version: await analyzer.version,
-    questions: await analyzer.questions
   }
 }

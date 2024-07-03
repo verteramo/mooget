@@ -1,10 +1,10 @@
-import { Answer } from '@/models'
+import { Answer } from '.'
 
 export enum QuestionType {
   Unknown,
   Description,
-  MultipleChoice,
-  Matching,
+  Multichoice,
+  Match,
   Text,
 }
 

@@ -11,10 +11,23 @@
  */
 
 import { ThemeProvider } from '@emotion/react'
-import { DarkMode, LightMode } from '@mui/icons-material'
-import { Box, CssBaseline, ToggleButton, ToggleButtonGroup, Typography, createTheme } from '@mui/material'
 import { PropsWithChildren } from 'react'
 import { createChromeStorageStateHookSync } from 'use-chrome-storage'
+
+import {
+  Box,
+  CssBaseline,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+  createTheme
+} from '@mui/material'
+
+import {
+  DarkMode,
+  LightMode
+} from '@mui/icons-material'
 
 type Mode = 'light' | 'dark'
 
@@ -26,8 +39,16 @@ export function ThemeModeProvider ({ children }: PropsWithChildren): JSX.Element
   return (
     <ThemeProvider theme={createTheme({ palette: { mode } })}>
       <CssBaseline />
-      <Box p={1} display='flex' justifyContent='space-between'>
-        <Typography variant='h6'>{document.title}</Typography>
+      <Box p={2} display='flex' justifyContent='space-between'>
+        <Stack direction='row'>
+          <Box
+            component='img'
+            alt={document.title}
+            src='/assets/logo_512.png'
+            sx={{ width: 32, height: 32 }}
+          />
+          <Typography variant='h4'>{document.title}</Typography>
+        </Stack>
         <ToggleButtonGroup
           exclusive
           size='small'
@@ -50,9 +71,7 @@ export function ThemeModeProvider ({ children }: PropsWithChildren): JSX.Element
           </ToggleButton>
         </ToggleButtonGroup>
       </Box>
-      <Box p={1}>
-        {children}
-      </Box>
+      <Box p={1}>{children}</Box>
     </ThemeProvider>
   )
 }

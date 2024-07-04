@@ -17,7 +17,7 @@ export async function fetchVersion (url: string): Promise<string> {
  * @param src Image source
  * @returns Base64 image
  */
-async function fetchImage (src: string): Promise<string> {
+export async function fetchImage (src: string): Promise<string> {
   const blob = await (await fetch(src)).blob()
   const reader = new FileReader()
 

@@ -1,10 +1,12 @@
 import { Test } from '@/models'
-import { PayloadAction, createSlice } from '@reduxjs/toolkit'
-// import { updateFromStorage } from './action'
+import { IStore } from '@/redux'
+import { PayloadAction, createAction, createSlice } from '@reduxjs/toolkit'
 
 const initialState: Test[] = []
 
-export const testsSlice = createSlice({
+export const updateFromStorage = createAction<IStore>('updateFromStorage')
+
+const testsSlice = createSlice({
   name: 'tests',
   initialState,
   reducers: {
@@ -14,22 +16,21 @@ export const testsSlice = createSlice({
       }
     },
 
-    removeTest: (state, action: PayloadAction<Test>) => {
-      return state.filter(test => test.id !== action.payload.id)
+    deleteTest: (state, action: PayloadAction<string>) => {
+      return state.filter(test => test.id !== action.payload)
     },
 
     updateTest: (state, action: PayloadAction<Test>) => {
       return state.map(test => test.id === action.payload.id ? action.payload : test)
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(updateFromStorage, (state, action) => {
+      return action.payload.tests
+    })
   }
-  // extraReducers: (builder) => {
-  //   builder.addCase(updateFromStorage, (state, action) => {
-  //     if (Array.isArray(action.payload.tests)) {
-  //       return action.payload.tests
-  //     }
-  //     return state
-  //   })
-  // }
 })
 
-export const { createTest, removeTest, updateTest } = testsSlice.actions
+export const { createTest, deleteTest, updateTest } = testsSlice.actions
+
+export default testsSlice.reducer

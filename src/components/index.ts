@@ -1,2 +1,2 @@
 export * from './NewTestControl'
-export * from './TestsTable'
+export * from './TestsGrid'

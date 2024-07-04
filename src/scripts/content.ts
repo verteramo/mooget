@@ -8,7 +8,7 @@
  */
 
 import { Test, TestType } from '@/models'
-import { getTestFromContent } from '@/utilities'
+import { getTestFromContent } from '@/services'
 import { getMessage } from '@extend-chrome/messages'
 import { setBadge } from './background'
 
@@ -23,7 +23,7 @@ getTestFromContent().then((test) => {
     switch (test.type) {
       case TestType.Review:
         console.log('Review', test)
-        setBadge(test.questions.length).catch((error) => {
+        setBadge('New').catch((error) => {
           console.log('setBadge error', error)
         })
         break

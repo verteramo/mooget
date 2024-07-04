@@ -7,7 +7,7 @@
 
 import { Answer, Question, QuestionType, TestType } from '@/models'
 import { getVersion } from '@/scripts/background'
-import { replaceImages } from '@/utilities'
+import { fetchImage, replaceImages } from '@/services'
 import $ from 'jquery'
 import { Md5 } from 'ts-md5'
 
@@ -28,12 +28,20 @@ class BaseQuestion {
   }
 
   /**
+   * Get the question text
+   * @returns Question text
+   */
+  get text (): string {
+    return this.element.find('div.qtext').text()
+  }
+
+  /**
    * Get the question ID
    * It's the MD5 hash of the question text content
    * @returns Question ID
    */
   get id (): string {
-    return Md5.hashStr(this.element.find('div.qtext').text())
+    return Md5.hashStr(this.text)
   }
 
   /**
@@ -93,13 +101,13 @@ class BaseQuestion {
         case 'description':
           return QuestionType.Description
 
-        // Multiple choice question
+        // Multichoice question
         case 'truefalse':
         case 'multichoice':
         case 'calculatedmulti':
           return QuestionType.Multichoice
 
-        // Matching question
+        // Match question
         case 'match':
         case 'randomsamatch':
           return QuestionType.Match
@@ -118,17 +126,35 @@ class BaseQuestion {
   }
 }
 
-class DescriptionQuestion extends BaseQuestion {}
-
+/**
+ * Multichoice question class
+ */
 class MultichoiceQuestion extends BaseQuestion {
+  /**
+   * Get the question answer
+   * @returns Question answer
+   */
   get answer (): Promise<Answer[]> {
     return (async () => {
       const answer: Answer[] = []
 
+      // Loop through options
       for (const option of this.element.find('div.answer > div')) {
+        // Check if the option is checked
         const checked = $(option).find('input').attr('checked') === 'checked'
-        const answerContent = await replaceImages($(option).find('div > div'))
+
+        // Get the option content (multichoice & calculatedmulti)
+        let optionContent = $(option).find('div > div')
+        // If there're no divs, get the label (truefalse)
+        if (optionContent.length === 0) {
+          optionContent = $(option).find('label')
+        }
+        // Finally, get the option content with replaced images
+        const answerContent = await replaceImages(optionContent)
+
         // Check if the answer is correct
+        // If the question is correct, if it's checked, it's correct
+        // Otherwise, if it's in the right answer, it's correct
         const answerCorrect =
           this.correct ? checked : this.rightanswer?.includes(answerContent)
 
@@ -144,7 +170,15 @@ class MultichoiceQuestion extends BaseQuestion {
   }
 }
 
+/**
+ * TODO
+ * Match question class
+ */
 class MatchQuestion extends BaseQuestion {
+  /**
+   * Get the question answer
+   * @returns Question answer
+   */
   get answer (): Answer[] {
     const optionsSelector = 'table.answer > tbody > tr:first-child > td.control > select > option:not(:first-child)'
     const options = this.element.find(optionsSelector).map((_, option) => $(option).html()).get()
@@ -159,25 +193,36 @@ class MatchQuestion extends BaseQuestion {
   }
 }
 
+/**
+ * Text question class
+ */
 class TextQuestion extends BaseQuestion {
+  /**
+   * Get the question answer
+   * @returns Question answer
+   */
   get answer (): Answer[] {
     const answer: Answer[] = []
 
+    // If it has a right answer, push it
     if (this.rightanswer !== undefined) {
       answer.push({
         content: this.rightanswer,
         correct: true
       })
-    } else if (this.element.find('div.answer > input').length > 0) {
-      answer.push({
-        content: this.element.find('div.answer > input').val() as string,
-        correct: this.correct
-      })
-    } else if (this.element.find('div.answer > div[role=textbox]').length > 0) {
-      answer.push({
-        content: this.element.find('div.answer > div[role=textbox]').html(),
-        correct: this.correct
-      })
+    } else {
+      // If it has an input or a textbox, push it
+      if (this.element.find('div.answer > input').length > 0) {
+        answer.push({
+          content: this.element.find('div.answer > input').val() as string,
+          correct: this.correct
+        })
+      } else if (this.element.find('div.answer > div[role=textbox]').length > 0) {
+        answer.push({
+          content: this.element.find('div.answer > div[role=textbox]').html(),
+          correct: this.correct
+        })
+      }
     }
 
     return answer
@@ -190,27 +235,10 @@ class TextQuestion extends BaseQuestion {
  */
 export class TestDOM {
   /**
-   * Get the page type
-   * @returns Page type
-   */
-  get type (): TestType {
-    switch (document.body.id) {
-      case 'page-mod-quiz-attempt':
-        return TestType.Attempt
-
-      case 'page-mod-quiz-review':
-        return TestType.Review
-
-      default:
-        return TestType.Unknown
-    }
-  }
-
-  /**
    * Get the quiz name
    * @returns Quiz name
    */
-  get id (): string {
+  get name (): string {
     return $('li.breadcrumb-item:last')
       .text()
       .trim()
@@ -258,6 +286,14 @@ export class TestDOM {
   }
 
   /**
+   * Get the site icon
+   * @returns Site icon
+   */
+  get icon (): Promise<string> {
+    return fetchImage($('link[rel*="icon"]').attr('href') as string)
+  }
+
+  /**
    * Get the site version
    * @returns Site version
    */
@@ -266,48 +302,73 @@ export class TestDOM {
   }
 
   /**
+   * Get the page type
+   * @returns Page type
+   */
+  get type (): TestType {
+    switch (document.body.id) {
+      case 'page-mod-quiz-attempt':
+        return TestType.Attempt
+
+      case 'page-mod-quiz-review':
+        return TestType.Review
+    }
+
+    return TestType.Unknown
+  }
+
+  /**
    * Get the questions
    * @returns Questions
    */
   get questions (): Promise<Question[]> {
+    // Return a promise with the questions
     return (async function () {
       const questions: Question[] = []
+      // Loop through questions
       for (const element of $('div.que')) {
-        switch (new BaseQuestion($(element)).type) {
+        // Create a base question
+        const baseQuestion = new BaseQuestion($(element))
+
+        // Create an essential question
+        const currentQuestion: Question = {
+          id: baseQuestion.id,
+          type: baseQuestion.type,
+          content: await baseQuestion.content
+        }
+
+        switch (baseQuestion.type) {
+          // If it's a description, push it
           case QuestionType.Description:{
-            const question = new DescriptionQuestion($(element))
-            questions.push({
-              id: question.id,
-              content: await question.content
-            })
+            questions.push(currentQuestion)
             break
           }
 
+          // If it's a multichoice question, get the answer and push it
           case QuestionType.Multichoice:{
             const question = new MultichoiceQuestion($(element))
             questions.push({
-              id: question.id,
-              content: await question.content,
+              ...currentQuestion,
               answer: await question.answer
             })
             break
           }
 
+          // If it's a match question, get the answer and push it
           case QuestionType.Match:{
             const question = new MatchQuestion($(element))
             questions.push({
-              id: question.id,
-              content: await question.content,
+              ...currentQuestion,
               answer: question.answer
             })
             break
           }
 
+          // If it's a text question, get the answer and push it
           case QuestionType.Text:{
             const question = new TextQuestion($(element))
             questions.push({
-              id: question.id,
-              content: await question.content,
+              ...currentQuestion,
               answer: question.answer
             })
             break

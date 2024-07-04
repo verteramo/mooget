@@ -1,28 +1,16 @@
-import { TestsTable } from '@/components'
-import { ThemeModeProvider } from '@/providers'
-import { IStore, store, persistor } from '@/redux/store'
-import { createRoot } from 'react-dom/client'
-import { Provider, useSelector } from 'react-redux'
-import { PersistGate } from 'redux-persist/integration/react'
-// import '@/redux/listener'
+import { Quiz } from '@/components/Quiz'
+import { TestType } from '@/models'
+import '@/redux/storage.listener'
+import { IStore } from '@/redux/store'
+import { useSelector } from 'react-redux'
+import { render } from './render'
 
 function SidePanel (): JSX.Element {
-  const tests = useSelector((store: IStore) => store.tests)
+  const test = useSelector((store: IStore) => store.current)
 
   return (
-    <>
-      <h1>Side Panel</h1>
-      <TestsTable tests={tests} />
-    </>
+    <>{test.type !== TestType.Unknown && <Quiz test={test} />}</>
   )
 }
 
-createRoot(document.getElementById('root') as HTMLElement).render(
-  <Provider store={store}>
-    <PersistGate persistor={persistor}>
-      <ThemeModeProvider>
-        <SidePanel />
-      </ThemeModeProvider>
-    </PersistGate>
-  </Provider>
-)
+render(<SidePanel />)

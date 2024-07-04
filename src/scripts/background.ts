@@ -1,17 +1,17 @@
-import { fetchVersion, replaceImages } from '@/utilities'
+import { fetchVersion, replaceImages } from '@/services'
 import { getMessage } from '@extend-chrome/messages'
 
 // Messages
-const [setBadge, setBadgeObserver] = getMessage<number>('setBadge')
+const [setBadge, setBadgeObserver] = getMessage<string>('setBadge')
 const [disablePopup, disablePopupObserver] = getMessage<undefined>('disablePopup')
 const [getVersion, getVersionObserver] = getMessage<string, string>('getVersion', { async: true })
 const [getImages, getImagesObserver] = getMessage<JQuery<HTMLElement>, string>('replaceImages', { async: true })
 
 // Set badge observer
-setBadgeObserver.subscribe(([count]) => {
+setBadgeObserver.subscribe(([text]) => {
   console.log('setBadgeObserver')
   chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
-    chrome.action.setBadgeText({ text: count.toString(), tabId: tab.id }).then(() => {
+    chrome.action.setBadgeText({ text, tabId: tab.id }).then(() => {
 
     }).catch((error) => {
       console.log('chrome.action.setBadgeText error', error)

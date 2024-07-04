@@ -1,11 +1,17 @@
 import { Test } from '@/models'
 import { combineReducers, configureStore } from '@reduxjs/toolkit'
-import { testsSlice } from './test.slice'
 import { persistReducer, persistStore } from 'redux-persist'
 import { localStorage } from 'redux-persist-webextension-storage'
+import testsReducer from './test.slice'
+import currentReducer from './current.slice'
 
 export interface IStore {
   tests: Test[]
+  current: Test
+}
+
+export const StoreInitialState = {
+  tests: []
 }
 
 const persistConfig = {
@@ -14,7 +20,8 @@ const persistConfig = {
 }
 
 const rootReducer = combineReducers({
-  tests: testsSlice.reducer
+  tests: testsReducer,
+  current: currentReducer
 })
 
 export const store = configureStore({
@@ -27,3 +34,5 @@ export const store = configureStore({
 })
 
 export const persistor = persistStore(store)
+
+export type RootState = ReturnType<typeof rootReducer>

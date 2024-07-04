@@ -1,19 +1,23 @@
 import { Question } from '.'
 
 export enum TestType {
-  Unknown,
-  Attempt,
-  Review,
+  Unknown = 'unknown',
+  Attempt = 'page-mod-quiz-attempt',
+  Review = 'page-mod-quiz-review',
 }
 
 /**
  * Test interface
- * @property type Test type
- * @property home Site URL
- * @property link Quiz URL
- * @property name Quiz name
- * @property version Site version
- * @property questions Questions
+ * @property {string} id Test ID
+ * @property {string} name Test name
+ * @property {string} category Test category
+ * @property {TestType} type Test type
+ * @property {string} home Test home
+ * @property {string} icon Test icon
+ * @property {string} link Test link
+ * @property {string} version Test version
+ * @property {Question[]} questions Test questions
+ * @property {boolean} favorite Test favorite
  */
 export interface Test {
   id: string
@@ -22,7 +26,27 @@ export interface Test {
   type: TestType
   home: string
   link: string
+  icon: string
   version: string
+  questions: Question[]
+  favorite: boolean
+}
+
+export interface DownloadableTest {
+  id: string
+  name: string
+  category: string
+  type: TestType
+  home: string
+  link: string
+  icon: string
+  version: string
+  questions: Question[]
+}
+
+export interface PrintableTest {
+  name: string
+  category: string
   questions: Question[]
 }
 
@@ -33,6 +57,8 @@ export const defaultTest: Test = {
   type: TestType.Unknown,
   home: '',
   link: '',
+  icon: '',
   version: '',
-  questions: []
+  questions: [],
+  favorite: false
 }

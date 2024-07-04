@@ -1,11 +1,11 @@
 import { Answer } from '.'
 
 export enum QuestionType {
-  Unknown,
-  Description,
-  Multichoice,
-  Match,
-  Text,
+  Unknown = 'unknown',
+  Description = 'description',
+  Multichoice = 'multichoice',
+  Match = 'match',
+  Text = 'text',
 }
 
 /**
@@ -18,4 +18,5 @@ export interface Question {
   id: string
   content: string
   answer?: Answer[]
+  type: QuestionType
 }

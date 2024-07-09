@@ -1,50 +1,30 @@
-import { Question, QuestionType, Test } from '@/models'
-import { KeyboardArrowLeft, KeyboardArrowRight } from '@mui/icons-material'
-import { Box, Paper, Typography, MobileStepper, Button, FormControlLabel, Radio, RadioGroup, Stack, Divider, Checkbox } from '@mui/material'
+import KeyboardArrowLeft from '@mui/icons-material/KeyboardArrowLeft'
+import KeyboardArrowRight from '@mui/icons-material/KeyboardArrowRight'
+
+import Box from '@mui/material/Box'
+import Button from '@mui/material/Button'
+import Divider from '@mui/material/Divider'
+import MobileStepper from '@mui/material/MobileStepper'
+import Paper from '@mui/material/Paper'
+import Stack from '@mui/material/Stack'
+import Typography from '@mui/material/Typography'
+
 import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+
+import { ITest } from '@/dom'
+
+import { Answer, Raw } from '@/components'
+import { shuffle } from '@/scripts/utilities'
 
 interface IProps {
-  test: Test
-}
-
-function getAnswer (question: Question): JSX.Element {
-  switch (question.type) {
-    case QuestionType.Multichoice:{
-      const isSingle = question.answer
-        ?.filter((answer) => answer.correct).length === 1
-
-      return (
-        <Box key={question.id}>
-          <RadioGroup name={question.id}>
-            {question.answer?.map((answer, index) => {
-              return (
-                <FormControlLabel
-                  key={index}
-                  value={answer.content}
-                  label={answer.content}
-                  control={isSingle ? <Radio /> : <Checkbox />}
-                />
-              )
-            })}
-          </RadioGroup>
-        </Box>
-      )
-    }
-
-    case QuestionType.Text:{
-      return (
-        <input type='text' id='answer' name='answer' />
-      )
-    }
-
-    default:
-      return <></>
-  }
+  test: ITest
 }
 
 export function Quiz ({ test }: IProps): JSX.Element {
-  const questions = test.questions
-  const length = questions.length
+  const { t } = useTranslation()
+  const questions = shuffle(test?.questions)
+  const length = questions?.length
   const [index, setIndex] = useState(0)
 
   const handleNextClick = (): void => {
@@ -70,20 +50,22 @@ export function Quiz ({ test }: IProps): JSX.Element {
               onClick={handleNextClick}
               disabled={index === length - 1}
             >
-              Next
+              {t('next')}
               <KeyboardArrowRight />
             </Button>
           }
           backButton={
             <Button size='small' onClick={handleBackClick} disabled={index === 0}>
               <KeyboardArrowLeft />
-              Back
+              {t('previous')}
             </Button>
           }
         />
         <Stack sx={{ p: 2 }} spacing={2}>
-          <Typography align='justify'>{questions[index].content}</Typography>
-          <Box>{getAnswer(questions[index])}</Box>
+          <Typography align='justify'>
+            <Raw content={questions[index].content} />
+          </Typography>
+          <Box><Answer question={questions[index]} /></Box>
         </Stack>
       </Stack>
     </Paper>

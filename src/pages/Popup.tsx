@@ -1,12 +1,11 @@
 import { NewTestControl, TestsGrid } from '@/components'
+import { ITest } from '@/dom'
 import { useTest } from '@/hooks'
-import { Test } from '@/models'
-import '@/redux/storage.listener'
+import { render } from '@/pages/render'
+import { createTest } from '@/redux/slice.tests'
 import { IStore } from '@/redux/store'
-import { createTest } from '@/redux/test.slice'
 import { Stack } from '@mui/material'
 import { useDispatch, useSelector } from 'react-redux'
-import { render } from './render'
 
 function Popup (): JSX.Element {
   const [test, setName] = useTest()
@@ -19,12 +18,12 @@ function Popup (): JSX.Element {
     }
   }
 
-  function isNewTest (test: Test): boolean {
+  function isNewTest (test: ITest): boolean {
     return !tests.some(({ id }) => id === test.id)
   }
 
   return (
-    <Stack minWidth={700} spacing={1}>
+    <Stack minWidth={700} minHeight={300} spacing={1}>
       {test !== undefined && isNewTest(test) &&
         <NewTestControl
           test={test}

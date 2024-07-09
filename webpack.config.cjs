@@ -1,5 +1,4 @@
 const CopyWebpackPlugin = require('copy-webpack-plugin')
-const HtmlWebpackPlugin = require('html-webpack-plugin')
 const ExtReloaderPlugin = require('webpack-ext-reloader')
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 
@@ -28,27 +27,6 @@ module.exports = {
   plugins: [
     // Copy static files
     new CopyWebpackPlugin({ patterns: [{ from: './src/static' }] }),
-
-    // Popup page
-    new HtmlWebpackPlugin({
-      template: './src/templates/page.html',
-      filename: 'pages/popup.html',
-      chunks: ['popup']
-    }),
-
-    // Options page
-    new HtmlWebpackPlugin({
-      template: './src/templates/page.html',
-      filename: 'pages/options.html',
-      chunks: ['options']
-    }),
-
-    // Side panel page
-    new HtmlWebpackPlugin({
-      template: './src/templates/page.html',
-      filename: 'pages/side_panel.html',
-      chunks: ['side_panel']
-    }),
 
     // Extension reloader
     new ExtReloaderPlugin({

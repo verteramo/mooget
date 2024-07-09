@@ -1,52 +1,76 @@
-import { fetchVersion, replaceImages } from '@/services'
+/**
+ * Background script
+ *
+ * - Observes messages
+ *
+ * @license GPL-3.0-or-later
+ * @link https://github.com/verteramo/mooget
+ */
+
+import { fetchVersion, replaceImages } from '@/scripts/utilities'
 import { getMessage } from '@extend-chrome/messages'
 
-// Messages
-const [setBadge, setBadgeObserver] = getMessage<string>('setBadge')
-const [disablePopup, disablePopupObserver] = getMessage<undefined>('disablePopup')
-const [getVersion, getVersionObserver] = getMessage<string, string>('getVersion', { async: true })
-const [getImages, getImagesObserver] = getMessage<JQuery<HTMLElement>, string>('replaceImages', { async: true })
+/**
+ * Message observer to set the badge
+ * It is called from the content script
+ *
+ * @param text Badge text
+ */
 
-// Set badge observer
+const [
+  setBadge,
+  setBadgeObserver
+] = getMessage<string>('setBadge')
+
 setBadgeObserver.subscribe(([text]) => {
-  console.log('setBadgeObserver')
-  chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
-    chrome.action.setBadgeText({ text, tabId: tab.id }).then(() => {
-
-    }).catch((error) => {
-      console.log('chrome.action.setBadgeText error', error)
+  chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
+    chrome.action.setBadgeText({ text, tabId: tab.id }).catch((error) => {
+      console.log('setBadge error', error)
     })
-  }).catch((error) => {
-    console.log('chrome.tabs.query error', error)
   })
 })
 
-// Disable popup observer
-disablePopupObserver.subscribe(() => {
-  console.log('disablePopupObserver')
-  chrome.tabs.query({ active: true, currentWindow: true }).then(([tab]) => {
-    chrome.action.disable(tab.id).catch((error) => {
-      console.log('chrome.action.disable error', error)
-    })
-  }).catch((error) => {
-    console.log('chrome.tabs.query error', error)
-  })
-})
+/**
+ * Message observer to get the version
+ * It is called from the Page class
+ *
+ * @param url URL
+ */
 
-// Get version observer
+const [
+  getVersion,
+  getVersionObserver
+] = getMessage<string, string | undefined>('getVersion', { async: true })
+
 getVersionObserver.subscribe(([url,,sendResponse]) => {
-  console.log('getVersionObserver')
   fetchVersion(url).then(sendResponse).catch((error) => {
-    console.log('fetchVersion error', error)
+    console.log('getVersion error', error)
   })
 })
 
-// Get images observer
+/**
+ * Message observer to get images as base64
+ * It is called from the Page and Question classes
+ *
+ * @param element HTML element
+ * @returns HTML element with replaced images as base64
+ */
+
+const [
+  getImages,
+  getImagesObserver
+] = getMessage<JQuery<HTMLElement>, JQuery<HTMLElement>>('getImages', { async: true })
+
 getImagesObserver.subscribe(([element,,sendResponse]) => {
-  console.log('getImageObserver')
   replaceImages(element).then(sendResponse).catch((error) => {
-    console.log('replaceImages error', error)
+    console.log('getImages error', error)
   })
 })
 
-export { setBadge, disablePopup, getVersion, getImages }
+/**
+ * Exports
+ */
+
+export {
+  getImages, getVersion, setBadge
+}

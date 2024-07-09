@@ -1,2 +1,7 @@
+export * from './Answer'
 export * from './NewTestControl'
+export * from './Quiz'
+export * from './Raw'
 export * from './TestsGrid'
+export * from './TestsGridProps'
+export * from './ThemeModeProvider'

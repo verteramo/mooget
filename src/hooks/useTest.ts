@@ -5,7 +5,7 @@
  * @link https://github.com/verteramo/mooget
  */
 
-import { Test } from '@/models'
+import { ITest } from '@/dom'
 import { getTest } from '@/scripts/content'
 import { useEffect, useState } from 'react'
 
@@ -14,8 +14,8 @@ import { useEffect, useState } from 'react'
  * Get the test
  * @returns Test and setTestName
  */
-export function useTest (): [Test | undefined, (id: string) => void] {
-  const [test, setTest] = useState<Test | undefined>()
+export function useTest (): [ITest | undefined, (id: string) => void] {
+  const [test, setTest] = useState<ITest | undefined>()
 
   /**
    * Set the test name

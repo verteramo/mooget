@@ -1,15 +1,16 @@
 import { Quiz } from '@/components/Quiz'
-import { TestType } from '@/models'
-import '@/redux/storage.listener'
+import { render } from '@/pages/render'
 import { IStore } from '@/redux/store'
 import { useSelector } from 'react-redux'
-import { render } from './render'
 
 function SidePanel (): JSX.Element {
-  const test = useSelector((store: IStore) => store.current)
+  const store = useSelector((store: IStore) => store)
+  const test = store.tests.find((test) => test.id === store.config.currentTest)
 
   return (
-    <>{test.type !== TestType.Unknown && <Quiz test={test} />}</>
+    <>
+      {test !== undefined && <Quiz test={test} />}
+    </>
   )
 }
 

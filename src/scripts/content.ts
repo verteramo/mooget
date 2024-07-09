@@ -3,33 +3,34 @@
  *
  * - DOM access
  *
- * @license GNU GPLv3
+ * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
  */
 
-import { Test, TestType } from '@/models'
-import { getTestFromContent } from '@/services'
+import { ITest, Page, PageType } from '@/dom'
+import { setBadge } from '@/scripts/background'
 import { getMessage } from '@extend-chrome/messages'
-import { setBadge } from './background'
 
-export const [getTest, getTestStream] = getMessage<undefined, Test>('getTest', { async: true })
+const [getTest, getTestObserver] = getMessage<undefined, ITest>('getTest', { async: true })
 
-getTestFromContent().then((test) => {
+export { getTest }
+
+Page.getTest().then((test) => {
+  console.log('getTestFromContent', test)
   if (test !== undefined) {
-    getTestStream.subscribe(([,,sendResponse]) => {
+    // Register getTest function observer
+    getTestObserver.subscribe(([,,sendResponse]) => {
       sendResponse(test)
     })
 
     switch (test.type) {
-      case TestType.Review:
-        console.log('Review', test)
+      case PageType.Review:
         setBadge('New').catch((error) => {
           console.log('setBadge error', error)
         })
         break
 
-      case TestType.Attempt:
-        console.log('Attempt', test)
+      case PageType.Attempt:
         break
     }
   }

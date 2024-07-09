@@ -1,25 +1,13 @@
-import { Question, Test } from '@/models'
-import { deleteTest, updateTest } from '@/redux'
-import { downloadTest } from '@/services'
+import Box from '@mui/material/Box'
+import Checkbox from '@mui/material/Checkbox'
 
-import { useConfirm } from 'material-ui-confirm'
-import { useState } from 'react'
-import { useDispatch } from 'react-redux'
-
-import {
-  Box,
-  Checkbox
-} from '@mui/material'
-
-import {
-  Cancel,
-  Delete,
-  Download,
-  Edit,
-  Favorite,
-  PlayCircle,
-  Save
-} from '@mui/icons-material'
+import Cancel from '@mui/icons-material/Cancel'
+import Delete from '@mui/icons-material/Delete'
+import Download from '@mui/icons-material/Download'
+import Edit from '@mui/icons-material/Edit'
+import PlayCircle from '@mui/icons-material/PlayCircle'
+import Save from '@mui/icons-material/Save'
+import Star from '@mui/icons-material/Star'
 
 import {
   DataGrid,
@@ -35,18 +23,28 @@ import {
   GridRowParams
 } from '@mui/x-data-grid'
 
-import { setCurrent } from '@/redux/current.slice'
+import { IQuestion, ITest } from '@/dom'
+import { deleteTest, setConfigCurrentTest, updateTest } from '@/redux'
+import { downloadTest } from '@/scripts/utilities'
+
+import { useConfirm } from 'material-ui-confirm'
+import { useState } from 'react'
+import { useTranslation } from 'react-i18next'
+import { useDispatch } from 'react-redux'
+
+import { initialState, localeText, styles } from './TestsGridProps'
 
 interface IProps {
-  tests: Test[]
+  tests: ITest[]
 }
 
 export function TestsGrid ({ tests }: IProps): JSX.Element {
+  const { t } = useTranslation()
   const dispatch = useDispatch()
   const confirm = useConfirm()
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
-  const processRowUpdate = (test: GridRowModel<Test>): Test => {
+  const processRowUpdate = (test: GridRowModel<ITest>): ITest => {
     return dispatch(updateTest(test)).payload
   }
 
@@ -55,7 +53,8 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
   }
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (
-    params, event
+    params,
+    event
   ) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true
@@ -91,22 +90,26 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
     })
   }
 
-  const handleDeleteClick = (test: Test) => () => {
-    console.log('handleDeleteClick', test)
+  const handleDeleteClick = (test: ITest) => () => {
     confirm({
-      title: 'Remove Test',
-      content: `Are you sure you want to remove '${test.name}' test?`
+      title: <>{t('remove-title')}</>,
+      content: (
+        <>
+          <p>{test.name}</p>
+          <p>{t('remove-content')}</p>
+        </>
+      )
     })
       .then(() => dispatch(deleteTest(test.id)))
       .catch(console.error)
   }
 
-  const handleDownloadClick = (test: Test) => () => {
+  const handleDownloadClick = (test: ITest) => () => {
     downloadTest(test)
   }
 
-  const handlePlayClick = (test: Test) => () => {
-    dispatch(setCurrent(test))
+  const handlePlayClick = (test: ITest) => () => {
+    dispatch(setConfigCurrentTest(test.id))
     chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
       chrome.sidePanel.open({ tabId: tab.id as number }).catch(console.error)
     })
@@ -125,8 +128,8 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
       renderCell: (params: GridCellParams<any, boolean>) => (
         <Checkbox
           size='small'
-          icon={<Favorite />}
-          checkedIcon={<Favorite color='error' />}
+          icon={<Star />}
+          checkedIcon={<Star color='warning' />}
           checked={params.value ?? false}
           onChange={toggleFavorite(params.id)}
         />
@@ -136,7 +139,7 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
     {
       // Name column
       field: 'name',
-      headerName: 'Test',
+      headerName: t('test'),
       minWidth: 150,
       editable: true
     },
@@ -144,7 +147,7 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
     {
       // Category column
       field: 'category',
-      headerName: 'Category',
+      headerName: t('category'),
       minWidth: 200,
       editable: true
     },
@@ -152,15 +155,13 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
     {
       // Questions column
       field: 'questions',
-      headerName: 'Questions',
+      headerName: t('questions'),
       align: 'center',
       type: 'number',
-      renderCell:
-        (params: GridCellParams<any, Question[]>) =>
-          params.value?.length,
-      sortComparator:
-        (v1: Question[], v2: Question[]) =>
-          v1.length - v2.length
+      renderCell: (params: GridCellParams<any, IQuestion[]>) =>
+        params.value?.length,
+      sortComparator: (v1: IQuestion[], v2: IQuestion[]) =>
+        v1.length - v2.length
     },
 
     {
@@ -173,7 +174,7 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
       disableColumnMenu: true,
       width: 160,
       align: 'center',
-      getActions: (params: GridRowParams<Test>) => {
+      getActions: (params: GridRowParams<ITest>) => {
         const isInEditMode =
           rowModesModel[params.id]?.mode === GridRowModes.Edit
 
@@ -181,15 +182,15 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
           return [
             <GridActionsCellItem
               key='save'
-              label='Save'
-              title='Save'
+              label={t('save')}
+              title={t('save')}
               icon={<Save />}
               onClick={handleSaveClick(params.id)}
             />,
             <GridActionsCellItem
               key='cancel'
-              label='Cancel'
-              title='Cancel'
+              label={t('cancel')}
+              title={t('cancel')}
               icon={<Cancel />}
               onClick={handleCancelClick(params.id)}
             />
@@ -199,29 +200,29 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
         return [
           <GridActionsCellItem
             key='edit'
-            label='Edit'
-            title='Edit'
+            label={t('edit')}
+            title={t('edit')}
             icon={<Edit />}
             onClick={handleEditClick(params.id)}
           />,
           <GridActionsCellItem
             key='delete'
-            label='Delete'
-            title='Delete'
+            label={t('delete')}
+            title={t('delete')}
             icon={<Delete />}
             onClick={handleDeleteClick(params.row)}
           />,
           <GridActionsCellItem
             key='download'
-            label='Download'
-            title='Download'
+            label={t('download')}
+            title={t('download')}
             icon={<Download />}
             onClick={handleDownloadClick(params.row)}
           />,
           <GridActionsCellItem
             key='play'
-            label='Play'
-            title='Play'
+            label={t('play')}
+            title={t('play')}
             icon={<PlayCircle />}
             onClick={handlePlayClick(params.row)}
           />
@@ -246,9 +247,10 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
         onRowModesModelChange={handleRowModesModelChange}
         onRowEditStop={handleRowEditStop}
         pageSizeOptions={[5, 10, 20]}
-        initialState={{
-          pagination: { paginationModel: { pageSize: 5, page: 0 } }
-        }}
+        // Come from TestsGridProps.ts
+        sx={styles}
+        initialState={initialState}
+        localeText={localeText(t)}
       />
     </Box>
   )

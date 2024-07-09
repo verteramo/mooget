@@ -1,3 +1,4 @@
-export * from './storage.listener'
+export * from './slice.config'
+export * from './slice.tests'
+export * from './store.listener'
 export * from './store'
-export * from './test.slice'

@@ -10,7 +10,7 @@ import {
   configInitialState,
   IStore,
   store,
-  testsInitialState
+  quizzesInitialState
 } from '@/redux'
 import { createAction } from '@reduxjs/toolkit'
 
@@ -21,8 +21,8 @@ export const updateFromStorage = createAction<IStore>('updateFromStorage')
  **************************************/
 
 const storeInitialState: IStore = {
-  tests: testsInitialState,
-  config: configInitialState
+  config: configInitialState,
+  quizzes: quizzesInitialState
 }
 
 /***************************************
@@ -40,13 +40,13 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
       newState = storeInitialState
     } else {
       const data: {
-        tests: string
         config: string
+        quizzes: string
       } = JSON.parse(root)
 
       newState = {
-        tests: JSON.parse(data.tests),
-        config: JSON.parse(data.config)
+        config: JSON.parse(data.config),
+        quizzes: JSON.parse(data.quizzes)
       }
     }
 

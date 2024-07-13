@@ -19,6 +19,7 @@ export class MatchQuestion extends BaseQuestion {
    */
   get answer (): IAnswer[] {
     const answer: IAnswer[] = []
+
     if (this.correct === true) {
       for (const option of this.element.find('table.answer > tbody > tr')) {
         const text = $(option).find('td.text').html()
@@ -29,18 +30,19 @@ export class MatchQuestion extends BaseQuestion {
           correct: control
         })
       }
-    } else {
-      const optionsSelector = 'table.answer > tbody > tr:first-child > td.control > select > option:not(:first-child)'
-      const options = this.element.find(optionsSelector).map((_, option) => $(option).html()).get()
-
-      console.log('options:', options)
-
-      const texts = this.element.find('table.answer > tbody > tr > td.text').map((_, text) => $(text).html()).get()
-
-      console.log('texts:', texts)
-
-      return []
     }
+    // else {
+    //   const optionsSelector = 'table.answer > tbody > tr:first-child > td.control > select > option:not(:first-child)'
+    //   const options = this.element.find(optionsSelector).map((_, option) => $(option).html()).get()
+
+    //   console.log('options:', options)
+
+    //   const texts = this.element.find('table.answer > tbody > tr > td.text').map((_, text) => $(text).html()).get()
+
+    //   console.log('texts:', texts)
+
+    //   return []
+    // }
 
     return answer
   }

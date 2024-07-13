@@ -5,10 +5,11 @@
  * @link https://github.com/verteramo/mooget
  */
 
-import { ITest } from '@/dom'
-import i18n from 'i18next'
+import { IQuiz } from '@/dom'
 import configReducer, { IConfig } from '@/redux/slice.config'
-import testsReducer from '@/redux/slice.tests'
+import progressReducer from '@/redux/slice.progress'
+import quizzesReducer from '@/redux/slice.quizzes'
+import i18n from 'i18next'
 
 import {
   combineReducers,
@@ -32,8 +33,8 @@ import { updateFromStorage } from './store.listener'
  **************************************/
 
 export interface IStore {
-  tests: ITest[]
   config: IConfig
+  quizzes: IQuiz[]
 }
 
 /***************************************
@@ -48,8 +49,9 @@ const persistConfig = {
 
 // Root reducer
 const rootReducer = combineReducers({
-  tests: testsReducer,
-  config: configReducer
+  config: configReducer,
+  quizzes: quizzesReducer,
+  progress: progressReducer
 })
 
 // Persisted reducer
@@ -64,14 +66,16 @@ const configListenerMiddleware = createListenerMiddleware<IStore>()
 configListenerMiddleware.startListening({
   actionCreator: updateFromStorage,
   effect: async (action) => {
-    i18n.changeLanguage(action.payload.config.language).catch(console.error)
+    i18n.changeLanguage(action.payload.config.language).catch((error) => {
+      console.log('i18n error', error)
+    })
   }
 })
 
 // Serializability configuration
 const serializableConfig = {
   serializableCheck: {
-    ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE']
+    ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE', '']
   }
 }
 

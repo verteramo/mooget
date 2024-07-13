@@ -1,13 +1,17 @@
-import Box from '@mui/material/Box'
-import Checkbox from '@mui/material/Checkbox'
+import {
+  Box,
+  Checkbox
+} from '@mui/material'
 
-import Cancel from '@mui/icons-material/Cancel'
-import Delete from '@mui/icons-material/Delete'
-import Download from '@mui/icons-material/Download'
-import Edit from '@mui/icons-material/Edit'
-import PlayCircle from '@mui/icons-material/PlayCircle'
-import Save from '@mui/icons-material/Save'
-import Star from '@mui/icons-material/Star'
+import {
+  Cancel,
+  Delete,
+  Download,
+  Edit,
+  PlayCircle,
+  Save,
+  Star
+} from '@mui/icons-material'
 
 import {
   DataGrid,
@@ -23,8 +27,8 @@ import {
   GridRowParams
 } from '@mui/x-data-grid'
 
-import { IQuestion, ITest } from '@/dom'
-import { deleteTest, setConfigCurrentTest, updateTest } from '@/redux'
+import { IQuestion, IQuiz } from '@/dom'
+import { removeQuiz, setConfigCurrentTest, updateQuiz } from '@/redux'
 import { downloadTest } from '@/scripts/utilities'
 
 import { useConfirm } from 'material-ui-confirm'
@@ -35,7 +39,7 @@ import { useDispatch } from 'react-redux'
 import { initialState, localeText, styles } from './TestsGridProps'
 
 interface IProps {
-  tests: ITest[]
+  tests: IQuiz[]
 }
 
 export function TestsGrid ({ tests }: IProps): JSX.Element {
@@ -44,8 +48,8 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
   const confirm = useConfirm()
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
-  const processRowUpdate = (test: GridRowModel<ITest>): ITest => {
-    return dispatch(updateTest(test)).payload
+  const processRowUpdate = (test: GridRowModel<IQuiz>): IQuiz => {
+    return dispatch(updateQuiz(test)).payload
   }
 
   const handleRowModesModelChange = (model: GridRowModesModel): void => {
@@ -53,8 +57,7 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
   }
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (
-    params,
-    event
+    params, event
   ) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true
@@ -65,7 +68,7 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
     const test = tests.find((test) => test.id === id)
 
     if (test !== undefined) {
-      dispatch(updateTest({ ...test, favorite: !test.favorite }))
+      dispatch(updateQuiz({ ...test, favorite: !(test.favorite ?? false) }))
     }
   }
 
@@ -90,25 +93,27 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
     })
   }
 
-  const handleDeleteClick = (test: ITest) => () => {
+  const handleDeleteClick = (test: IQuiz) => () => {
     confirm({
       title: <>{t('remove-title')}</>,
       content: (
-        <>
-          <p>{test.name}</p>
-          <p>{t('remove-content')}</p>
-        </>
+        <p>
+          {t('remove-content', {
+            name: test.name,
+            questions: test.questions.length
+          })}
+        </p>
       )
     })
-      .then(() => dispatch(deleteTest(test.id)))
+      .then(() => dispatch(removeQuiz(test.id)))
       .catch(console.error)
   }
 
-  const handleDownloadClick = (test: ITest) => () => {
+  const handleDownloadClick = (test: IQuiz) => () => {
     downloadTest(test)
   }
 
-  const handlePlayClick = (test: ITest) => () => {
+  const handlePlayClick = (test: IQuiz) => () => {
     dispatch(setConfigCurrentTest(test.id))
     chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
       chrome.sidePanel.open({ tabId: tab.id as number }).catch(console.error)
@@ -137,18 +142,18 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
     },
 
     {
-      // Name column
-      field: 'name',
-      headerName: t('test'),
-      minWidth: 150,
+      // Category column
+      field: 'category',
+      headerName: t('category'),
+      minWidth: 180,
       editable: true
     },
 
     {
-      // Category column
-      field: 'category',
-      headerName: t('category'),
-      minWidth: 200,
+      // Name column
+      field: 'name',
+      headerName: t('test'),
+      minWidth: 180,
       editable: true
     },
 
@@ -174,7 +179,7 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
       disableColumnMenu: true,
       width: 160,
       align: 'center',
-      getActions: (params: GridRowParams<ITest>) => {
+      getActions: (params: GridRowParams<IQuiz>) => {
         const isInEditMode =
           rowModesModel[params.id]?.mode === GridRowModes.Edit
 

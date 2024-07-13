@@ -1,9 +1,25 @@
+/**
+ * TestsGridProps
+ * It contains the initial state, styles and locale text for the TestsGrid component.
+ *
+ * @license GPL-3.0-or-later
+ * @link https://github.com/verteramo/mooget
+ * @link https://github.com/mui/mui-x/blob/v7.9.0/packages/x-data-grid/src/constants/localeTextConstants.ts
+ */
+
+import { GridLocaleText } from '@mui/x-data-grid'
 import { TFunction } from 'i18next'
 
+/**
+ * Initial state
+ */
 export const initialState = {
   pagination: { paginationModel: { pageSize: 5, page: 0 } }
 }
 
+/**
+ * Styles
+ */
 export const styles = {
   '& .MuiDataGrid-cell:focus-within, & .MuiDataGrid-cell:focus': {
     outline: 'none'
@@ -13,8 +29,15 @@ export const styles = {
   }
 }
 
-export function localeText (t: TFunction): any {
+/**
+ * Locale text
+ * @param t Translation function
+ * @returns localeText object
+ */
+export function localeText (t: TFunction): Partial<GridLocaleText> {
   return {
+    noRowsLabel: t('no-rows-label'),
+
     columnMenuLabel: t('column-menu-label'),
     columnMenuShowColumns: t('column-menu-show-columns'),
     columnMenuManageColumns: t('column-menu-manage-columns'),

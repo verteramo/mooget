@@ -1,34 +1,52 @@
 /**
  * ThemeModeProvider
- * A provider component that provides a theme mode state
- * and a toggle button group to switch between light and dark mode.
- * The theme mode state is stored in Chrome storage,
- * is used to create a MUI theme,
- * and is used to set the initial value of the toggle button group.
+ * Component that provides theme mode and language state
+ * A select component to switch between languages
+ * And a toggle button group to switch between light and dark mode
  *
  * @license GPL-3.0
  * @link https://github.com/verteramo/mooget
  */
 
-import Box from '@mui/material/Box'
-import createTheme from '@mui/material/styles/createTheme'
-import CssBaseline from '@mui/material/CssBaseline'
-import FormControl from '@mui/material/FormControl'
-import InputLabel from '@mui/material/InputLabel'
-import MenuItem from '@mui/material/MenuItem'
-import Select, { SelectChangeEvent } from '@mui/material/Select'
-import Stack from '@mui/material/Stack'
-import ToggleButton from '@mui/material/ToggleButton'
-import ToggleButtonGroup from '@mui/material/ToggleButtonGroup'
-import Typography from '@mui/material/Typography'
+import {
+  Avatar,
+  Box,
+  createTheme,
+  CssBaseline,
+  FormControl,
+  InputLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
+  Stack,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography
+} from '@mui/material'
 
-import DarkMode from '@mui/icons-material/DarkMode'
-import LightMode from '@mui/icons-material/LightMode'
+import {
+  DarkMode,
+  LightMode
+} from '@mui/icons-material'
 
-import { ThemeProvider } from '@emotion/react'
-import { PropsWithChildren, useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { useDispatch, useSelector } from 'react-redux'
+import {
+  ThemeProvider
+} from '@emotion/react'
+
+import {
+  PropsWithChildren,
+  useEffect,
+  useState
+} from 'react'
+
+import {
+  useTranslation
+} from 'react-i18next'
+
+import {
+  useDispatch,
+  useSelector
+} from 'react-redux'
 
 import {
   IStore,
@@ -38,17 +56,17 @@ import {
 } from '@/redux'
 
 export function ThemeModeProvider ({ children }: PropsWithChildren): JSX.Element {
-  const { t, i18n } = useTranslation()
   const dispatch = useDispatch()
+  const { t, i18n } = useTranslation()
   const config = useSelector((store: IStore) => store.config)
 
   const [language, setLanguage] = useState<string>(i18n.language)
 
-  const handleThemeClick = (mode: Theme) => () => {
+  const handleThemeChange = (mode: Theme) => () => {
     dispatch(setConfigTheme(mode))
   }
 
-  const handleChangeLanguage = (event: SelectChangeEvent<string>): void => {
+  const handleLanguageChange = (event: SelectChangeEvent<string>): void => {
     setLanguage(event.target.value)
   }
 
@@ -61,18 +79,25 @@ export function ThemeModeProvider ({ children }: PropsWithChildren): JSX.Element
     <ThemeProvider theme={createTheme({ palette: { mode: config.theme } })}>
       <CssBaseline />
       <Box p={2} display='flex' justifyContent='space-between'>
-        <Typography variant='h6'>{document.title}</Typography>
+        <Stack direction='row' spacing={2}>
+          <Avatar
+            variant='square'
+            alt={document.title}
+            src='../assets/logo_512.png'
+          />
+          <Typography variant='h4' fontWeight='bold'>
+            {document.title}
+          </Typography>
+        </Stack>
         <Stack direction='row' spacing={2}>
           <FormControl size='small' variant='filled' sx={{ width: 150 }}>
-            <InputLabel id='demo-select-small-label'>
-              {t('language')}
-            </InputLabel>
+            <InputLabel id='language-label'>{t('language')}</InputLabel>
             <Select
-              labelId='demo-select-small-label'
-              id='demo-select-small'
-              label='Age'
+              labelId='language-label'
+              id='language-select'
+              label={t('language')}
               value={i18n.language}
-              onChange={handleChangeLanguage}
+              onChange={handleLanguageChange}
             >
               {i18n.languages.map((language) => (
                 <MenuItem key={language} value={language}>
@@ -91,7 +116,7 @@ export function ThemeModeProvider ({ children }: PropsWithChildren): JSX.Element
               value='light'
               title={t('light')}
               aria-label={t('light')}
-              onClick={handleThemeClick('light')}
+              onClick={handleThemeChange('light')}
             >
               <LightMode />
             </ToggleButton>
@@ -99,7 +124,7 @@ export function ThemeModeProvider ({ children }: PropsWithChildren): JSX.Element
               value='dark'
               title={t('dark')}
               aria-label={t('dark')}
-              onClick={handleThemeClick('dark')}
+              onClick={handleThemeChange('dark')}
             >
               <DarkMode />
             </ToggleButton>

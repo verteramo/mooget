@@ -7,7 +7,7 @@
  * @link https://github.com/verteramo/mooget
  */
 
-import { ITest } from '@/dom'
+import { IQuestion, IQuiz } from '@/dom'
 import saveAs from 'file-saver'
 
 /**
@@ -74,7 +74,7 @@ export async function replaceImages (element: JQuery<HTMLElement>): Promise<JQue
  *
  * @param test Test
  */
-export function downloadTest (test: ITest): void {
+export function downloadTest (test: IQuiz): void {
   saveAs(new Blob([JSON.stringify(test)], {
     type: 'application/json'
   }), `${test.name}.json`)
@@ -95,4 +95,19 @@ export function shuffle<T> (array: T[]): T[] {
   }
 
   return copy
+}
+
+/**
+ * Filter questions
+ *
+ * @param test Test
+ * @param tests Tests
+ * @returns Unique questions
+ */
+export function filterQuestions (test: IQuiz, tests: IQuiz[]): IQuestion[] {
+  const allQuestions = tests.flatMap((test) => test.questions)
+
+  return test.questions.filter((currentQuestion) => {
+    return allQuestions.some((question) => question.id === currentQuestion.id) === false
+  })
 }

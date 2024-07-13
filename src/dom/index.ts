@@ -1,5 +1,7 @@
 export * from './page'
 export * from './question.base'
+export * from './question.draganddrop'
 export * from './question.match'
+export * from './question.multianswer'
 export * from './question.multichoice'
 export * from './question.text'

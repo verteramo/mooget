@@ -24,11 +24,20 @@ const quizzesSlice = createSlice({
   initialState: quizzesInitialState,
   reducers: {
     createQuiz: (state, { payload: quiz }: PayloadAction<IQuiz>) => {
-      if (!state.some(current => current.id === quiz.id)) {
-        return [...state, quiz]
+      if (state.some(current => current.id === quiz.id)) {
+        return state.map(current => current.id === quiz.id
+          ? {
+              ...current,
+              questions: [
+                ...current.questions,
+                ...quiz.questions
+              ]
+            }
+          : current
+        )
       }
 
-      return state
+      return [...state, quiz]
     },
 
     removeQuiz: (state, { payload: id }: PayloadAction<string>) => {

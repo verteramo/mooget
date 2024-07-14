@@ -1,6 +1,6 @@
 /**
- * NewTestControl
- * Control to create a new test
+ * NewQuizControl
+ * Control to create a new quiz
  *
  * @license GPL-3.0
  * @link https://github.com/verteramo/mooget
@@ -12,7 +12,6 @@ import {
   Card,
   CardActions,
   CardContent,
-  CardHeader,
   CardMedia,
   Stack,
   TextField
@@ -27,14 +26,16 @@ import { useTranslation } from 'react-i18next'
 import { IQuiz } from '@/dom'
 
 interface IProps {
-  test: IQuiz
+  quiz: IQuiz
   handleCategoryChange: (category: string) => void
   handleNameChange: (name: string) => void
   handleDownloadClick: () => void
 }
 
-export function NewTestCard ({
-  test,
+const NO_ICON = '../assets/no-icon.png'
+
+export function NewQuizCard ({
+  quiz,
   handleCategoryChange,
   handleNameChange,
   handleDownloadClick
@@ -57,23 +58,23 @@ export function NewTestCard ({
     <Card sx={{ display: 'flex' }}>
       <Box sx={{ display: 'flex', flexDirection: 'column', width: '82%' }}>
         <CardContent>
-          <Stack spacing={2} direction='row'>
+          <Stack spacing={1} direction='row'>
             <TextField
               fullWidth
               size='small'
               variant='filled'
               label={t('category')}
-              value={test.category}
-              error={test.category?.length === 0}
+              value={quiz.category}
+              error={quiz.category?.length === 0}
               onChange={handleOnCategoryChange}
             />
             <TextField
               fullWidth
               size='small'
               variant='filled'
-              label={t('test')}
-              value={test.name}
-              error={test.name.length === 0}
+              label={t('quiz')}
+              value={quiz.name}
+              error={quiz.name.length === 0}
               onChange={handleOnNameChange}
             />
           </Stack>
@@ -87,7 +88,7 @@ export function NewTestCard ({
       <CardMedia
         component='img'
         sx={{ width: 128, objectFit: 'contain', backgroundColor: 'white' }}
-        image={test.icon ?? '../assets/no-icon.png'}
+        image={quiz.icon ?? NO_ICON}
       />
     </Card>
   )

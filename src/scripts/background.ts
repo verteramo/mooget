@@ -25,7 +25,7 @@ const [
 setBadgeObserver.subscribe(([text]) => {
   chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
     chrome.action.setBadgeText({ text, tabId: tab.id }).catch((error) => {
-      console.log('setBadge error', error)
+      console.log('setBadge background error', error)
     })
   })
 })

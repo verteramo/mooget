@@ -258,6 +258,8 @@ export class Page {
         questions.push(question)
       }
 
+      const version = await page.version
+
       return {
         type: page.type,
         url: page.url?.href,
@@ -265,8 +267,8 @@ export class Page {
         icon: page.icon,
         name: page.name,
         category: page.category,
-        version: await page.version,
         id: Md5.hashStr(page.name),
+        version,
         questions
       }
     }

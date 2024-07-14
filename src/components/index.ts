@@ -1,5 +1,5 @@
 export * from './InputField'
-export * from './popup/NewTestCard'
+export * from './popup/NewQuizCard'
 export * from './popup/TestsGrid'
 export * from './popup/TestsGridProps'
 export * from './sidepanel/Multianswer'

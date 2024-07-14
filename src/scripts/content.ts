@@ -11,22 +11,24 @@ import { IQuiz, Page } from '@/dom'
 import { getMessage } from '@extend-chrome/messages'
 import { setBadge } from './background'
 
-const [requestQuiz, requestQuizObserver] = getMessage<undefined, IQuiz>('requestQuiz', { async: true })
+/* eslint-disable-next-line @typescript-eslint/no-invalid-void-type */
+const [requestQuiz, requestQuizObserver] = getMessage<void, IQuiz>('requestQuiz', { async: true })
 
-Page.getQuiz().then((test) => {
-  console.log('init', test)
-
-  if (test !== undefined) {
-    setBadge(test.questions.length.toString()).catch((error) => {
-      console.error('setBadge error', error)
+function handleQuiz (quiz: IQuiz | undefined): void {
+  console.log('init', quiz)
+  if (quiz !== undefined) {
+    setBadge(quiz.questions.length.toString()).catch((error) => {
+      console.log('setBadge content error', error)
     })
 
     requestQuizObserver.subscribe(([,,sendResponse]) => {
-      sendResponse(test)
+      sendResponse(quiz)
     })
   }
-}).catch((error) => {
-  console.log('init error', error)
+}
+
+Page.getQuiz().then(handleQuiz).catch((error) => {
+  console.error('getQuiz error', error)
 })
 
 export { requestQuiz }

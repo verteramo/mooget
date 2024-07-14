@@ -152,7 +152,7 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
     {
       // Name column
       field: 'name',
-      headerName: t('test'),
+      headerName: t('quiz'),
       minWidth: 180,
       editable: true
     },

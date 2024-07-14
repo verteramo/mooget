@@ -108,6 +108,6 @@ export function filterQuestions (test: IQuiz, tests: IQuiz[]): IQuestion[] {
   const allQuestions = tests.flatMap((test) => test.questions)
 
   return test.questions.filter((currentQuestion) => {
-    return allQuestions.some((question) => question.id === currentQuestion.id) === false
+    return !allQuestions.some((question) => question.id === currentQuestion.id)
   })
 }

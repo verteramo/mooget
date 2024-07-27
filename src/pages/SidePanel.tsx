@@ -5,13 +5,14 @@ import { shuffle } from '@/scripts/utilities'
 import { useSelector } from 'react-redux'
 
 function SidePanel (): JSX.Element {
-  const store = useSelector((store: IStore) => store)
-  const currentTestId = store.config.currentTest
-  const test = store.quizzes.find((test) => test.id === currentTestId)
+  const { progress, quizzes } = useSelector((store: IStore) => store)
+  const quiz = quizzes.find(({ id }) => id === progress.quiz)
 
   return (
     <>
-      {test !== undefined && <Quiz test={{ ...test, questions: shuffle(test.questions) }} />}
+      {quiz !== undefined && (
+        <Quiz quiz={{ ...quiz, questions: shuffle(quiz.questions) }} />
+      )}
     </>
   )
 }

@@ -15,54 +15,45 @@ import {
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { IQuiz } from '@/dom'
+import { QuizInfo } from '@/dom'
 
 import { Question } from './Question'
 
 interface IProps {
-  test: IQuiz
+  quiz: QuizInfo
 }
 
-export function Quiz ({ test }: IProps): JSX.Element {
+export function Quiz ({ quiz: { name, questions } }: IProps): JSX.Element {
   const { t } = useTranslation()
-  const [index, setIndex] = useState(0)
-  const { name, questions } = test
-  const { length } = questions
-
-  const handleClickNext = (): void => {
-    setIndex((index) => index + 1)
-  }
-
-  const handleClickPrevious = (): void => {
-    setIndex((index) => index - 1)
-  }
+  const [step, setStep] = useState(0)
+  const { length: steps } = questions
 
   return (
     <Paper elevation={2}>
-      <Stack divider={<Divider />}>
+      <Stack divider={<Divider variant='middle' />}>
         <Typography sx={{ p: 2 }} variant='h6'>
           {name}
         </Typography>
         <MobileStepper
           variant='text'
           position='static'
-          steps={length}
-          activeStep={index}
+          steps={steps}
+          activeStep={step}
           backButton={
             <Button
               size='small'
-              disabled={index === 0}
-              onClick={handleClickPrevious}
+              disabled={step === 0}
+              onClick={() => setStep((step) => step - 1)}
             >
               <KeyboardArrowLeft />
-              {t('previous')}
+              {t('back')}
             </Button>
           }
           nextButton={
             <Button
               size='small'
-              disabled={index === length - 1}
-              onClick={handleClickNext}
+              disabled={step === steps - 1}
+              onClick={() => setStep((step) => step + 1)}
             >
               {t('next')}
               <KeyboardArrowRight />
@@ -70,7 +61,7 @@ export function Quiz ({ test }: IProps): JSX.Element {
           }
         />
         <Stack p={2}>
-          <Question question={questions[index]} />
+          <Question question={questions[step]} />
         </Stack>
       </Stack>
     </Paper>

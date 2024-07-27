@@ -1,34 +1,34 @@
 /**
- * Redux slice for configuration
+ * Redux slice for user progress
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
  */
 
+import { IQuiz } from '@/dom'
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
-/**
- * Initial state for configuration
- */
-export const progressInitialState = {
-  currentTest: ''
+export interface IProgress {
+  quiz?: IQuiz
+  step?: number
 }
 
-/**
- * Configuration slice
- */
+export const progressInitialState: IProgress = {}
+
 export const progressSlice = createSlice({
   name: 'progress',
   initialState: progressInitialState,
   reducers: {
-    setCurrentTest: (state, { payload: currentTest }: PayloadAction<string>) => {
-      return { ...state, currentTest }
+    setQuiz: (state, { payload: quiz }: PayloadAction<IQuiz>) => {
+      return { ...state, quiz }
+    },
+    setStep: (state, { payload: step }: PayloadAction<number>) => {
+      return { ...state, step }
     }
   }
 })
 
 export const {
-  setCurrentTest
+  setQuiz,
+  setStep
 } = progressSlice.actions
-
-export default progressSlice.reducer

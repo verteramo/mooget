@@ -26,6 +26,9 @@ export const styles = {
   },
   '& .MuiDataGrid-columnHeader:focus-within, & .MuiDataGrid-columnHeader:focus': {
     outline: 'none'
+  },
+  '& .favorite-cell': {
+    textOverflow: 'clip'
   }
 }
 

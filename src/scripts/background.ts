@@ -13,10 +13,7 @@ import { getMessage } from '@extend-chrome/messages'
 /**
  * Message observer to set the badge
  * It is called from the content script
- *
- * @param text Badge text
  */
-
 const [
   setBadge,
   setBadgeObserver
@@ -24,19 +21,18 @@ const [
 
 setBadgeObserver.subscribe(([text]) => {
   chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-    chrome.action.setBadgeText({ text, tabId: tab.id }).catch((error) => {
-      console.log('setBadge background error', error)
-    })
+    if (tab !== undefined) {
+      chrome.action.setBadgeText({ text, tabId: tab.id }).catch((error) => {
+        console.log('setBadge error', error)
+      })
+    }
   })
 })
 
 /**
  * Message observer to get the version
  * It is called from the Page class
- *
- * @param url URL
  */
-
 const [
   getVersion,
   getVersionObserver
@@ -51,11 +47,7 @@ getVersionObserver.subscribe(([url,,sendResponse]) => {
 /**
  * Message observer to get images as base64
  * It is called from the Page and Question classes
- *
- * @param element HTML element
- * @returns HTML element with replaced images as base64
  */
-
 const [
   getImages,
   getImagesObserver
@@ -70,7 +62,8 @@ getImagesObserver.subscribe(([element,,sendResponse]) => {
 /**
  * Exports
  */
-
 export {
-  getImages, getVersion, setBadge
+  setBadge,
+  getVersion,
+  getImages
 }

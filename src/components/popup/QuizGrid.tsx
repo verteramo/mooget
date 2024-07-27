@@ -8,9 +8,9 @@ import {
   Delete,
   Download,
   Edit,
+  Favorite,
   PlayCircle,
-  Save,
-  Star
+  Save
 } from '@mui/icons-material'
 
 import {
@@ -27,33 +27,29 @@ import {
   GridRowParams
 } from '@mui/x-data-grid'
 
-import { IQuestion, IQuiz } from '@/dom'
-import { removeQuiz, setConfigCurrentTest, updateQuiz } from '@/redux'
-import { downloadTest } from '@/scripts/utilities'
+import { IQuestion, QuizInfo } from '@/dom'
+import { removeQuiz, setQuiz, updateQuiz } from '@/redux'
+import { downloadQuiz } from '@/scripts/utilities'
 
 import { useConfirm } from 'material-ui-confirm'
 import { useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch } from 'react-redux'
 
-import { initialState, localeText, styles } from './TestsGridProps'
+import { initialState, localeText, styles } from './QuizGridProps'
 
 interface IProps {
-  tests: IQuiz[]
+  quizzes: QuizInfo[]
 }
 
-export function TestsGrid ({ tests }: IProps): JSX.Element {
+export function QuizGrid ({ quizzes }: IProps): JSX.Element {
   const { t } = useTranslation()
   const dispatch = useDispatch()
   const confirm = useConfirm()
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
-  const processRowUpdate = (test: GridRowModel<IQuiz>): IQuiz => {
-    return dispatch(updateQuiz(test)).payload
-  }
-
-  const handleRowModesModelChange = (model: GridRowModesModel): void => {
-    setRowModesModel(model)
+  const processRowUpdate = (quiz: GridRowModel<QuizInfo>): QuizInfo => {
+    return dispatch(updateQuiz(quiz)).payload
   }
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (
@@ -64,57 +60,50 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
     }
   }
 
-  const toggleFavorite = (id: GridRowId) => () => {
-    const test = tests.find((test) => test.id === id)
+  const toggleFavorite = (id: string) => () => {
+    const quiz = quizzes.find(({ id: currentId }) => currentId === id)
 
-    if (test !== undefined) {
-      dispatch(updateQuiz({ ...test, favorite: !(test.favorite ?? false) }))
+    if (quiz !== undefined) {
+      dispatch(updateQuiz({ ...quiz, favorite: !(quiz.favorite ?? false) }))
     }
   }
 
-  const handleEditClick = (id: GridRowId) => () => {
+  const handleQuizEdit = (id: GridRowId) => () => {
     setRowModesModel({
       ...rowModesModel,
       [id]: { mode: GridRowModes.Edit }
     })
   }
 
-  const handleSaveClick = (id: GridRowId) => () => {
+  const handleQuizEditSave = (id: GridRowId) => () => {
     setRowModesModel({
       ...rowModesModel,
       [id]: { mode: GridRowModes.View }
     })
   }
 
-  const handleCancelClick = (id: GridRowId) => () => {
+  const handleQuizEditCancel = (id: GridRowId) => () => {
     setRowModesModel({
       ...rowModesModel,
       [id]: { mode: GridRowModes.View, ignoreModifications: true }
     })
   }
 
-  const handleDeleteClick = (test: IQuiz) => () => {
+  const handleQuizDelete = ({ id, name, questions: { length } }: QuizInfo) => () => {
     confirm({
       title: <>{t('remove-title')}</>,
-      content: (
-        <p>
-          {t('remove-content', {
-            name: test.name,
-            questions: test.questions.length
-          })}
-        </p>
-      )
+      content: <p>{t('remove-content', { name, length })}</p>
     })
-      .then(() => dispatch(removeQuiz(test.id)))
+      .then(() => dispatch(removeQuiz(id)))
       .catch(console.error)
   }
 
-  const handleDownloadClick = (test: IQuiz) => () => {
-    downloadTest(test)
+  const handleQuizDownload = (quiz: QuizInfo) => () => {
+    downloadQuiz(quiz)
   }
 
-  const handlePlayClick = (test: IQuiz) => () => {
-    dispatch(setConfigCurrentTest(test.id))
+  const handleQuizPlay = (quiz: QuizInfo) => () => {
+    dispatch(setQuiz(quiz))
     chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
       chrome.sidePanel.open({ tabId: tab.id as number }).catch(console.error)
     })
@@ -128,15 +117,16 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
       resizable: false,
       filterable: false,
       disableColumnMenu: true,
-      align: 'center',
-      width: 20,
-      renderCell: (params: GridCellParams<any, boolean>) => (
+      width: 50,
+      align: 'left',
+      cellClassName: 'favorite-cell',
+      renderCell: ({ value, row: { id } }: GridCellParams<QuizInfo, boolean>) => (
         <Checkbox
           size='small'
-          icon={<Star />}
-          checkedIcon={<Star color='warning' />}
-          checked={params.value ?? false}
-          onChange={toggleFavorite(params.id)}
+          icon={<Favorite />}
+          checkedIcon={<Favorite color='error' />}
+          checked={value ?? false}
+          onChange={toggleFavorite(id)}
         />
       )
     },
@@ -163,8 +153,8 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
       headerName: t('questions'),
       align: 'center',
       type: 'number',
-      renderCell: (params: GridCellParams<any, IQuestion[]>) =>
-        params.value?.length,
+      renderCell: ({ value }: GridCellParams<any, IQuestion[]>) =>
+        value?.length,
       sortComparator: (v1: IQuestion[], v2: IQuestion[]) =>
         v1.length - v2.length
     },
@@ -179,9 +169,8 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
       disableColumnMenu: true,
       width: 160,
       align: 'center',
-      getActions: (params: GridRowParams<IQuiz>) => {
-        const isInEditMode =
-          rowModesModel[params.id]?.mode === GridRowModes.Edit
+      getActions: ({ id, row: quiz }: GridRowParams<QuizInfo>) => {
+        const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit
 
         if (isInEditMode) {
           return [
@@ -190,14 +179,14 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
               label={t('save')}
               title={t('save')}
               icon={<Save />}
-              onClick={handleSaveClick(params.id)}
+              onClick={handleQuizEditSave(id)}
             />,
             <GridActionsCellItem
               key='cancel'
               label={t('cancel')}
               title={t('cancel')}
               icon={<Cancel />}
-              onClick={handleCancelClick(params.id)}
+              onClick={handleQuizEditCancel(id)}
             />
           ]
         }
@@ -208,28 +197,28 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
             label={t('edit')}
             title={t('edit')}
             icon={<Edit />}
-            onClick={handleEditClick(params.id)}
+            onClick={handleQuizEdit(id)}
           />,
           <GridActionsCellItem
             key='delete'
             label={t('delete')}
             title={t('delete')}
             icon={<Delete />}
-            onClick={handleDeleteClick(params.row)}
+            onClick={handleQuizDelete(quiz)}
           />,
           <GridActionsCellItem
             key='download'
             label={t('download')}
             title={t('download')}
             icon={<Download />}
-            onClick={handleDownloadClick(params.row)}
+            onClick={handleQuizDownload(quiz)}
           />,
           <GridActionsCellItem
             key='play'
             label={t('play')}
             title={t('play')}
             icon={<PlayCircle />}
-            onClick={handlePlayClick(params.row)}
+            onClick={handleQuizPlay(quiz)}
           />
         ]
       }
@@ -243,16 +232,17 @@ export function TestsGrid ({ tests }: IProps): JSX.Element {
         disableColumnSelector
         disableRowSelectionOnClick
         editMode='row'
-        rows={tests}
+        density='compact'
+        rows={quizzes}
         columns={columns}
         rowSelection={false}
         rowModesModel={rowModesModel}
         autosizeOptions={{ includeOutliers: true }}
         processRowUpdate={processRowUpdate}
-        onRowModesModelChange={handleRowModesModelChange}
+        onRowModesModelChange={setRowModesModel}
         onRowEditStop={handleRowEditStop}
         pageSizeOptions={[5, 10, 20]}
-        // Come from TestsGridProps.ts
+          // Come from TestsGridProps.ts
         sx={styles}
         initialState={initialState}
         localeText={localeText(t)}

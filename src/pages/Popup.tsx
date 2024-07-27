@@ -1,94 +1,141 @@
-import { InputField, NewQuizCard, TestsGrid, useQuiz } from '@/components'
+import { InputField, QuizCard, QuizGrid, useBadge, useContentQuiz } from '@/components'
 import { IQuiz } from '@/dom'
 import { render } from '@/pages/render'
 import { createQuiz } from '@/redux/slice.quizzes'
 import { IStore } from '@/redux/store'
-import { filterQuestions } from '@/scripts/utilities'
+import { filterQuiz, loadQuiz } from '@/scripts/utilities'
 import { UploadFile } from '@mui/icons-material'
-import { Button, Stack } from '@mui/material'
-import { ChangeEvent, useRef } from 'react'
+import { Box, Button, Stack } from '@mui/material'
+import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
+import { Md5 } from 'ts-md5'
 
 function Popup (): JSX.Element {
-  const quizzes = useSelector((store: IStore) => store.quizzes)
-  const [quiz, setCategory, setName] = useQuiz(quizzes)
-  const dispatch = useDispatch()
   const { t } = useTranslation()
+
+  const dispatch = useDispatch()
+  const quizzes = useSelector((store: IStore) => store.quizzes)
+
+  const setBadge = useBadge()
+  const contentQuiz = useContentQuiz()
+  const [quiz, setQuiz] = useState<IQuiz>()
+  const [filteredQuiz, setFilteredQuiz] = useState<IQuiz>()
+
+  const showQuizCard =
+    filteredQuiz !== undefined &&
+    filteredQuiz.questions.length > 0
+
+  const showQuizGrid =
+    quizzes.length > 0
+
   const inputFileRef = useRef<HTMLInputElement>(null)
 
-  function handleDownloadClick (): void {
-    if (quiz !== undefined) {
-      dispatch(createQuiz(quiz))
+  /**
+   * Set the quiz name
+   * @param name Quiz name
+   */
+  function setQuizName (name: string): void {
+    if (filteredQuiz !== undefined) {
+      setFilteredQuiz({
+        ...filteredQuiz,
+        name,
+        id: Md5.hashStr(name + filteredQuiz.category)
+      })
     }
   }
 
-  function handleUploadClick (): void {
-    inputFileRef.current?.click()
-  }
-
-  async function loadJSONFile (file: File): Promise<IQuiz> {
-    return await new Promise((resolve, reject) => {
-      const reader = new FileReader()
-      reader.onload = (e) => {
-        try {
-          resolve(JSON.parse(e.target?.result as string))
-        } catch (error) {
-          reject(error)
-        }
-      }
-      reader.readAsText(file)
-    })
-  }
-
-  async function handleUploadedFiles (files: FileList): Promise<void> {
-    console.log('handleUploadedFiles init', files)
-    for (const file of files) {
-      try {
-        const quiz = await loadJSONFile(file)
-        console.log('handleUploadedFiles reading', quiz)
-
-        if (typeof quiz.questions !== 'undefined') {
-          dispatch(createQuiz(quiz))
-        }
-      } catch (error) {
-        console.error('Error handleUploadedFiles', error)
-      }
+  /**
+   * Set the quiz category
+   * @param category Quiz category
+   */
+  function setQuizCategory (category: string): void {
+    if (filteredQuiz !== undefined) {
+      setFilteredQuiz({
+        ...filteredQuiz,
+        category,
+        id: Md5.hashStr(filteredQuiz.name + category)
+      })
     }
   }
 
-  function handleUploadChange (e: ChangeEvent<HTMLInputElement>): void {
-    handleUploadedFiles(e.target.files as FileList).catch((error) => {
-      console.error('Error handleUploadChange', error)
-    })
-
-    e.target.value = '' 
+  function handleQuizSave (): void {
+    if (filteredQuiz !== undefined) {
+      dispatch(createQuiz(filteredQuiz))
+    }
   }
+
+  function handleQuizUpload (e: ChangeEvent<HTMLInputElement>): void {
+    const file = e.target.files?.item(0) ?? undefined
+
+    if (file !== undefined) {
+      loadQuiz(file).then((loadedQuiz) => {
+        setQuiz(loadedQuiz)
+      }).catch((error) => {
+        console.log('handleQuizUpload', error)
+      })
+
+      e.target.value = ''
+    }
+  }
+
+  useEffect(() => {
+    if (contentQuiz !== undefined) {
+      setQuiz(contentQuiz)
+      setFilteredQuiz(filterQuiz(quizzes, contentQuiz))
+    }
+  }, [contentQuiz])
+
+  useEffect(() => {
+    if (quiz !== undefined && contentQuiz !== undefined) {
+      const filteredQuiz = filterQuiz(quizzes, quiz)
+
+      setFilteredQuiz(filteredQuiz)
+      setBadge(filteredQuiz.questions.length)
+    }
+  }, [quiz, quizzes])
 
   return (
-    <Stack minWidth={700} minHeight={300} spacing={1}>
+    <Stack minWidth={700} minHeight={150} spacing={1}>
       <Stack direction='row' spacing={2} justifyContent='end'>
         <InputField
           ref={inputFileRef}
           hidden
-          multiple
           type='file'
           accept='.json'
-          onChange={handleUploadChange}
+          onChange={handleQuizUpload}
         />
-        <Button startIcon={<UploadFile />} onClick={handleUploadClick}>
+        <Button
+          size='small'
+          variant='contained'
+          startIcon={<UploadFile />}
+          onClick={() => inputFileRef.current?.click()}
+        >
           {t('upload')}
         </Button>
       </Stack>
-      {quiz !== undefined && filterQuestions(quiz, quizzes).length > 0 && (
-        <NewQuizCard
-          quiz={quiz}
-          handleCategoryChange={setCategory}
-          handleNameChange={setName}
-          handleDownloadClick={handleDownloadClick}
+      {showQuizCard && (
+        <QuizCard
+          quiz={filteredQuiz}
+          onNameChange={setQuizName}
+          onCategoryChange={setQuizCategory}
+          onSaveClick={handleQuizSave}
         />
       )}
-      <TestsGrid tests={quizzes} />
+      {showQuizGrid
+        ? <QuizGrid quizzes={quizzes} />
+        : (
+          <Box sx={{
+            p: 5,
+            color: 'grey',
+            border: '6px dashed lightgrey',
+            borderRadius: '10px',
+            textAlign: 'center'
+          }}
+          >
+            {t('empty')}
+          </Box>
+          )}
     </Stack>
   )
 }

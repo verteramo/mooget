@@ -1,5 +1,4 @@
 /**
- * Storage listener
  * Updates the store when the storage changes
  *
  * @license GPL-3.0-or-later
@@ -7,49 +6,27 @@
  */
 
 import {
-  configInitialState,
   IStore,
   store,
-  quizzesInitialState
+  storeInitialState
 } from '@/redux'
 import { createAction } from '@reduxjs/toolkit'
 
-export const updateFromStorage = createAction<IStore>('updateFromStorage')
-
-/***************************************
- * Configuration slice initial state
- **************************************/
-
-const storeInitialState: IStore = {
-  config: configInitialState,
-  quizzes: quizzesInitialState
-}
-
-/***************************************
- * Listener
- **************************************/
+export const storageAction = createAction<IStore>('storageAction')
 
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName === 'local') {
     const root: string | undefined =
       changes['persist:root']?.newValue
 
-    let newState: IStore
+    const newState: { [key: string]: any } = storeInitialState
 
-    if (root === undefined) {
-      newState = storeInitialState
-    } else {
-      const data: {
-        config: string
-        quizzes: string
-      } = JSON.parse(root)
-
-      newState = {
-        config: JSON.parse(data.config),
-        quizzes: JSON.parse(data.quizzes)
+    if (root !== undefined) {
+      for (const [key, value] of Object.entries<string>(JSON.parse(root))) {
+        newState[key] = JSON.parse(value)
       }
     }
 
-    store.dispatch(updateFromStorage(newState))
+    store.dispatch(storageAction(newState as IStore))
   }
 })

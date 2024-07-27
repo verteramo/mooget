@@ -12,4 +12,5 @@
   "files.associations": {
     "*.json": "jsonc"
   },
+  "standard.enable": true,
 }

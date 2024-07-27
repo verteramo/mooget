@@ -1,15 +1,9 @@
 /**
- * Redux store configuration
+ * Redux store
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
  */
-
-import { IQuiz } from '@/dom'
-import configReducer, { IConfig } from '@/redux/slice.config'
-import progressReducer from '@/redux/slice.progress'
-import quizzesReducer from '@/redux/slice.quizzes'
-import i18n from 'i18next'
 
 import {
   combineReducers,
@@ -26,72 +20,88 @@ import {
   localStorage
 } from 'redux-persist-webextension-storage'
 
-import { updateFromStorage } from './store.listener'
+import i18n from 'i18next'
+
+import { QuizInfo } from '@/dom'
+
+import {
+  configInitialState,
+  configSlice,
+  IConfig,
+  IProgress,
+  progressInitialState,
+  progressSlice,
+  quizzesInitialState,
+  quizzesSlice,
+  storageAction
+} from '@/redux'
 
 /***************************************
- * Store interface
+ * Store model
  **************************************/
 
 export interface IStore {
   config: IConfig
-  quizzes: IQuiz[]
+  quizzes: QuizInfo[]
+  progress: IProgress
+}
+
+export const storeInitialState: IStore = {
+  config: configInitialState,
+  quizzes: quizzesInitialState,
+  progress: progressInitialState
 }
 
 /***************************************
- * Reducer configuration
+ * Persist configuration
  **************************************/
 
-// Persist configuration
 const persistConfig = {
   key: 'root',
   storage: localStorage
 }
 
-// Root reducer
 const rootReducer = combineReducers({
-  config: configReducer,
-  quizzes: quizzesReducer,
-  progress: progressReducer
+  config: configSlice.reducer,
+  quizzes: quizzesSlice.reducer,
+  progress: progressSlice.reducer
 })
 
-// Persisted reducer
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 
 /***************************************
  * Middleware configuration
  **************************************/
 
-// Listener middleware
-const configListenerMiddleware = createListenerMiddleware<IStore>()
-configListenerMiddleware.startListening({
-  actionCreator: updateFromStorage,
-  effect: async (action) => {
-    i18n.changeLanguage(action.payload.config.language).catch((error) => {
-      console.log('i18n error', error)
-    })
+const storageListenerMiddleware = createListenerMiddleware<IStore>()
+storageListenerMiddleware.startListening({
+  actionCreator: storageAction,
+  effect: async ({ payload: { config: { language } } }) => {
+    try {
+      if (i18n.isInitialized && language !== i18n.language) {
+        await i18n.changeLanguage(language)
+      }
+    } catch (error) {
+      console.log('store.ts > i18n.changeLanguage', error)
+    }
   }
 })
 
-// Serializability configuration
 const serializableConfig = {
   serializableCheck: {
-    ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE', '']
+    ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE']
   }
 }
 
 /***************************************
- * Store
+ * Store & persistor
  **************************************/
 
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) => getDefaultMiddleware(
     serializableConfig
-  ).prepend(configListenerMiddleware.middleware)
+  ).concat(storageListenerMiddleware.middleware)
 })
-
-/***************************************
- * Persistor
- **************************************/
 
 export const persistor = persistStore(store)

@@ -7,7 +7,7 @@
  * @link https://github.com/verteramo/mooget
  */
 
-import { IQuestion, IQuiz } from '@/dom'
+import { convertQuiz, IQuestion, IQuiz } from '@/dom'
 import saveAs from 'file-saver'
 
 /**
@@ -70,14 +70,14 @@ export async function replaceImages (element: JQuery<HTMLElement>): Promise<JQue
 }
 
 /**
- * Download test as JSON
+ * Download quiz as JSON
  *
- * @param test Test
+ * @param quiz Quiz
  */
-export function downloadTest (test: IQuiz): void {
-  saveAs(new Blob([JSON.stringify(test)], {
+export function downloadQuiz (quiz: IQuiz): void {
+  saveAs(new Blob([JSON.stringify(quiz)], {
     type: 'application/json'
-  }), `${test.name}.json`)
+  }), `${quiz.name}.json`)
 }
 
 /**
@@ -98,16 +98,82 @@ export function shuffle<T> (array: T[]): T[] {
 }
 
 /**
+ * Load JSON file
+ *
+ * @param file File
+ * @returns Quiz
+ */
+export async function loadQuiz (file: File): Promise<IQuiz | undefined> {
+  return await new Promise((resolve, reject) => {
+    const reader = new FileReader()
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target?.result as string)
+        const quiz = convertQuiz(data)
+
+        if (quiz !== undefined) {
+          resolve(quiz)
+        }
+      } catch (error) {
+        reject(error)
+      }
+    }
+    reader.readAsText(file)
+  })
+}
+
+/**
+ * Get question IDs
+ *
+ * @returns Question IDs
+ */
+function getQuestionIds (quizzes: IQuiz[]): string[] {
+  return quizzes
+    .flatMap(({ questions }) => questions)
+    .flatMap(({ id }) => id)
+}
+
+/**
  * Filter questions
  *
- * @param test Test
- * @param tests Tests
- * @returns Unique questions
+ * @param questions Questions
+ * @returns Filtered questions
  */
-export function filterQuestions (test: IQuiz, tests: IQuiz[]): IQuestion[] {
-  const allQuestions = tests.flatMap((test) => test.questions)
+function filterQuestions (quizzes: IQuiz[], questions: IQuestion[]): IQuestion[] {
+  const questionIds = getQuestionIds(quizzes)
 
-  return test.questions.filter((currentQuestion) => {
-    return !allQuestions.some((question) => question.id === currentQuestion.id)
+  return questions.filter(({ id: currentId }) => {
+    return !questionIds.some((id) => id === currentId)
   })
+}
+
+/**
+ * Filter quiz
+ *
+ * @param quiz Quiz
+ * @returns Filtered quiz
+ */
+export function filterQuiz (quizzes: IQuiz[], quiz: IQuiz): IQuiz {
+  return {
+    ...quiz,
+    questions: filterQuestions(quizzes, quiz.questions)
+  }
+}
+
+/**
+ * Conditional props
+ *
+ * Weak null check is valid for undefined too
+ *
+ * @param props Props
+ * @returns Conditional props
+ */
+export function optional<T> (props: { [key: string]: any }): Partial<T> {
+  return Object.entries(props).reduce<Partial<T>>((acc, [key, value]) => {
+    if (value != null) {
+      acc[key as keyof T] = value
+    }
+
+    return acc
+  }, {})
 }

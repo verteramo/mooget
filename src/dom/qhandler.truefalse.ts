@@ -10,8 +10,10 @@ export const truefalseQHandler: QuestionHandler<IQuestion> = {
   types: ['truefalse'],
   reducer: {
     answer: (e, { correct }): boolean => {
-      const checked = e.find('input[type=radio]').attr('checked') === 'checked'
-      return correct === true ? checked : !checked
+      return (
+        correct === true &&
+        e.find('input[type=radio]').attr('checked') === 'checked'
+      )
     }
   }
 }

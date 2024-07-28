@@ -3,6 +3,9 @@
   "editor.insertSpaces": true,
   "editor.detectIndentation": false,
   "editor.formatOnSave": false,
+  "editor.codeActionsOnSave": {
+    "source.organizeImports": "always"
+  },
   "standard.autoFixOnSave": true,
   "standard.engine": "ts-standard",
   "autoBarrel.formatting.excludeSemiColonAtEndOfLine": true,

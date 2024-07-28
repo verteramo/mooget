@@ -12,21 +12,36 @@ import {
   KeyboardArrowRight
 } from '@mui/icons-material'
 
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { QuizInfo } from '@/dom'
+import { IQuiz } from '@/core/models/IQuiz'
+import { IStore } from '@/redux/store'
 
-import { Question } from './Question'
+import { Question } from '@/components/sidepanel/Question'
+import { sliceProgressSetStep } from '@/redux/sliceProgress'
+import { useDispatch, useSelector } from 'react-redux'
 
 interface IProps {
-  quiz: QuizInfo
+  quiz: IQuiz
 }
 
 export function Quiz ({ quiz: { name, questions } }: IProps): JSX.Element {
   const { t } = useTranslation()
-  const [step, setStep] = useState(0)
+  const [stateStep, setStateStep] = useState(0)
+  const dispatch = useDispatch()
+  const step = useSelector((store: IStore) => store.progress.step)
   const { length: steps } = questions
+
+  useEffect(() => {
+    dispatch(sliceProgressSetStep(stateStep))
+  }, [stateStep])
+
+  useEffect(() => {
+    if (step !== undefined) {
+      setStateStep(step)
+    }
+  }, [step])
 
   return (
     <Paper elevation={2}>
@@ -38,12 +53,12 @@ export function Quiz ({ quiz: { name, questions } }: IProps): JSX.Element {
           variant='text'
           position='static'
           steps={steps}
-          activeStep={step}
+          activeStep={stateStep}
           backButton={
             <Button
               size='small'
-              disabled={step === 0}
-              onClick={() => setStep((step) => step - 1)}
+              disabled={stateStep === 0}
+              onClick={() => setStateStep((step) => step - 1)}
             >
               <KeyboardArrowLeft />
               {t('back')}
@@ -52,8 +67,8 @@ export function Quiz ({ quiz: { name, questions } }: IProps): JSX.Element {
           nextButton={
             <Button
               size='small'
-              disabled={step === steps - 1}
-              onClick={() => setStep((step) => step + 1)}
+              disabled={stateStep === steps - 1}
+              onClick={() => setStateStep((step) => step + 1)}
             >
               {t('next')}
               <KeyboardArrowRight />
@@ -61,7 +76,7 @@ export function Quiz ({ quiz: { name, questions } }: IProps): JSX.Element {
           }
         />
         <Stack p={2}>
-          <Question question={questions[step]} />
+          <Question question={questions[stateStep]} />
         </Stack>
       </Stack>
     </Paper>

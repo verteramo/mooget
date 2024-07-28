@@ -5,7 +5,7 @@
  * @link https://github.com/verteramo/mooget
  */
 
-import { setBadge } from '@/scripts/background'
+import { bgSetBadge } from '@/scripts/background'
 import { useEffect, useState } from 'react'
 
 /**
@@ -19,7 +19,7 @@ export function useBadge (): (value: number) => void {
     if (value !== undefined) {
       const text = value === 0 ? '' : value.toString()
 
-      setBadge(text).catch((error) => {
+      bgSetBadge(text).catch((error) => {
         console.log('useBadge.ts > setBadgeText', error)
       })
     }

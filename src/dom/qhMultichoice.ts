@@ -1,6 +1,14 @@
-import { QuestionHandler, IQuestion, IAnswer } from '@/dom'
+/**
+ * qhMultichoice.ts
+ *
+ * @license GPL-3.0-or-later
+ * @link https://github.com/verteramo/mooget
+ */
 
 import $ from 'jquery'
+
+import { QuestionHandler } from '@/core/dom/QuestionHandler'
+import { IAnswer } from '@/core/models/IAnswer'
 
 /**
  * Single-answer questions:
@@ -13,14 +21,14 @@ import $ from 'jquery'
  * Are like multichoice questions.
  * @see https://docs.moodle.org/en/Calculated_multichoice_question_type
  */
-export const mchoiceQHandler: QuestionHandler<IQuestion> = {
+export const qhMultichoice: QuestionHandler = {
   types: ['multichoice', 'calculatedmulti'],
   reducer: {
-    answer: async (e, { correct, rightanswer }) => {
+    answer: async ({ element, question: { correct, rightanswer } }) => {
       const answer: IAnswer[] = []
 
       // Loop through options
-      for (const option of e.find('div.answer > div')) {
+      for (const option of element.find('div.answer > div')) {
       // Check if the option is checked
         const checked = $(option).find('input').attr('checked') === 'checked'
 

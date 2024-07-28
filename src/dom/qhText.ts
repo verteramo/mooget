@@ -1,4 +1,11 @@
-import { QuestionHandler, IQuestion } from '@/dom'
+/**
+ * qhText.ts
+ *
+ * @license GPL-3.0-or-later
+ * @link https://github.com/verteramo/mooget
+ */
+
+import { QuestionHandler } from '@/core/dom/QuestionHandler'
 
 /**
  * Short-Answer question type:
@@ -20,13 +27,13 @@ import { QuestionHandler, IQuestion } from '@/dom'
  * Provides the option of answering by uploading one or more files and/or entering text online.
  * @see https://docs.moodle.org/en/Essay_question_type
  */
-export const textQHandler: QuestionHandler<IQuestion> = {
+export const qhText: QuestionHandler = {
   types: ['shortanswer', 'numerical', 'calculated', 'essay'],
   reducer: {
-    answer: (e, { rightanswer }): string => {
+    answer: ({ element, question: { rightanswer } }): string => {
       return rightanswer ??
-      e.find('input[type=text]').val()?.toString() ??
-      e.find('div.answer > div[role=textbox]').html()
+      element.find('input[type=text]').val()?.toString() ??
+      element.find('div.answer > div[role=textbox]').html()
     }
   }
 }

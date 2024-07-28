@@ -1,15 +1,24 @@
-import { InputField, QuizCard, QuizGrid, useBadge, useContentQuiz } from '@/components'
-import { IQuiz } from '@/dom'
-import { render } from '@/pages/render'
-import { createQuiz } from '@/redux/slice.quizzes'
-import { IStore } from '@/redux/store'
-import { filterQuiz, loadQuiz } from '@/scripts/utilities'
 import { UploadFile } from '@mui/icons-material'
 import { Box, Button, Stack } from '@mui/material'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
 import { Md5 } from 'ts-md5'
+
+import { render } from '@/pages/render'
+
+import { IQuiz } from '@/core/models/IQuiz'
+import { IStore } from '@/core/models/IStore'
+
+import { sliceQuizzesCreateQuiz } from '@/redux/sliceQuizzes'
+
+import { InputField } from '@/components/common/InputField'
+import { useBadge } from '@/components/common/useBadge'
+import { useContentQuiz } from '@/components/common/useContentQuiz'
+import { QuizCard } from '@/components/popup/QuizCard'
+import { QuizGrid } from '@/components/popup/QuizGrid'
+
+import { filterQuiz, loadQuiz } from '@/todo/utilities'
 
 function Popup (): JSX.Element {
   const { t } = useTranslation()
@@ -61,7 +70,7 @@ function Popup (): JSX.Element {
 
   function handleQuizSave (): void {
     if (filteredQuiz !== undefined) {
-      dispatch(createQuiz(filteredQuiz))
+      dispatch(sliceQuizzesCreateQuiz(filteredQuiz))
     }
   }
 
@@ -123,15 +132,18 @@ function Popup (): JSX.Element {
         />
       )}
       {showQuizGrid
-        ? <QuizGrid quizzes={quizzes} />
+        ? (
+          <QuizGrid quizzes={quizzes} />
+          )
         : (
-          <Box sx={{
-            p: 5,
-            color: 'grey',
-            border: '6px dashed lightgrey',
-            borderRadius: '10px',
-            textAlign: 'center'
-          }}
+          <Box
+            sx={{
+              p: 5,
+              color: 'grey',
+              border: '5px dashed grey',
+              borderRadius: '5px',
+              textAlign: 'center'
+            }}
           >
             {t('empty')}
           </Box>

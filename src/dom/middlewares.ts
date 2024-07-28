@@ -1,20 +1,12 @@
-import $ from 'jquery'
-
-import { IQuestion, Middleware } from './quiz'
-
 /**
- * Middleware to replace images src in HTML content
+ * middlewares.ts
+ *
+ * @license GPL-3.0-or-later
+ * @link https://github.com/verteramo/mooget
  */
-const imagesQuestionMiddleware: Middleware<IQuestion> = {
-  content: async (content) => {
-    for (const img of $($.parseHTML(content)).find('img')) {
-      content = content.replace(img.src, 'HOLA')
-    }
 
-    return content
-  }
-}
+import { mwImages } from '@/dom/mwImages'
 
 export const middlewares = [
-  imagesQuestionMiddleware
+  mwImages
 ]

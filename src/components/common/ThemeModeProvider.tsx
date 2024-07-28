@@ -50,12 +50,10 @@ import {
   useSelector
 } from 'react-redux'
 
-import {
-  IStore,
-  setLanguage as setLanguageAction,
-  setTheme as setThemeAction,
-  Theme
-} from '@/redux'
+import { IConfig } from '@/core/models/IConfig'
+import { IStore } from '@/core/models/IStore'
+
+import { sliceConfigSetLanguage, sliceConfigSetTheme } from '@/redux/sliceConfig'
 
 export function ThemeModeProvider ({ children }: PropsWithChildren): JSX.Element {
   const dispatch = useDispatch()
@@ -64,8 +62,8 @@ export function ThemeModeProvider ({ children }: PropsWithChildren): JSX.Element
 
   const [language, setLanguage] = useState<string>(i18n.language)
 
-  const handleThemeChange = (mode: Theme) => () => {
-    dispatch(setThemeAction(mode))
+  const handleThemeChange = (mode: IConfig['theme']) => () => {
+    dispatch(sliceConfigSetTheme(mode))
   }
 
   const handleLanguageChange = (event: SelectChangeEvent<string>): void => {
@@ -73,7 +71,7 @@ export function ThemeModeProvider ({ children }: PropsWithChildren): JSX.Element
   }
 
   useEffect(() => {
-    dispatch(setLanguageAction(language))
+    dispatch(sliceConfigSetLanguage(language))
     i18n.changeLanguage(language).catch(console.error)
   }, [language])
 

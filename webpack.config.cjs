@@ -5,7 +5,7 @@ const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 module.exports = {
   watch: true,
   mode: 'development',
-  devtool: 'inline-source-map',
+  devtool: 'cheap-module-source-map',
   resolve: {
     extensions: ['.js', '.ts', '.tsx'],
     plugins: [new TSConfigPathsPlugin()]

@@ -1,5 +1,5 @@
 /**
- * Redux store
+ * store.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
@@ -8,6 +8,7 @@
 import {
   combineReducers,
   configureStore,
+  createAction,
   createListenerMiddleware
 } from '@reduxjs/toolkit'
 
@@ -22,56 +23,17 @@ import {
 
 import i18n from 'i18next'
 
-import { QuizInfo } from '@/dom'
+import { IStore } from '@/core/models/IStore'
 
-import {
-  configInitialState,
-  configSlice,
-  IConfig,
-  IProgress,
-  progressInitialState,
-  progressSlice,
-  quizzesInitialState,
-  quizzesSlice,
-  storageAction
-} from '@/redux'
-
-/***************************************
- * Store model
- **************************************/
-
-export interface IStore {
-  config: IConfig
-  quizzes: QuizInfo[]
-  progress: IProgress
-}
-
-export const storeInitialState: IStore = {
-  config: configInitialState,
-  quizzes: quizzesInitialState,
-  progress: progressInitialState
-}
-
-/***************************************
- * Persist configuration
- **************************************/
-
-const persistConfig = {
-  key: 'root',
-  storage: localStorage
-}
-
-const rootReducer = combineReducers({
-  config: configSlice.reducer,
-  quizzes: quizzesSlice.reducer,
-  progress: progressSlice.reducer
-})
-
-const persistedReducer = persistReducer(persistConfig, rootReducer)
+import { sliceConfig, sliceConfigInitialState } from '@/redux/sliceConfig'
+import { sliceProgress, sliceProgressInitialState } from '@/redux/sliceProgress'
+import { sliceQuizzes, sliceQuizzesInitialState } from '@/redux/sliceQuizzes'
 
 /***************************************
  * Middleware configuration
  **************************************/
+
+export const storageAction = createAction<IStore>('storageAction')
 
 const storageListenerMiddleware = createListenerMiddleware<IStore>()
 storageListenerMiddleware.startListening({
@@ -87,11 +49,41 @@ storageListenerMiddleware.startListening({
   }
 })
 
-const serializableConfig = {
-  serializableCheck: {
-    ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE']
+chrome.storage.onChanged.addListener((changes, areaName) => {
+  if (areaName === 'local') {
+    const root: string | undefined =
+      changes[`persist:${PERSIST_KEY}`]?.newValue
+
+    const newState: IStore = {
+      config: sliceConfigInitialState,
+      quizzes: sliceQuizzesInitialState,
+      progress: sliceProgressInitialState
+    }
+
+    if (root !== undefined) {
+      for (const [key, value] of Object.entries<string>(JSON.parse(root))) {
+        newState[key as keyof IStore] = JSON.parse(value)
+      }
+    }
+
+    store.dispatch(storageAction(newState))
   }
-}
+})
+
+/***************************************
+ * Persist configuration
+ **************************************/
+
+const PERSIST_KEY = 'root'
+
+const persistedReducer = persistReducer({
+  key: PERSIST_KEY,
+  storage: localStorage
+}, combineReducers({
+  config: sliceConfig.reducer,
+  quizzes: sliceQuizzes.reducer,
+  progress: sliceProgress.reducer
+}))
 
 /***************************************
  * Store & persistor
@@ -99,9 +91,11 @@ const serializableConfig = {
 
 export const store = configureStore({
   reducer: persistedReducer,
-  middleware: (getDefaultMiddleware) => getDefaultMiddleware(
-    serializableConfig
-  ).concat(storageListenerMiddleware.middleware)
+  middleware: (getDefaultMiddleware) => getDefaultMiddleware({
+    serializableCheck: {
+      ignoredActions: ['persist/PERSIST', 'persist/REHYDRATE']
+    }
+  }).concat(storageListenerMiddleware.middleware)
 })
 
 export const persistor = persistStore(store)

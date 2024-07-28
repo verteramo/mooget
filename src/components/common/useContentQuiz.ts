@@ -5,8 +5,8 @@
  * @link https://github.com/verteramo/mooget
  */
 
-import { IQuiz } from '@/dom'
-import { requestQuiz } from '@/scripts/content'
+import { IQuiz } from '@/core/models/IQuiz'
+import { csRequestQuiz } from '@/scripts/content'
 import { useEffect, useState } from 'react'
 
 /**
@@ -20,7 +20,7 @@ export function useContentQuiz (): IQuiz | undefined {
     const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true })
 
     if (tab !== undefined) {
-      const quiz = await requestQuiz(undefined, { tabId: tab.id })
+      const quiz = await csRequestQuiz(undefined, { tabId: tab.id })
 
       if (quiz !== undefined) {
         setQuiz(quiz)

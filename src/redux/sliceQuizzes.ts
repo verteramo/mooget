@@ -1,21 +1,23 @@
 /**
- * Redux slice for quizzes
+ * slice.quizzes.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
  */
 
-import { IQuiz } from '@/dom'
-import { storageAction } from '@/redux'
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
-export const quizzesInitialState: IQuiz[] = []
+import { IQuiz } from '@/core/models/IQuiz'
 
-export const quizzesSlice = createSlice({
+import { storageAction } from '@/redux/store'
+
+export const sliceQuizzesInitialState: IQuiz[] = []
+
+export const sliceQuizzes = createSlice({
   name: 'quizzes',
-  initialState: [] as IQuiz[],
+  initialState: sliceQuizzesInitialState,
   reducers: {
-    createQuiz: (state, { payload: quiz }: PayloadAction<IQuiz>) => {
+    sliceQuizzesCreateQuiz: (state, { payload: quiz }: PayloadAction<IQuiz>) => {
       if (state.some(({ id }) => id === quiz.id)) {
         return state.map(current => current.id === quiz.id
           ? {
@@ -29,11 +31,11 @@ export const quizzesSlice = createSlice({
       return [...state, quiz]
     },
 
-    removeQuiz: (state, { payload: id }: PayloadAction<string>) => {
+    sliceQuizzesRemoveQuiz: (state, { payload: id }: PayloadAction<string>) => {
       return state.filter(({ id: currentId }) => currentId !== id)
     },
 
-    updateQuiz: (state, { payload: quiz }: PayloadAction<IQuiz>) => {
+    sliceQuizzesUpdateQuiz: (state, { payload: quiz }: PayloadAction<IQuiz>) => {
       return state.map((current) => current.id === quiz.id ? quiz : current)
     }
   },
@@ -45,7 +47,7 @@ export const quizzesSlice = createSlice({
 })
 
 export const {
-  createQuiz,
-  removeQuiz,
-  updateQuiz
-} = quizzesSlice.actions
+  sliceQuizzesCreateQuiz,
+  sliceQuizzesRemoveQuiz,
+  sliceQuizzesUpdateQuiz
+} = sliceQuizzes.actions

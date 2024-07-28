@@ -1,22 +1,30 @@
-import { QuestionHandler, IQuestion, IAnswer } from '@/dom'
+/**
+ * qhDragAndDrop.ts
+ *
+ * @license GPL-3.0-or-later
+ * @link https://github.com/verteramo/mooget
+ */
 
 import $ from 'jquery'
+
+import { QuestionHandler } from '@/core/dom/QuestionHandler'
+import { IAnswer } from '@/core/models/IAnswer'
 
 /**
  * Drag and drop into text question type:
  * Missing words have to be dragged into gaps in a paragraph of text.
  * @see https://docs.moodle.org/en/Drag_and_drop_into_text_question_type
  */
-export const ddQHandler: QuestionHandler<IQuestion> = {
+export const qhDragAndDrop: QuestionHandler = {
   types: ['ddwtos'],
   reducer: {
     content: undefined,
-    answer: (e, { correct }) => {
+    answer: ({ element, question: { correct } }) => {
       const answer: IAnswer[] = []
 
       // If the question is correct
       if (correct === true) {
-        const qtext = e.find('div.qtext')
+        const qtext = element.find('div.qtext')
 
         // let answerContent: string[] = []
         // // Loop through the text content nodes

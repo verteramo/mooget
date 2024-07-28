@@ -1,12 +1,17 @@
-import { Quiz } from '@/components'
+import { Quiz } from '@/components/sidepanel/Quiz'
 import { render } from '@/pages/render'
-import { IStore } from '@/redux/store'
-import { shuffle } from '@/scripts/utilities'
+import { IStore } from '@/core/models/IStore'
+import { shuffle } from '@/core/utils/shuffle'
 import { useSelector } from 'react-redux'
 
 function SidePanel (): JSX.Element {
-  const { progress, quizzes } = useSelector((store: IStore) => store)
-  const quiz = quizzes.find(({ id }) => id === progress.quiz)
+  const progress = useSelector((store: IStore) => store.progress)
+  const quizzes = useSelector((store: IStore) => store.quizzes)
+  const quiz = quizzes.find(({ id }) => id === progress.quiz?.id)
+
+  console.log('progress:', progress)
+  console.log('quizzes:', quizzes)
+  console.log('quiz:', quiz)
 
   return (
     <>

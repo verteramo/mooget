@@ -27,9 +27,11 @@ import {
   GridRowParams
 } from '@mui/x-data-grid'
 
-import { IQuestion, QuizInfo } from '@/dom'
-import { removeQuiz, setQuiz, updateQuiz } from '@/redux'
-import { downloadQuiz } from '@/scripts/utilities'
+import { IQuestion } from '@/core/models/IQuestion'
+import { IQuiz } from '@/core/models/IQuiz'
+import { sliceProgressSetQuiz } from '@/redux/sliceProgress'
+import { sliceQuizzesRemoveQuiz, sliceQuizzesUpdateQuiz } from '@/redux/sliceQuizzes'
+import { openSidePanel, promptQuizDownload } from '@/todo/utilities'
 
 import { useConfirm } from 'material-ui-confirm'
 import { useState } from 'react'
@@ -39,7 +41,7 @@ import { useDispatch } from 'react-redux'
 import { initialState, localeText, styles } from './QuizGridProps'
 
 interface IProps {
-  quizzes: QuizInfo[]
+  quizzes: IQuiz[]
 }
 
 export function QuizGrid ({ quizzes }: IProps): JSX.Element {
@@ -48,8 +50,8 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
   const confirm = useConfirm()
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
-  const processRowUpdate = (quiz: GridRowModel<QuizInfo>): QuizInfo => {
-    return dispatch(updateQuiz(quiz)).payload
+  const processRowUpdate = (quiz: GridRowModel<IQuiz>): IQuiz => {
+    return dispatch(sliceQuizzesUpdateQuiz(quiz)).payload
   }
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (
@@ -64,7 +66,7 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
     const quiz = quizzes.find(({ id: currentId }) => currentId === id)
 
     if (quiz !== undefined) {
-      dispatch(updateQuiz({ ...quiz, favorite: !(quiz.favorite ?? false) }))
+      dispatch(sliceQuizzesUpdateQuiz({ ...quiz, favorite: !(quiz.favorite ?? false) }))
     }
   }
 
@@ -89,23 +91,23 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
     })
   }
 
-  const handleQuizDelete = ({ id, name, questions: { length } }: QuizInfo) => () => {
+  const handleQuizDelete = ({ id, name, questions: { length } }: IQuiz) => () => {
     confirm({
       title: <>{t('remove-title')}</>,
       content: <p>{t('remove-content', { name, length })}</p>
     })
-      .then(() => dispatch(removeQuiz(id)))
+      .then(() => dispatch(sliceQuizzesRemoveQuiz(id)))
       .catch(console.error)
   }
 
-  const handleQuizDownload = (quiz: QuizInfo) => () => {
-    downloadQuiz(quiz)
+  const handleQuizDownload = (quiz: IQuiz) => () => {
+    promptQuizDownload(quiz)
   }
 
-  const handleQuizPlay = (quiz: QuizInfo) => () => {
-    dispatch(setQuiz(quiz))
-    chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-      chrome.sidePanel.open({ tabId: tab.id as number }).catch(console.error)
+  const handleQuizPlay = (quiz: IQuiz) => () => {
+    dispatch(sliceProgressSetQuiz(quiz))
+    openSidePanel().catch((error) => {
+      console.log('QuizGrid.tsx > handleQuizPlay > openSidePanel', error)
     })
   }
 
@@ -120,7 +122,7 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
       width: 50,
       align: 'left',
       cellClassName: 'favorite-cell',
-      renderCell: ({ value, row: { id } }: GridCellParams<QuizInfo, boolean>) => (
+      renderCell: ({ value, row: { id } }: GridCellParams<IQuiz, boolean>) => (
         <Checkbox
           size='small'
           icon={<Favorite />}
@@ -169,7 +171,7 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
       disableColumnMenu: true,
       width: 160,
       align: 'center',
-      getActions: ({ id, row: quiz }: GridRowParams<QuizInfo>) => {
+      getActions: ({ id, row: quiz }: GridRowParams<IQuiz>) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit
 
         if (isInEditMode) {

@@ -23,7 +23,7 @@ import {
 
 import { useTranslation } from 'react-i18next'
 
-import { IQuiz } from '@/dom'
+import { IQuiz } from '@/core/models/IQuiz'
 
 interface IProps {
   quiz: IQuiz
@@ -68,7 +68,7 @@ export function QuizCard ({
               </Badge>
             </Stack>
           </CardContent>
-          <CardActions sx={{ ml: 1, mb: 1 }}>
+          <CardActions sx={{ marginX: 1 }}>
             <Stack spacing={1} direction='row'>
               <Button
                 size='small'
@@ -83,9 +83,9 @@ export function QuizCard ({
         </Stack>
         <CardMedia
           component='img'
-          image={icon ?? DefaultIcon}
           alt={brand}
           title={brand}
+          image={icon ?? DefaultIcon}
           sx={{ width: 128, objectFit: 'contain', backgroundColor: 'white' }}
         />
       </Stack>

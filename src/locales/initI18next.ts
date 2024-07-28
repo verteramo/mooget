@@ -1,11 +1,18 @@
+/**
+ * initI18next.ts
+ *
+ * @license GPL-3.0-or-later
+ * @link https://github.com/verteramo/mooget
+ */
+
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
 
 // Translations
-import en from './en.json'
-import es from './es.json'
+import en from '@/locales/en.json'
+import es from '@/locales/es.json'
 
-import { store } from '@/redux'
+import { store } from '@/redux/store'
 
 // Initialize i18next
 export async function initI18next (): Promise<void> {

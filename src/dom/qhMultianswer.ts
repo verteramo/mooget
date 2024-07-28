@@ -1,16 +1,24 @@
-import { QuestionHandler, IQuestion, IAnswer } from '@/dom'
+/**
+ * qhMultianswer.ts
+ *
+ * @license GPL-3.0-or-later
+ * @link https://github.com/verteramo/mooget
+ */
 
 import $ from 'jquery'
 
-export const manswerQHandler: QuestionHandler<IQuestion> = {
+import { QuestionHandler } from '@/core/dom/QuestionHandler'
+import { IAnswer } from '@/core/models/IAnswer'
+
+export const qhMultianswer: QuestionHandler = {
   types: ['multianswer'],
   reducer: {
-    answer: (e, { correct }) => {
+    answer: ({ element, question: { correct } }) => {
       const answer: IAnswer[] = []
 
       // If the question is correct
       if (correct === true) {
-        const formulation = e.find('div.formulation > p')
+        const formulation = element.find('div.formulation > p')
 
         // Loop through the text content nodes
         let answerContent: string[] = []

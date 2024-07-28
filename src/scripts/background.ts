@@ -7,7 +7,8 @@
  * @link https://github.com/verteramo/mooget
  */
 
-import { fetchVersion, replaceImages } from '@/scripts/utilities'
+import { fetchImagesAsBase64 } from '@/services/fetchImagesAsBase64'
+import { fetchMoodleVersion } from '@/services/fetchMoodleVersion'
 import { getMessage } from '@extend-chrome/messages'
 
 /**
@@ -15,11 +16,11 @@ import { getMessage } from '@extend-chrome/messages'
  * It is called from the content script
  */
 const [
-  setBadge,
-  setBadgeObserver
+  bgSetBadge,
+  bgSetBadgeObserver
 ] = getMessage<string>('setBadge')
 
-setBadgeObserver.subscribe(([text]) => {
+bgSetBadgeObserver.subscribe(([text]) => {
   chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
     if (tab !== undefined) {
       chrome.action.setBadgeText({ text, tabId: tab.id }).catch((error) => {
@@ -34,12 +35,12 @@ setBadgeObserver.subscribe(([text]) => {
  * It is called from the Page class
  */
 const [
-  getVersion,
-  getVersionObserver
+  bgFetchVersion,
+  bgFetchVersionObserver
 ] = getMessage<string, string | undefined>('getVersion', { async: true })
 
-getVersionObserver.subscribe(([url,,sendResponse]) => {
-  fetchVersion(url).then(sendResponse).catch((error) => {
+bgFetchVersionObserver.subscribe(([url,,sendResponse]) => {
+  fetchMoodleVersion(url).then(sendResponse).catch((error) => {
     console.log('getVersion error', error)
   })
 })
@@ -49,12 +50,12 @@ getVersionObserver.subscribe(([url,,sendResponse]) => {
  * It is called from the Page and Question classes
  */
 const [
-  getImages,
-  getImagesObserver
-] = getMessage<JQuery<HTMLElement>, JQuery<HTMLElement>>('getImages', { async: true })
+  bgFetchImagesAsBase64,
+  bgFetchImagesAsBase64Observer
+] = getMessage<JQuery<HTMLElement> | JQuery<JQuery.Node[]>, JQuery<HTMLElement> | JQuery<JQuery.Node[]>>('getImages', { async: true })
 
-getImagesObserver.subscribe(([element,,sendResponse]) => {
-  replaceImages(element).then(sendResponse).catch((error) => {
+bgFetchImagesAsBase64Observer.subscribe(([element,,sendResponse]) => {
+  fetchImagesAsBase64(element).then(sendResponse).catch((error) => {
     console.log('getImages error', error)
   })
 })
@@ -63,7 +64,7 @@ getImagesObserver.subscribe(([element,,sendResponse]) => {
  * Exports
  */
 export {
-  setBadge,
-  getVersion,
-  getImages
+  bgSetBadge,
+  bgFetchVersion,
+  bgFetchImagesAsBase64
 }

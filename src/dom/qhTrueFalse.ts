@@ -1,4 +1,11 @@
-import { QuestionHandler, IQuestion } from '@/dom'
+/**
+ * qhTrueFalse.ts
+ *
+ * @license GPL-3.0-or-later
+ * @link https://github.com/verteramo/mooget
+ */
+
+import { QuestionHandler } from '@/core/dom/QuestionHandler'
 
 /**
  * True/False question type:
@@ -6,13 +13,13 @@ import { QuestionHandler, IQuestion } from '@/dom'
  * The question content can include an image or html code.
  * @see https://docs.moodle.org/en/True/False_question_type
  */
-export const truefalseQHandler: QuestionHandler<IQuestion> = {
+export const qhTrueFalse: QuestionHandler = {
   types: ['truefalse'],
   reducer: {
-    answer: (e, { correct }): boolean => {
+    answer: ({ element, question: { correct } }): boolean => {
       return (
         correct === true &&
-        e.find('input[type=radio]').attr('checked') === 'checked'
+        element.find('input[type=radio]').attr('checked') === 'checked'
       )
     }
   }

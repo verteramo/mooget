@@ -1,24 +1,15 @@
 /*******************************************************************************
- * IProgress.ts
+ * Options.tsx
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
 /** Package dependencies */
-import { IQuiz } from './IQuiz'
+import { render } from '../common/render'
 
-/**
- * User progress like quiz answers and current step
- */
-export interface IProgress {
-  /**
-   * Quiz answers
-   */
-  quiz?: IQuiz
-
-  /**
-   * Current step
-   */
-  step: number
+function Options (): JSX.Element {
+  return <div>Options</div>
 }
+
+render(<Options />)

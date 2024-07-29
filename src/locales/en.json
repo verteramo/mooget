@@ -16,7 +16,7 @@
   "save": "Save",
   "download": "Download",
   "upload": "Upload",
-  "empty": "Ther are no quizzes",
+  "empty": "No quizzes",
   "remove-title": "Remove",
   "remove-content": "Remove quiz '{{name}}'? ({{length}} questions)",
   "no-rows-label": "No data",

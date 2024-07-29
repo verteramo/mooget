@@ -1,9 +1,9 @@
-/**
+/*******************************************************************************
  * IAnswer.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
- */
+ ******************************************************************************/
 
 /**
  * Answers like multichoice or match, where there are multiple answers

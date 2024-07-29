@@ -16,4 +16,11 @@
     "*.json": "jsonc"
   },
   "standard.enable": true,
+  "colorize.languages": [
+    "javascript",
+    "javascriptreact",
+    "typescript",
+    "typescriptreact",
+    "json"
+  ],
 }

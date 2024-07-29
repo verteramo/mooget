@@ -11,9 +11,9 @@ import { isRight } from 'fp-ts/lib/Either'
 import * as t from 'io-ts'
 import { Md5 } from 'ts-md5'
 
-import { QuizType } from '@/core/dom/QuizType'
 import { IQuestion } from '@/core/models/IQuestion'
 import { IQuiz } from '@/core/models/IQuiz'
+import { QuizType } from '@/core/providers/moodle/QuizType'
 
 /****************************************************
  * Input codecs

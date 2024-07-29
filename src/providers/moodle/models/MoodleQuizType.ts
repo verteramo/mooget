@@ -1,24 +1,16 @@
 /*******************************************************************************
- * IProgress.ts
+ * MoodleQuizType.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-/** Package dependencies */
-import { IQuiz } from './IQuiz'
-
 /**
- * User progress like quiz answers and current step
+ * Quiz type
+ *
+ * It is the body ID
  */
-export interface IProgress {
-  /**
-   * Quiz answers
-   */
-  quiz?: IQuiz
-
-  /**
-   * Current step
-   */
-  step: number
+export enum MoodleQuizType {
+  Review = 'page-mod-quiz-review',
+  Attempt = 'page-mod-quiz-attempt'
 }

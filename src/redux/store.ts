@@ -1,10 +1,11 @@
-/**
+/*******************************************************************************
  * store.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
- */
+ ******************************************************************************/
 
+/** External dependencies */
 import {
   combineReducers,
   configureStore,
@@ -23,11 +24,13 @@ import {
 
 import i18n from 'i18next'
 
-import { IStore } from '@/core/models/IStore'
+/** Package dependencies */
+import { sliceConfig, sliceConfigInitialState } from './sliceConfig'
+import { sliceProgress, sliceProgressInitialState } from './sliceProgress'
+import { sliceQuizzes, sliceQuizzesInitialState } from './sliceQuizzes'
 
-import { sliceConfig, sliceConfigInitialState } from '@/redux/sliceConfig'
-import { sliceProgress, sliceProgressInitialState } from '@/redux/sliceProgress'
-import { sliceQuizzes, sliceQuizzesInitialState } from '@/redux/sliceQuizzes'
+/** Project dependencies */
+import { IStore } from '@/core/models/IStore'
 
 /***************************************
  * Middleware configuration

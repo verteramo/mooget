@@ -1,15 +1,14 @@
-/**
+/*******************************************************************************
  * IQuestion.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
- */
+ ******************************************************************************/
 
-import { IAnswer } from '@/core/models/IAnswer'
+/** Package dependencies */
+import { IAnswer } from './IAnswer'
 
 /**
- * Question interface
- *
  * It is the question data
  */
 export interface IQuestion {

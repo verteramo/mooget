@@ -1,30 +1,31 @@
-/**
- * Background script
- *
- * - Observes messages
+/*******************************************************************************
+ * background.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
- */
+ ******************************************************************************/
 
-import { fetchImagesAsBase64 } from '@/services/fetchImagesAsBase64'
-import { fetchMoodleVersion } from '@/services/fetchMoodleVersion'
+/** External dependencies */
 import { getMessage } from '@extend-chrome/messages'
+
+/** Project dependencies */
+import { fetchImagesAsBase64 } from '@/core/services/images'
+import { fetchMoodleVersion } from '@/providers/moodle/utils/fetchMoodleVersion'
 
 /**
  * Message observer to set the badge
  * It is called from the content script
  */
 const [
-  bgSetBadge,
-  bgSetBadgeObserver
-] = getMessage<string>('setBadge')
+  bgSetBadgeText,
+  bgSetBadgeTextObserver
+] = getMessage<string>('bgSetBadgeText')
 
-bgSetBadgeObserver.subscribe(([text]) => {
+bgSetBadgeTextObserver.subscribe(([text]) => {
   chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
     if (tab !== undefined) {
       chrome.action.setBadgeText({ text, tabId: tab.id }).catch((error) => {
-        console.log('setBadge error', error)
+        console.log('setBadgeText error', error)
       })
     }
   })
@@ -37,7 +38,7 @@ bgSetBadgeObserver.subscribe(([text]) => {
 const [
   bgFetchVersion,
   bgFetchVersionObserver
-] = getMessage<string, string | undefined>('getVersion', { async: true })
+] = getMessage<string, string | undefined>('bgFetchVersion', { async: true })
 
 bgFetchVersionObserver.subscribe(([url,,sendResponse]) => {
   fetchMoodleVersion(url).then(sendResponse).catch((error) => {
@@ -52,7 +53,7 @@ bgFetchVersionObserver.subscribe(([url,,sendResponse]) => {
 const [
   bgFetchImagesAsBase64,
   bgFetchImagesAsBase64Observer
-] = getMessage<JQuery<HTMLElement> | JQuery<JQuery.Node[]>, JQuery<HTMLElement> | JQuery<JQuery.Node[]>>('getImages', { async: true })
+] = getMessage<JQuery<HTMLElement> | JQuery<JQuery.Node[]>, JQuery<HTMLElement> | JQuery<JQuery.Node[]>>('bgFetchImagesAsBase64', { async: true })
 
 bgFetchImagesAsBase64Observer.subscribe(([element,,sendResponse]) => {
   fetchImagesAsBase64(element).then(sendResponse).catch((error) => {
@@ -64,7 +65,5 @@ bgFetchImagesAsBase64Observer.subscribe(([element,,sendResponse]) => {
  * Exports
  */
 export {
-  bgSetBadge,
-  bgFetchVersion,
-  bgFetchImagesAsBase64
+  bgFetchImagesAsBase64, bgFetchVersion, bgSetBadgeText
 }

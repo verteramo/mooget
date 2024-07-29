@@ -1,12 +1,12 @@
-/**
+/*******************************************************************************
  * IQuiz.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
- */
+ ******************************************************************************/
 
-import { QuizType } from '@/core/dom/QuizType'
-import { IQuestion } from '@/core/models/IQuestion'
+/** Package dependencies */
+import { IQuestion } from './IQuestion'
 
 /**
  * Quiz interface
@@ -42,7 +42,7 @@ export interface IQuiz {
   /**
    * Body ID
    */
-  type?: QuizType
+  type?: string
 
   /**
    * URL with the attempt parameter

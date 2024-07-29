@@ -1,13 +1,14 @@
-/**
+/*******************************************************************************
  * IStore.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
- */
+ ******************************************************************************/
 
-import { IConfig } from '@/core/models/IConfig'
-import { IProgress } from '@/core/models/IProgress'
-import { IQuiz } from '@/core/models/IQuiz'
+/** Package dependencies */
+import { IConfig } from './IConfig'
+import { IProgress } from './IProgress'
+import { IQuiz } from './IQuiz'
 
 /**
  * Store interface

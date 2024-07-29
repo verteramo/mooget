@@ -1,3 +1,11 @@
+/*******************************************************************************
+ * webpack.config.cjs
+ *
+ * @license GPL-3.0-or-later
+ * @link https://github.com/verteramo/mooget
+ ******************************************************************************/
+
+/** External modules */
 const CopyWebpackPlugin = require('copy-webpack-plugin')
 const ExtReloaderPlugin = require('webpack-ext-reloader')
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
@@ -12,9 +20,9 @@ module.exports = {
   },
   entry: {
     // Pages
-    popup: '@/pages/Popup',
-    options: '@/pages/Options',
-    side_panel: '@/pages/SidePanel',
+    popup: '@/pages/popup/Popup',
+    options: '@/pages/options/Options',
+    sidepanel: '@/pages/sidepanel/SidePanel',
 
     // Scripts
     content: '@/scripts/content',
@@ -32,7 +40,7 @@ module.exports = {
     new ExtReloaderPlugin({
       reloadPage: true,
       entries: {
-        extensionPage: ['popup', 'options', 'side_panel'],
+        extensionPage: ['popup', 'options', 'sidepanel'],
         contentScript: 'content',
         background: 'background'
       }

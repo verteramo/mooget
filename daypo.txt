@@ -1,0 +1,29 @@
+Página Comentarios
+#ven0
+
+Página Estadísticas
+#ven1
+
+Página Récords
+#ven2
+
+Página Cuestionario
+#ven3
+
+Nombre (página previa)
+#titu
+
+Nombre (dentro del cuestionario)
+#tit
+
+Enunciados
+#pri1
+
+Pregunta:   Escoger/Chequear
+Respuestas: #cuestiones1 > table > tbody > tr
+
+Pregunta:   Flechas
+Respuestas: #1cu1 > table > tbody > tr
+Matches:    #1cu2 > table > tbody > tr
+
+Pregunta

@@ -1,15 +1,18 @@
-/**
- * slice.quizzes.ts
+/*******************************************************************************
+ * sliceQuizzes.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
- */
+ ******************************************************************************/
 
+/** External dependencies */
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
-import { IQuiz } from '@/core/models/IQuiz'
+/** Package dependencies */
+import { storageAction } from './store'
 
-import { storageAction } from '@/redux/store'
+/** Project dependencies */
+import { IQuiz } from '@/core/models/IQuiz'
 
 export const sliceQuizzesInitialState: IQuiz[] = []
 

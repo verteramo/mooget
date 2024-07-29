@@ -1,20 +1,22 @@
-/**
- * Content script
- *
- * - DOM access
+/*******************************************************************************
+ * content.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
- */
+ ******************************************************************************/
 
-import { store } from '@/redux/store'
+/** External dependencies */
 import { getMessage } from '@extend-chrome/messages'
 
-import { Quiz } from '@/core/dom/Quiz'
+/** Package dependencies */
+import { bgFetchVersion, bgSetBadgeText } from './background'
+
+/** Project dependencies */
 import { IQuiz } from '@/core/models/IQuiz'
-import { handlers } from '@/dom/handlers'
-import { middlewares } from '@/dom/middlewares'
-import { bgSetBadge } from '@/scripts/background'
+import handlers from '@/providers/handlers'
+import middlewares from '@/providers/middlewares'
+import { MoodleQuiz } from '@/providers/moodle/models/MoodleQuiz'
+import { store } from '@/redux/store'
 import { filterQuiz } from '@/todo/utilities'
 
 const [
@@ -26,7 +28,10 @@ const [
 
 async function main (): Promise<void> {
   console.log(handlers, middlewares)
-  const quiz = await Quiz.extract(handlers)
+
+  const quiz = await MoodleQuiz.extract({
+    handlers, fetchVersion: bgFetchVersion
+  })
 
   console.log('quiz', quiz)
 
@@ -40,7 +45,7 @@ async function main (): Promise<void> {
     const length = filteredQuiz.questions.length
 
     if (length > 0) {
-      await bgSetBadge(length.toString())
+      await bgSetBadgeText(length.toString())
     }
   }
 }

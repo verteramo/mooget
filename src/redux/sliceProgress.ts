@@ -1,12 +1,14 @@
-/**
+/*******************************************************************************
  * sliceProgress.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
- */
+ ******************************************************************************/
 
+/** External dependencies */
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
+/** Project dependencies */
 import { IProgress } from '@/core/models/IProgress'
 import { IQuiz } from '@/core/models/IQuiz'
 

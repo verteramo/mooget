@@ -1,17 +1,17 @@
 /*******************************************************************************
- * MoodleQuestion.ts
+ * MoodleQuestionParser.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
 /** Project dependencies */
-import { Question } from '@/core/parsing/Question'
+import { QuestionParser } from '@/core/parsing/Question'
 
 /**
  * Extracts information from the DOM div.que element
  */
-export class MoodleQuestion extends Question {
+export class MoodleQuestionParser extends QuestionParser {
   /**
    * Second class of the div.que element
    */

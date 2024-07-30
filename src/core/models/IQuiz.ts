@@ -45,24 +45,24 @@ export interface IQuiz {
   type?: string
 
   /**
-   * URL with the attempt parameter
+   * Quiz URL
    */
   url?: string
 
   /**
-   * Site home
+   * Site home URL
    */
   home?: string
 
   /**
-   * Site icon
+   * Representative icon
    */
   icon?: string
 
   /**
-   * Site brand
+   * Owner, site, author...
    */
-  brand?: string
+  owner?: string
 
   /**
    * Site version

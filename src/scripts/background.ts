@@ -9,7 +9,7 @@
 import { getMessage } from '@extend-chrome/messages'
 
 /** Project dependencies */
-import { fetchImagesAsBase64 } from '@/core/services/images'
+import { fetchImagesAsBase64 } from '@/core/utils/images'
 import { fetchMoodleVersion } from '@/providers/moodle/utils/fetchMoodleVersion'
 
 /**
@@ -36,11 +36,11 @@ bgSetBadgeTextObserver.subscribe(([text]) => {
  * It is called from the Page class
  */
 const [
-  bgFetchVersion,
-  bgFetchVersionObserver
+  bgFetchMoodleVersion,
+  bgFetchMoodleVersionObserver
 ] = getMessage<string, string | undefined>('bgFetchVersion', { async: true })
 
-bgFetchVersionObserver.subscribe(([url,,sendResponse]) => {
+bgFetchMoodleVersionObserver.subscribe(([url,,sendResponse]) => {
   fetchMoodleVersion(url).then(sendResponse).catch((error) => {
     console.log('getVersion error', error)
   })
@@ -65,5 +65,5 @@ bgFetchImagesAsBase64Observer.subscribe(([element,,sendResponse]) => {
  * Exports
  */
 export {
-  bgFetchImagesAsBase64, bgFetchVersion, bgSetBadgeText
+  bgFetchImagesAsBase64, bgFetchMoodleVersion, bgSetBadgeText
 }

@@ -9,15 +9,17 @@
 import { getMessage } from '@extend-chrome/messages'
 
 /** Package dependencies */
-import { bgFetchVersion, bgSetBadgeText } from './background'
+import { bgSetBadgeText } from './background'
 
 /** Project dependencies */
 import { IQuiz } from '@/core/models/IQuiz'
-import handlers from '@/providers/handlers'
-import middlewares from '@/providers/middlewares'
-import { MoodleQuiz } from '@/providers/moodle/models/MoodleQuiz'
+import { parseQuiz } from '@/core/parsing/parseQuiz'
+import { MoodleQuestionParser } from '@/providers/moodle/parsing/MoodleQuestionParser'
+import { MoodleQuizProvider } from '@/providers/moodle/parsing/MoodleQuizProvider'
 import { store } from '@/redux/store'
 import { filterQuiz } from '@/todo/utilities'
+import { DaypoQuizProvider } from '@/providers/daypo/parsing/DaypoQuizProvider'
+import { DaypoQuestionParser } from '@/providers/daypo/parsing/DaypoQuestionParser'
 
 const [
   csRequestQuiz,
@@ -27,19 +29,16 @@ const [
   getMessage<void, IQuiz | undefined>('requestQuiz', { async: true })
 
 async function main (): Promise<void> {
-  console.log(handlers, middlewares)
-
-  const quiz = await MoodleQuiz.extract({
-    handlers, fetchVersion: bgFetchVersion
-  })
+  const quiz = await parseQuiz([
+    [MoodleQuizProvider, MoodleQuestionParser],
+    [DaypoQuizProvider, DaypoQuestionParser]
+  ])
 
   console.log('quiz', quiz)
 
-  // Listen to the requestQuiz message from the popup
-  csRequestQuizObserver.subscribe(([,,sendResponse]) => sendResponse(quiz))
-
-  // Set the badge with new questions count
   if (quiz !== undefined) {
+    csRequestQuizObserver.subscribe(([,,sendResponse]) => sendResponse(quiz))
+
     const quizzes = store.getState().quizzes
     const filteredQuiz = filterQuiz(quizzes, quiz)
     const length = filteredQuiz.questions.length

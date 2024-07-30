@@ -10,14 +10,14 @@ import { Save } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 import {
-  Badge,
-  Button,
-  Card,
-  CardActions,
-  CardContent,
-  CardMedia,
-  Stack,
-  TextField
+    Badge,
+    Button,
+    Card,
+    CardActions,
+    CardContent,
+    CardMedia,
+    Stack,
+    TextField
 } from '@mui/material'
 
 /** Project dependencies */
@@ -38,7 +38,7 @@ export function QuizCard ({
     category,
     questions: { length },
     icon,
-    brand
+    owner: brand
   },
   onNameChange,
   onCategoryChange,

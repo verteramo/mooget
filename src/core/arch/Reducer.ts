@@ -6,22 +6,20 @@
  ******************************************************************************/
 
 /**
- * Maps each property of an output type to a
- * function that receives the an input data,
- * and which is intended to reduce data to the output type
+ * Maps each property of an output type O to a
+ * function that receives an input data of type I;
+ * It is intended to reduce this data to an O object
  */
-export type Reducer<InputType, OutputType> = {
-  [Property in keyof OutputType]?: (
-    source: InputType
-  ) => OutputType[Property] | Promise<OutputType[Property]>
+export type Reducer<I, O> = {
+  [P in keyof O]?: (source: I) => O[P] | Promise<O[P]>
 }
 
 /**
- * Maps array of types to a reducer
+ * Maps an array of types to a reducer
  *
  * @example
  * ```ts
- * const handler: Handler<InputType, OutputType> = {
+ * const handler: TypeHandler<InputType, OutputType> = {
  *   types: ['type1', 'type2', ...],
  *   reducer: {
  *     some_property: ({...}: InputType): OutputType => {
@@ -32,38 +30,39 @@ export type Reducer<InputType, OutputType> = {
  * }
  * ```
  */
-export interface Handler<InputType, OutputType> {
+export interface TypeHandler<I, O> {
   /**
    * Types that this handler can reduce
    */
   types: string[]
+
   /**
-   * Reducer
+   * Reducer map
    */
-  reducer: Reducer<InputType, OutputType>
+  reducer: Reducer<I, O>
 }
 
 /**
- * Reduce an input object to an output type
+ * Reduce an input object to an OutputType object
  *
- * @param type Type
+ * @param type Type of the question
  * @param handlers Handlers
  * @param source Source object
  * @returns Partial output type
  */
-export async function reduce<InputType, OutputType> (
+export async function reduce<I, O> (
   type: string,
-  handlers: Array<Handler<InputType, OutputType>>,
-  source: InputType
-): Promise<Partial<OutputType>> {
-  const result: Partial<OutputType> = {}
+  handlers: Array<TypeHandler<I, O>>,
+  source: I
+): Promise<Partial<O>> {
+  const result: Partial<O> = {}
 
-  // Find the reducer for the question type
+  // Find the reducer for the type
   const reducer = handlers.find(
     (handler) => handler.types.includes(type)
   )?.reducer
 
-  // If there is a reducer, reduce the question
+  // If there is a reducer, apply it on each property
   if (reducer !== undefined) {
     for (const property in reducer) {
       if (reducer[property] !== undefined) {

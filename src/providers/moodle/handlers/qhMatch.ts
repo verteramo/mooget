@@ -21,7 +21,7 @@ import { QuestionHandler } from '@/core/parsing/Question'
 export const qhMatch: QuestionHandler = {
   types: ['match', 'randomsamatch'],
   reducer: {
-    answer: ({ $element, correct }) => {
+    answer: ({ $element: $element, correct }) => {
       const answer: IAnswer[] = []
 
       if (correct === true) {

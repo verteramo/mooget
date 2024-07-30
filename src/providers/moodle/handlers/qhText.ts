@@ -31,7 +31,7 @@ import { QuestionHandler } from '@/core/parsing/Question'
 export const qhText: QuestionHandler = {
   types: ['shortanswer', 'numerical', 'calculated', 'essay'],
   reducer: {
-    answer: ({ $element, rightanswer }): string => {
+    answer: ({ $element: $element, rightanswer }): string => {
       return rightanswer ??
       $element.find('input[type=text]').val()?.toString() ??
       $element.find('div.answer > div[role=textbox]').html()

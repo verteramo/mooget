@@ -26,7 +26,7 @@ import { QuestionHandler } from '@/core/parsing/Question'
 export const qhMultichoice: QuestionHandler = {
   types: ['multichoice', 'calculatedmulti'],
   reducer: {
-    answer: async ({ $element, correct, rightanswer }) => {
+    answer: async ({ $element: $element, correct, rightanswer }) => {
       const answer: IAnswer[] = []
 
       // Loop through options
@@ -44,7 +44,7 @@ export const qhMultichoice: QuestionHandler = {
           text = contentElement.text().trim()
           content = contentElement.html().trim()
         } else {
-        // Version 3.7.7
+          // Version 3.7.7
           const label = $(option).find('label').clone()
 
           // Remove the answernumber span and get the remaining HTML content

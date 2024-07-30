@@ -21,7 +21,7 @@ export const qhDragAndDrop: QuestionHandler = {
   types: ['ddwtos'],
   reducer: {
     content: undefined,
-    answer: ({ $element, correct }) => {
+    answer: ({ $element: $element, correct }) => {
       const answer: IAnswer[] = []
 
       // If the question is correct

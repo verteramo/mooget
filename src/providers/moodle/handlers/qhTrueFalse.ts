@@ -17,7 +17,7 @@ import { QuestionHandler } from '@/core/parsing/Question'
 export const qhTrueFalse: QuestionHandler = {
   types: ['truefalse'],
   reducer: {
-    answer: ({ $element, correct }): boolean => {
+    answer: ({ $element: $element, correct }): boolean => {
       return (
         correct === true &&
         $element.find('input[type=radio]').attr('checked') === 'checked'

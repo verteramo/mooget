@@ -15,7 +15,7 @@ import { QuestionHandler } from '@/core/parsing/Question'
 export const qhMultianswer: QuestionHandler = {
   types: ['multianswer'],
   reducer: {
-    answer: ({ $element, correct }) => {
+    answer: ({ $element: $element, correct }) => {
       const answer: IAnswer[] = []
 
       // If the question is correct

@@ -9,15 +9,15 @@
 
 import saveAs from 'file-saver'
 
-import { IQuestion } from '@/core/models/IQuestion'
-import { IQuiz } from '@/core/models/IQuiz'
+import { Question } from '@/core/models/Question'
+import { Quiz } from '@/core/models/Quiz'
 
 /**
  * Prompt user to download quiz
  *
  * @param quiz Quiz to download
  */
-export function promptQuizDownload (quiz: IQuiz): void {
+export function promptQuizDownload (quiz: Quiz): void {
   saveAs(new Blob([JSON.stringify(quiz)], {
     type: 'application/json'
   }), `${quiz.name}.json`)
@@ -29,7 +29,7 @@ export function promptQuizDownload (quiz: IQuiz): void {
  * @param file File
  * @returns Quiz
  */
-export async function loadQuiz (file: File): Promise<IQuiz | undefined> {
+export async function loadQuiz (file: File): Promise<Quiz | undefined> {
   return await new Promise((resolve, reject) => {
     const reader = new FileReader()
     reader.onload = (e) => {
@@ -53,7 +53,7 @@ export async function loadQuiz (file: File): Promise<IQuiz | undefined> {
  *
  * @returns Question IDs
  */
-function getQuestionIds (quizzes: IQuiz[]): string[] {
+function getQuestionIds (quizzes: Quiz[]): string[] {
   return quizzes
     .flatMap(({ questions }) => questions)
     .flatMap(({ id }) => id)
@@ -66,7 +66,7 @@ function getQuestionIds (quizzes: IQuiz[]): string[] {
  * @param questions Questions
  * @returns Filtered questions
  */
-function filterQuestions (quizzes: IQuiz[], questions: IQuestion[]): IQuestion[] {
+function filterQuestions (quizzes: Quiz[], questions: Question[]): Question[] {
   const questionIds = getQuestionIds(quizzes)
 
   return questions.filter(({ id: currentId }) => {
@@ -81,7 +81,7 @@ function filterQuestions (quizzes: IQuiz[], questions: IQuestion[]): IQuestion[]
  * @param quiz Quiz
  * @returns Filtered quiz
  */
-export function filterQuiz (quizzes: IQuiz[], quiz: IQuiz): IQuiz {
+export function filterQuiz (quizzes: Quiz[], quiz: Quiz): Quiz {
   return {
     ...quiz,
     questions: filterQuestions(quizzes, quiz.questions)

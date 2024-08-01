@@ -1,21 +1,19 @@
 /*******************************************************************************
- * IQuiz.ts
+ * Quiz.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
 /** Package dependencies */
-import { IQuestion } from './IQuestion'
+import { Question } from './Question'
 
 /**
  * Quiz interface
- *
- * It is the quiz data
  */
-export interface IQuiz {
+export interface Quiz {
   /**
-   * MD5 hash of the quiz name
+   * ID
    */
   id: string
 
@@ -32,30 +30,15 @@ export interface IQuiz {
   /**
    * Questions
    */
-  questions: IQuestion[]
+  questions: Question[]
 
   /**
-   * Favorite status
-   */
-  favorite?: boolean
-
-  /**
-   * Body ID
-   */
-  type?: string
-
-  /**
-   * Quiz URL
+   * URL
    */
   url?: string
 
   /**
-   * Site home URL
-   */
-  home?: string
-
-  /**
-   * Representative icon
+   * Icon URL
    */
   icon?: string
 
@@ -65,7 +48,12 @@ export interface IQuiz {
   owner?: string
 
   /**
-   * Site version
+   * Version
    */
   version?: string
+
+  /**
+   * Favorite status
+   */
+  favorite?: boolean
 }

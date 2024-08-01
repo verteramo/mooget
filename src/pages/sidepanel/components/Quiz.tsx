@@ -15,7 +15,7 @@ import {
 import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { IQuiz } from '@/core/models/IQuiz'
+import { Quiz } from '@/core/models/Quiz'
 import { IStore } from '@/redux/store'
 
 import { Question } from '@/components/sidepanel/Question'
@@ -23,7 +23,7 @@ import { sliceProgressSetStep } from '@/redux/sliceProgress'
 import { useDispatch, useSelector } from 'react-redux'
 
 interface IProps {
-  quiz: IQuiz
+  quiz: Quiz
 }
 
 export function Quiz ({ quiz: { name, questions } }: IProps): JSX.Element {

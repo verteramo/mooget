@@ -44,14 +44,14 @@ import {
 import { initialState, localeText, styles } from './QuizGridProps'
 
 /** Project dependencies */
-import { IQuestion } from '@/core/models/IQuestion'
-import { IQuiz } from '@/core/models/IQuiz'
+import { Question } from '@/core/models/Question'
+import { Quiz } from '@/core/models/Quiz'
 import { sliceProgressSetQuiz } from '@/redux/sliceProgress'
 import { sliceQuizzesRemoveQuiz, sliceQuizzesUpdateQuiz } from '@/redux/sliceQuizzes'
 import { openSidePanel, promptQuizDownload } from '@/todo/utilities'
 
 interface IProps {
-  quizzes: IQuiz[]
+  quizzes: Quiz[]
 }
 
 export function QuizGrid ({ quizzes }: IProps): JSX.Element {
@@ -60,7 +60,7 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
   const confirm = useConfirm()
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
 
-  const processRowUpdate = (quiz: GridRowModel<IQuiz>): IQuiz => {
+  const processRowUpdate = (quiz: GridRowModel<Quiz>): Quiz => {
     return dispatch(sliceQuizzesUpdateQuiz(quiz)).payload
   }
 
@@ -105,7 +105,7 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
   }
 
   const handleQuizDelete =
-    ({ id, name, questions: { length } }: IQuiz) =>
+    ({ id, name, questions: { length } }: Quiz) =>
       () => {
         confirm({
           title: <>{t('remove-title')}</>,
@@ -115,11 +115,11 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
           .catch(console.error)
       }
 
-  const handleQuizDownload = (quiz: IQuiz) => () => {
+  const handleQuizDownload = (quiz: Quiz) => () => {
     promptQuizDownload(quiz)
   }
 
-  const handleQuizPlay = (quiz: IQuiz) => () => {
+  const handleQuizPlay = (quiz: Quiz) => () => {
     dispatch(sliceProgressSetQuiz(quiz))
     openSidePanel().catch((error) => {
       console.log('QuizGrid.tsx > handleQuizPlay > openSidePanel', error)
@@ -137,7 +137,7 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
       width: 50,
       align: 'left',
       cellClassName: 'favorite-cell',
-      renderCell: ({ value, row: { id } }: GridCellParams<IQuiz, boolean>) => (
+      renderCell: ({ value, row: { id } }: GridCellParams<Quiz, boolean>) => (
         <Checkbox
           icon={<Favorite />}
           checkedIcon={<Favorite color='error' />}
@@ -169,9 +169,9 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
       headerName: t('questions'),
       align: 'center',
       type: 'number',
-      renderCell: ({ value }: GridCellParams<any, IQuestion[]>) =>
+      renderCell: ({ value }: GridCellParams<any, Question[]>) =>
         value?.length,
-      sortComparator: (v1: IQuestion[], v2: IQuestion[]) =>
+      sortComparator: (v1: Question[], v2: Question[]) =>
         v1.length - v2.length
     },
 
@@ -185,7 +185,7 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
       disableColumnMenu: true,
       width: 160,
       align: 'center',
-      getActions: ({ id, row: quiz }: GridRowParams<IQuiz>) => {
+      getActions: ({ id, row: quiz }: GridRowParams<Quiz>) => {
         const isInEditMode = rowModesModel[id]?.mode === GridRowModes.Edit
 
         if (isInEditMode) {

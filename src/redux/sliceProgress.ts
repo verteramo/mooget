@@ -10,7 +10,7 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
 /** Project dependencies */
 import { IProgress } from '@/core/models/IProgress'
-import { IQuiz } from '@/core/models/IQuiz'
+import { Quiz } from '@/core/models/Quiz'
 
 export const sliceProgressInitialState: IProgress = {
   step: 0
@@ -20,7 +20,7 @@ export const sliceProgress = createSlice({
   name: 'progress',
   initialState: sliceProgressInitialState,
   reducers: {
-    sliceProgressSetQuiz: (state, { payload: quiz }: PayloadAction<IQuiz>) => {
+    sliceProgressSetQuiz: (state, { payload: quiz }: PayloadAction<Quiz>) => {
       console.log('setQuiz:', quiz)
       return { ...state, quiz }
     },

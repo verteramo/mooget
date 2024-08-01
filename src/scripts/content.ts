@@ -12,29 +12,25 @@ import { getMessage } from '@extend-chrome/messages'
 import { bgSetBadgeText } from './background'
 
 /** Project dependencies */
-import { IQuiz } from '@/core/models/IQuiz'
-import { parseQuiz } from '@/core/parsing/parseQuiz'
-import { MoodleQuestionParser } from '@/providers/moodle/parsing/MoodleQuestionParser'
-import { MoodleQuizProvider } from '@/providers/moodle/parsing/MoodleQuizProvider'
+import { Quiz } from '@/core/models/Quiz'
+import { MoodleQuizParser } from '@/providers/moodle/parsing/MoodleQuizParser'
 import { store } from '@/redux/store'
 import { filterQuiz } from '@/todo/utilities'
-import { DaypoQuizProvider } from '@/providers/daypo/parsing/DaypoQuizProvider'
-import { DaypoQuestionParser } from '@/providers/daypo/parsing/DaypoQuestionParser'
+import { parseQuiz } from '@/core/parsing/QuizParser'
 
 const [
   csRequestQuiz,
   csRequestQuizObserver
 ] =
   /* eslint-disable-next-line @typescript-eslint/no-invalid-void-type */
-  getMessage<void, IQuiz | undefined>('requestQuiz', { async: true })
+  getMessage<void, Quiz | undefined>('requestQuiz', { async: true })
+
+export { csRequestQuiz }
 
 async function main (): Promise<void> {
   const quiz = await parseQuiz([
-    [MoodleQuizProvider, MoodleQuestionParser],
-    [DaypoQuizProvider, DaypoQuestionParser]
+    MoodleQuizParser
   ])
-
-  console.log('quiz', quiz)
 
   if (quiz !== undefined) {
     csRequestQuizObserver.subscribe(([,,sendResponse]) => sendResponse(quiz))
@@ -48,8 +44,6 @@ async function main (): Promise<void> {
     }
   }
 }
-
-export { csRequestQuiz }
 
 main().catch((error) => {
   console.log('getQuiz error', error)

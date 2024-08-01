@@ -10,21 +10,9 @@ import $ from 'jquery'
 import { Md5 } from 'ts-md5'
 
 /** Project dependencies */
-import { QuizProvider } from '@/core/parsing/Quiz'
+import { QuizParser } from '@/core/parsing/QuizParser'
 
-export class DaypoQuizProvider extends QuizProvider {
-  get hash (): (value: string) => string {
-    return (value: string) => Md5.hashStr(value)
-  }
-
-  get type (): string | undefined {
-    if (
-      document.body.id === 'tod'
-    ) {
-      return document.body.id
-    }
-  }
-
+export class DaypoQuizProvider extends QuizParser {
   get name (): string | undefined {
     const clone = $('h1.titu').clone()
 
@@ -92,5 +80,15 @@ export class DaypoQuizProvider extends QuizProvider {
 
   get questions (): JQuery<HTMLElement> {
     return $('#ven3')
+  }
+  
+  get hash (): (value: string) => string {
+    return (value: string) => Md5.hashStr(value)
+  }
+
+  get valid (): boolean {
+    return [
+      'tod'
+    ].includes(document.body.id)
   }
 }

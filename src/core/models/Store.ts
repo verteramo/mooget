@@ -6,26 +6,26 @@
  ******************************************************************************/
 
 /** Package dependencies */
-import { IConfig } from './IConfig'
-import { IProgress } from './IProgress'
-import { IQuiz } from './IQuiz'
+import { Config } from './Config'
+import { Progress } from './Progress'
+import { Quiz } from './Quiz'
 
 /**
  * Store interface
  */
-export interface IStore {
+export interface Store {
   /**
-   * Store configuration
+   * Configuration
    */
-  config: IConfig
+  config: Config
 
   /**
-   * Store quizzes
+   * Quizzes
    */
-  quizzes: IQuiz[]
+  quizzes: Quiz[]
 
   /**
-   * Store progress
+   * User progress
    */
-  progress: IProgress
+  progress: Progress
 }

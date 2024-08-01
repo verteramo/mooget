@@ -9,8 +9,9 @@
 import $ from 'jquery'
 
 /** Project dependencies */
-import { IAnswer } from '@/core/models/IAnswer'
-import { QuestionHandler } from '@/core/parsing/Question'
+import { Answer } from '@/core/models/Answer'
+import { QuestionType } from '@/core/models/QuestionType'
+import { QuestionReducerMap } from '@/core/parsing/QuestionReducer'
 
 /**
  * Single-answer questions:
@@ -23,14 +24,13 @@ import { QuestionHandler } from '@/core/parsing/Question'
  * Are like multichoice questions.
  * @see https://docs.moodle.org/en/Calculated_multichoice_question_type
  */
-export const qhMultichoice: QuestionHandler = {
-  types: ['multichoice', 'calculatedmulti'],
-  reducer: {
-    answer: async ({ $element: $element, correct, rightanswer }) => {
-      const answer: IAnswer[] = []
+export const MultichoiceQuestionReducer: QuestionReducerMap = {
+  [QuestionType.Multichoice]: {
+    answer: async ({ element, correct, rightanswer }) => {
+      const answer: Answer[] = []
 
       // Loop through options
-      for (const option of $element.find('div.answer > div')) {
+      for (const option of element.querySelectorAll('div.answer > div')) {
       // Check if the option is checked
         const checked = $(option).find('input').attr('checked') === 'checked'
 

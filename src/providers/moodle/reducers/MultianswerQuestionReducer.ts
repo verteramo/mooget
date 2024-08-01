@@ -9,22 +9,22 @@
 import $ from 'jquery'
 
 /** Project dependencies */
-import { IAnswer } from '@/core/models/IAnswer'
-import { QuestionHandler } from '@/core/parsing/Question'
+import { Answer } from '@/core/models/Answer'
+import { QuestionType } from '@/core/models/QuestionType'
+import { QuestionReducerMap } from '@/core/parsing/QuestionReducer'
 
-export const qhMultianswer: QuestionHandler = {
-  types: ['multianswer'],
-  reducer: {
-    answer: ({ $element: $element, correct }) => {
-      const answer: IAnswer[] = []
+export const qhMultianswer: QuestionReducerMap = {
+  [QuestionType.Multianswer]: {
+    answer: ({ node: element, correct }) => {
+      const answer: Answer[] = []
 
       // If the question is correct
       if (correct === true) {
-        const formulation = $element.find('div.formulation > p')
+        const formulation = element.querySelector('div.formulation > p')
 
         // Loop through the text content nodes
         let answerContent: string[] = []
-        for (const content of formulation.contents()) {
+        for (const content of formulation?.childNodes ?? []) {
           // All content that is not a span.subquestion is content
           if (!$(content).is('span.subquestion')) {
             answerContent.push($(content).prop('outerHTML') ?? $(content).text())
@@ -36,7 +36,7 @@ export const qhMultianswer: QuestionHandler = {
 
         // Loop through inputs and selects and save the
         // correct answer in its corresponding index
-        formulation.find('span.subquestion input,select').each(function (index) {
+        formulation?.querySelectorAll('span.subquestion input,select').forEach(function (index) {
           switch ($(this).prop('tagName').toLowerCase()) {
             case 'input':{
               answer[index].correct = $(this).val()?.toString()

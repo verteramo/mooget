@@ -9,14 +9,14 @@
 import { useEffect, useState } from 'react'
 
 /** Project dependencies */
-import { IQuiz } from '@/core/models/IQuiz'
+import { Quiz } from '@/core/models/Quiz'
 import { csRequestQuiz } from '@/scripts/content'
 
 /**
  * Get the quiz from the content script
  */
-export function useContentQuiz (): IQuiz | undefined {
-  const [quiz, setQuiz] = useState<IQuiz>()
+export function useContentQuiz (): Quiz | undefined {
+  const [quiz, setQuiz] = useState<Quiz>()
 
   async function initialize (): Promise<void> {
     const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true })

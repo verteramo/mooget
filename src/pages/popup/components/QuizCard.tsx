@@ -10,23 +10,23 @@ import { Save } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 import {
-    Badge,
-    Button,
-    Card,
-    CardActions,
-    CardContent,
-    CardMedia,
-    Stack,
-    TextField
+  Badge,
+  Button,
+  Card,
+  CardActions,
+  CardContent,
+  CardMedia,
+  Stack,
+  TextField
 } from '@mui/material'
 
 /** Project dependencies */
-import { IQuiz } from '@/core/models/IQuiz'
+import { Quiz } from '@/core/models/Quiz'
 
 const DefaultIcon = '../assets/no-icon.png'
 
 interface IProps {
-  quiz: IQuiz
+  quiz: Quiz
   onNameChange: (name: string) => void
   onCategoryChange: (category: string) => void
   onSaveClick: () => void

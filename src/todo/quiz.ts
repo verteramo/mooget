@@ -11,8 +11,8 @@ import { isRight } from 'fp-ts/lib/Either'
 import * as t from 'io-ts'
 import { Md5 } from 'ts-md5'
 
-import { IQuestion } from '@/core/models/IQuestion'
-import { IQuiz } from '@/core/models/IQuiz'
+import { Question } from '@/core/models/Question'
+import { Quiz } from '@/core/models/Quiz'
 import { QuizType } from '@/core/providers/moodle/QuizType'
 
 /****************************************************
@@ -69,18 +69,18 @@ const InputQuizCodec = t.intersection([
   })
 ])
 
-export function convertQuiz (data: unknown): IQuiz | undefined {
+export function convertQuiz (data: unknown): Quiz | undefined {
   console.log('convertQuiz 1', data)
   const result = InputQuizCodec.decode(data)
   console.log('convertQuiz 2', result)
 
   if (isRight(result)) {
-    const quiz: IQuiz = {
+    const quiz: Quiz = {
       id: Md5.hashStr(result.right.name),
       name: result.right.name,
       category: result.right.category,
       questions: result.right.questions.map((currentQuestion) => {
-        const question: IQuestion = {
+        const question: Question = {
           id: Md5.hashStr(currentQuestion.content),
           type: 'multichoice',
           content: currentQuestion.content,

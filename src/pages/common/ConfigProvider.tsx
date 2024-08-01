@@ -31,7 +31,7 @@ import {
 } from '@mui/material'
 
 /** Project dependencies */
-import { IStore } from '@/core/models/IStore'
+import { Store } from '@/core/models/Store'
 
 import {
   Colors,
@@ -48,7 +48,7 @@ export function ConfigProvider ({
 }: PropsWithChildren): JSX.Element {
   const dispatch = useDispatch()
   const { t, i18n } = useTranslation()
-  const config = useSelector((store: IStore) => store.config)
+  const config = useSelector((store: Store) => store.config)
 
   const [language, setLanguage] = useState<string>(i18n.language)
 

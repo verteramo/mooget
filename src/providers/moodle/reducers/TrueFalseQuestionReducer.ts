@@ -6,7 +6,8 @@
  ******************************************************************************/
 
 /** Project dependencies */
-import { QuestionHandler } from '@/core/parsing/Question'
+import { QuestionType } from '@/core/models/QuestionType'
+import { QuestionReducerMap } from '@/core/parsing/QuestionReducer'
 
 /**
  * True/False question type:
@@ -14,13 +15,14 @@ import { QuestionHandler } from '@/core/parsing/Question'
  * The question content can include an image or html code.
  * @see https://docs.moodle.org/en/True/False_question_type
  */
-export const qhTrueFalse: QuestionHandler = {
-  types: ['truefalse'],
-  reducer: {
-    answer: ({ $element: $element, correct }): boolean => {
+export const TrueFalseQuestionReducer: QuestionReducerMap = {
+  [QuestionType.TrueFalse]: {
+    answer: ({ element, correct }): boolean => {
       return (
         correct === true &&
-        $element.find('input[type=radio]').attr('checked') === 'checked'
+        element.querySelector('input[type=radio]')
+          ?.attributes.getNamedItem('checked')
+          ?.value === 'checked'
       )
     }
   }

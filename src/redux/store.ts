@@ -30,15 +30,15 @@ import { sliceProgress, sliceProgressInitialState } from './sliceProgress'
 import { sliceQuizzes, sliceQuizzesInitialState } from './sliceQuizzes'
 
 /** Project dependencies */
-import { IStore } from '@/core/models/IStore'
+import { Store } from '@/core/models/Store'
 
 /***************************************
  * Middleware configuration
  **************************************/
 
-export const storageAction = createAction<IStore>('storageAction')
+export const storageAction = createAction<Store>('storageAction')
 
-const storageListenerMiddleware = createListenerMiddleware<IStore>()
+const storageListenerMiddleware = createListenerMiddleware<Store>()
 storageListenerMiddleware.startListening({
   actionCreator: storageAction,
   effect: async ({ payload: { config: { language } } }) => {
@@ -57,7 +57,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
     const root: string | undefined =
       changes[`persist:${PERSIST_KEY}`]?.newValue
 
-    const newState: IStore = {
+    const newState: Store = {
       config: sliceConfigInitialState,
       quizzes: sliceQuizzesInitialState,
       progress: sliceProgressInitialState
@@ -65,7 +65,7 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 
     if (root !== undefined) {
       for (const [key, value] of Object.entries<string>(JSON.parse(root))) {
-        newState[key as keyof IStore] = JSON.parse(value)
+        newState[key as keyof Store] = JSON.parse(value)
       }
     }
 

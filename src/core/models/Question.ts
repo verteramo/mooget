@@ -6,30 +6,30 @@
  ******************************************************************************/
 
 /** Package dependencies */
-import { IAnswer } from './IAnswer'
+import { Answer } from './Answer'
+import { QuestionType } from './QuestionType'
 
 /**
- * It is the question data
+ * Question interface
  */
-export interface IQuestion {
+export interface Question {
   /**
-   * MD5 hash of the div.formulation element text;
-   * HTML could be different because of the image URLs between sites
+   * ID
    */
   id: string
 
   /**
-   * Second class of the div.que element
+   * Type
    */
-  type: string
+  type: QuestionType
 
   /**
-   * HTML content of the div.qtext element
+   * Content
    */
   content: string
 
   /**
-   * HTML content of the div.rightanswer element
+   * Feedback, if any
    */
   feedback?: string
 
@@ -37,5 +37,5 @@ export interface IQuestion {
    * Answer, if it can be determined;
    * it could be a boolean, a string or an array of IAnswer if there are multiple answers
    */
-  answer?: boolean | string | IAnswer[]
+  answer?: boolean | string | Answer[]
 }

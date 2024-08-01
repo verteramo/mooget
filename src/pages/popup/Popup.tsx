@@ -23,8 +23,8 @@ import { useBadge } from './hooks/useBadge'
 import { useContentQuiz } from './hooks/useContentQuiz'
 
 /** Project dependencies */
-import { IQuiz } from '@/core/models/IQuiz'
-import { IStore } from '@/core/models/IStore'
+import { Quiz } from '@/core/models/Quiz'
+import { Store } from '@/core/models/Store'
 import { sliceQuizzesCreateQuiz } from '@/redux/sliceQuizzes'
 import { filterQuiz, loadQuiz } from '@/todo/utilities'
 
@@ -32,12 +32,12 @@ function Popup (): JSX.Element {
   const { t } = useTranslation()
 
   const dispatch = useDispatch()
-  const quizzes = useSelector((store: IStore) => store.quizzes)
+  const quizzes = useSelector((store: Store) => store.quizzes)
 
   const setBadge = useBadge()
   const contentQuiz = useContentQuiz()
-  const [quiz, setQuiz] = useState<IQuiz>()
-  const [filteredQuiz, setFilteredQuiz] = useState<IQuiz>()
+  const [quiz, setQuiz] = useState<Quiz>()
+  const [filteredQuiz, setFilteredQuiz] = useState<Quiz>()
 
   const showQuizCard =
     filteredQuiz !== undefined && filteredQuiz.questions.length > 0
@@ -84,13 +84,11 @@ function Popup (): JSX.Element {
     const file = e.target.files?.item(0) ?? undefined
 
     if (file !== undefined) {
-      loadQuiz(file)
-        .then((loadedQuiz) => {
-          setQuiz(loadedQuiz)
-        })
-        .catch((error) => {
-          console.log('handleQuizUpload', error)
-        })
+      loadQuiz(file).then((loadedQuiz) => {
+        setQuiz(loadedQuiz)
+      }).catch((error) => {
+        console.log('handleQuizUpload', error)
+      })
 
       e.target.value = ''
     }

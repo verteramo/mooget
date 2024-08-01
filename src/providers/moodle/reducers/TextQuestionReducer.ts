@@ -6,7 +6,8 @@
  ******************************************************************************/
 
 /** Project dependencies */
-import { QuestionHandler } from '@/core/parsing/Question'
+import { QuestionType } from '@/core/models/QuestionType'
+import { QuestionReducerMap } from '@/core/parsing/QuestionReducer'
 
 /**
  * Short-Answer question type:
@@ -28,13 +29,14 @@ import { QuestionHandler } from '@/core/parsing/Question'
  * Provides the option of answering by uploading one or more files and/or entering text online.
  * @see https://docs.moodle.org/en/Essay_question_type
  */
-export const qhText: QuestionHandler = {
-  types: ['shortanswer', 'numerical', 'calculated', 'essay'],
-  reducer: {
-    answer: ({ $element: $element, rightanswer }): string => {
-      return rightanswer ??
-      $element.find('input[type=text]').val()?.toString() ??
-      $element.find('div.answer > div[role=textbox]').html()
+export const qhText: QuestionReducerMap = {
+  [QuestionType.Text]: {
+    answer: ({ node: element, rightanswer }) => {
+      return (
+        rightanswer ??
+        element.querySelector('input[type=text]')?.nodeValue ??
+        element.querySelector('div.answer > div[role=textbox]')?.innerHTML
+      )
     }
   }
 }

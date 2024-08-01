@@ -10,39 +10,25 @@ import $ from 'jquery'
 import { Md5 } from 'ts-md5'
 
 /** Package dependencies */
-import { qhDragAndDrop } from '../handlers/qhDragAndDrop'
-import { qhMatch } from '../handlers/qhMatch'
-import { qhMultianswer } from '../handlers/qhMultianswer'
-import { qhMultichoice } from '../handlers/qhMultichoice'
-import { qhText } from '../handlers/qhText'
-import { qhTrueFalse } from '../handlers/qhTrueFalse'
 
 /** Project dependencies */
-import { QuestionHandler } from '@/core/parsing/Question'
-import { QuizProvider } from '@/core/parsing/Quiz'
-import { bgFetchMoodleVersion } from '@/scripts/background'
+import { QuestionParserConstructor } from '@/core/parsing/QuestionParser'
+import { QuestionReducerMap } from '@/core/parsing/QuestionReducer'
+import { QuizParser } from '@/core/parsing/QuizParser'
+import { MultichoiceQuestionReducer } from '../reducers/MultichoiceQuestionReducer'
+import { MoodleQuestionParser } from './MoodleQuestionParser'
+import { TrueFalseQuestionReducer } from '../reducers/TrueFalseQuestionReducer'
 
 /**
  * DOM quiz extractor
  */
-export class MoodleQuizProvider extends QuizProvider {
+export class MoodleQuizParser extends QuizParser {
   /**
-   * Hash function
+   * Base URL of the site;
+   * could be a subdirectory like 'site.com/path/to/moodle'
    */
-  get hash (): (value: string) => string {
-    return (value: string) => Md5.hashStr(value)
-  }
-
-  /**
-   * Body ID
-   */
-  get type (): string | undefined {
-    if (
-      document.body.id === 'page-mod-quiz-review' ||
-      document.body.id === 'page-mod-quiz-attempt'
-    ) {
-      return document.body.id
-    }
+  private get home (): string | undefined {
+    return this.url?.replace(/\/mod\/quiz.*/, '')
   }
 
   /**
@@ -91,14 +77,6 @@ export class MoodleQuizProvider extends QuizProvider {
   }
 
   /**
-   * Base URL of the site;
-   * could be a subdirectory like 'site.com/path/to/moodle'
-   */
-  get home (): string | undefined {
-    return this.url?.replace(/\/mod\/quiz.*/, '')
-  }
-
-  /**
    * Representative icon of the site;
    * it could be the favicon (preferred) or the navbar brand image
    */
@@ -137,28 +115,43 @@ export class MoodleQuizProvider extends QuizProvider {
   }
 
   /**
-   * Version of the quiz
+   * Question elements
    */
-  get version (): string | undefined | Promise<string | undefined> {
-    const home = this.home
+  get questions (): NodeListOf<HTMLElement> {
+    return document.querySelectorAll('div.que')
+  }
 
-    if (home !== undefined) {
-      return bgFetchMoodleVersion(home)
+  /**
+   * Validity
+   */
+  get valid (): boolean {
+    return [
+      'page-mod-quiz-review',
+      'page-mod-quiz-attempt'
+    ].includes(document.body.id)
+  }
+
+  /**
+   * Reducers
+   */
+  get reducers (): QuestionReducerMap {
+    return {
+      ...MultichoiceQuestionReducer,
+      ...TrueFalseQuestionReducer
     }
   }
 
-  get questions (): JQuery<HTMLElement> {
-    return $('div.que')
+  /**
+   * Hash function
+   */
+  get hash (): (value: string) => string {
+    return (value: string) => Md5.hashStr(value)
   }
 
-  get handlers (): QuestionHandler[] {
-    return [
-      qhDragAndDrop,
-      qhMatch,
-      qhMultianswer,
-      qhMultichoice,
-      qhText,
-      qhTrueFalse
-    ]
+  /**
+   * Parser
+   */
+  get Parser (): QuestionParserConstructor {
+    return MoodleQuestionParser
   }
 }

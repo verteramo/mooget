@@ -12,15 +12,15 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 import { storageAction } from './store'
 
 /** Project dependencies */
-import { IQuiz } from '@/core/models/IQuiz'
+import { Quiz } from '@/core/models/Quiz'
 
-export const sliceQuizzesInitialState: IQuiz[] = []
+export const sliceQuizzesInitialState: Quiz[] = []
 
 export const sliceQuizzes = createSlice({
   name: 'quizzes',
   initialState: sliceQuizzesInitialState,
   reducers: {
-    sliceQuizzesCreateQuiz: (state, { payload: quiz }: PayloadAction<IQuiz>) => {
+    sliceQuizzesCreateQuiz: (state, { payload: quiz }: PayloadAction<Quiz>) => {
       if (state.some(({ id }) => id === quiz.id)) {
         return state.map(current => current.id === quiz.id
           ? {
@@ -38,7 +38,7 @@ export const sliceQuizzes = createSlice({
       return state.filter(({ id: currentId }) => currentId !== id)
     },
 
-    sliceQuizzesUpdateQuiz: (state, { payload: quiz }: PayloadAction<IQuiz>) => {
+    sliceQuizzesUpdateQuiz: (state, { payload: quiz }: PayloadAction<Quiz>) => {
       return state.map((current) => current.id === quiz.id ? quiz : current)
     }
   },

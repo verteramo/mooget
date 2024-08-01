@@ -22,9 +22,9 @@
  * { "content": "Answer 3", "correct": "Match 3", "feedback": "Optional feedback" }
  * ```
  */
-export interface IAnswer {
+export interface Answer {
   /**
-   * HTML content
+   * Content
    */
   content: string
 
@@ -34,7 +34,7 @@ export interface IAnswer {
   correct?: boolean | string
 
   /**
-   * Feedback, if there is any
+   * Feedback, if any
    */
   feedback?: string
 }

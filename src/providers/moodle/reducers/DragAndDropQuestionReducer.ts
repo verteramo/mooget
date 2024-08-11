@@ -5,7 +5,6 @@
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-import { QuestionType } from '@/core/models/QuestionType'
 import { QuestionReducerMap } from '@/core/parsing/QuestionReducer'
 
 /** External dependencies */
@@ -18,7 +17,9 @@ import { QuestionReducerMap } from '@/core/parsing/QuestionReducer'
  * @see https://docs.moodle.org/en/Drag_and_drop_into_text_question_type
  */
 export const DragAndDropQuestionReducer: QuestionReducerMap = {
-  [QuestionType.DragAndDrop]: {
-    answer: (parser) => 'DragAndDropQuestionReducer answer'
+  draganddrop: {
+    answer: (parser) => [{
+      value: 'DragAndDropQuestionReducer answer'
+    }]
   }
 }

@@ -37,5 +37,5 @@ export interface Question {
    * Answer, if it can be determined;
    * it could be a boolean, a string or an array of IAnswer if there are multiple answers
    */
-  answer?: boolean | string | Answer[]
+  answer?: Answer[]
 }

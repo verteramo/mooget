@@ -12,17 +12,18 @@ import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 import { storageAction } from './store'
 
 /** Project dependencies */
-import { IConfig } from '@/core/models/IConfig'
+import { Config } from '@/core/models/Config'
+import { PaletteMode } from '@mui/material'
 
 export const Colors = [
-  '#66bb6a',
-  '#29b6f6',
-  '#ce93d8',
-  '#f44336',
-  '#ffa726'
+  '#4caf50',
+  '#03a9f4',
+  '#ba68c8',
+  '#ef5350',
+  '#ff9800'
 ]
 
-export const sliceConfigInitialState: IConfig = {
+export const sliceConfigInitialState: Config = {
   mode: 'light',
   primary: Colors[0],
   language: 'es'
@@ -32,7 +33,7 @@ export const sliceConfig = createSlice({
   name: 'config',
   initialState: sliceConfigInitialState,
   reducers: {
-    sliceConfigSetMode: (state, { payload: mode }: PayloadAction<IConfig['mode']>) => {
+    sliceConfigSetMode: (state, { payload: mode }: PayloadAction<PaletteMode>) => {
       return { ...state, mode }
     },
 

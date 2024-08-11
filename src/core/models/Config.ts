@@ -5,6 +5,8 @@
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
+import { PaletteMode } from '@mui/material'
+
 /**
  * Configuration interface
  */
@@ -12,7 +14,7 @@ export interface Config {
   /**
    * Current theme
    */
-  mode: 'light' | 'dark'
+  mode: PaletteMode
 
   /**
    * Current primary color

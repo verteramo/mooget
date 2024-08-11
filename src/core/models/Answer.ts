@@ -10,23 +10,23 @@
  *
  * @example Multichoice answers (there could be multiple correct answers):
  * ```json
- * { "content": "Answer 1", "correct": true, },
- * { "content": "Answer 2", "correct": false },
- * { "content": "Answer 4", "correct": false, "feedback": "Optional feedback" }
+ * { "value": "Answer 1", "correct": true, },
+ * { "value": "Answer 2", "correct": false },
+ * { "value": "Answer 4", "correct": false, "feedback": "Optional feedback" }
  * ```
  *
  * @example Match answers (in this case, correct is the match string):
  * ```json
- * { "content": "Answer 1", "correct": "Match 1" },
- * { "content": "Answer 2", "correct": "Match 2" },
- * { "content": "Answer 3", "correct": "Match 3", "feedback": "Optional feedback" }
+ * { "value": "Answer 1", "correct": "Match 1" },
+ * { "value": "Answer 2", "correct": "Match 2" },
+ * { "value": "Answer 3", "correct": "Match 3", "feedback": "Optional feedback" }
  * ```
  */
 export interface Answer {
   /**
-   * Content
+   * value
    */
-  content: string
+  value: boolean | string
 
   /**
    * Correctness, if it can be determined

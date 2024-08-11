@@ -1,29 +1,21 @@
 /*******************************************************************************
- * Progress.ts
+ * UserAnswer.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-/** Package dependencies */
-import { UserAnswer } from './UserAnswer'
-
 /**
  * User progress interface
  */
-export interface Progress {
+export interface UserAnswer {
   /**
-   * Quiz answers
+   * Question index
    */
-  quiz?: string
+  index: number
 
   /**
-   * Current step
+   * Answer
    */
-  step: number
-
-  /**
-   * Answers
-   */
-  answers: UserAnswer[]
+  answer?: Array<boolean | string>
 }

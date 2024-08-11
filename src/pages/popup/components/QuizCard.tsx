@@ -6,7 +6,7 @@
  ******************************************************************************/
 
 /** External dependencies */
-import { Save } from '@mui/icons-material'
+import { SaveOutlined } from '@mui/icons-material'
 import { useTranslation } from 'react-i18next'
 
 import {
@@ -23,7 +23,7 @@ import {
 /** Project dependencies */
 import { Quiz } from '@/core/models/Quiz'
 
-const DefaultIcon = '../assets/no-icon.png'
+const DefaultIcon = '../assets/undefined.png'
 
 interface IProps {
   quiz: Quiz
@@ -77,7 +77,7 @@ export function QuizCard ({
               <Button
                 size='small'
                 variant='contained'
-                startIcon={<Save />}
+                startIcon={<SaveOutlined />}
                 onClick={onSaveClick}
               >
                 {t('save')}

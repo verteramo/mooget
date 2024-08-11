@@ -9,6 +9,7 @@
  * Question type
  */
 export enum QuestionType {
+  Description = 'description',
   DragAndDrop = 'draganddrop',
   Match = 'matching',
   Multianswer = 'multianswer',

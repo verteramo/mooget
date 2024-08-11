@@ -17,13 +17,17 @@ import { QuestionReducerMap } from '@/core/parsing/QuestionReducer'
  */
 export const TrueFalseQuestionReducer: QuestionReducerMap = {
   [QuestionType.TrueFalse]: {
-    answer: ({ element, correct }): boolean => {
-      return (
+    answer: ({ element, correct }) => {
+      const value = (
         correct === true &&
         element.querySelector('input[type=radio]')
           ?.attributes.getNamedItem('checked')
           ?.value === 'checked'
       )
+
+      if (value !== undefined) {
+        return [{ value }]
+      }
     }
   }
 }

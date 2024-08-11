@@ -13,10 +13,10 @@ import { bgSetBadgeText } from './background'
 
 /** Project dependencies */
 import { Quiz } from '@/core/models/Quiz'
+import { parseQuiz } from '@/core/parsing/QuizParser'
+import { equalQuizzes, filterQuiz } from '@/core/utils/quizzes'
 import { MoodleQuizParser } from '@/providers/moodle/parsing/MoodleQuizParser'
 import { store } from '@/redux/store'
-import { filterQuiz } from '@/todo/utilities'
-import { parseQuiz } from '@/core/parsing/QuizParser'
 
 const [
   csRequestQuiz,
@@ -27,21 +27,35 @@ const [
 
 export { csRequestQuiz }
 
+let currentQuizzes: Quiz[] = []
+
 async function main (): Promise<void> {
   const quiz = await parseQuiz([
     MoodleQuizParser
   ])
 
+  console.log('Welcome', quiz)
+
   if (quiz !== undefined) {
     csRequestQuizObserver.subscribe(([,,sendResponse]) => sendResponse(quiz))
 
-    const quizzes = store.getState().quizzes
-    const filteredQuiz = filterQuiz(quizzes, quiz)
-    const length = filteredQuiz.questions.length
+    store.subscribe(() => {
+      console.log('content.ts observer')
+      const { quizzes } = store.getState()
 
-    if (length > 0) {
-      await bgSetBadgeText(length.toString())
-    }
+      if (!equalQuizzes(quizzes, currentQuizzes)) {
+        console.log('content.ts observer hasNewQuestions')
+        currentQuizzes = quizzes
+        const filteredQuiz = filterQuiz(currentQuizzes, quiz)
+        const length = filteredQuiz.questions.length
+
+        if (length > 0) {
+          bgSetBadgeText(length.toString()).catch((error) => {
+            console.log('bgSetBadgeText error', error)
+          })
+        }
+      }
+    })
   }
 }
 

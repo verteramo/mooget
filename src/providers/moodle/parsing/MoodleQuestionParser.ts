@@ -18,6 +18,9 @@ export class MoodleQuestionParser extends QuestionParser {
    */
   get type (): QuestionType | undefined {
     switch (this.element.classList.item(1)) {
+      case 'description':
+        return QuestionType.Description
+
       case 'ddwtos':
         return QuestionType.DragAndDrop
 

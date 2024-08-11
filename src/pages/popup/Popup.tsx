@@ -6,8 +6,8 @@
  ******************************************************************************/
 
 /** External dependencies */
-import { UploadFile } from '@mui/icons-material'
-import { Box, Button, Stack } from '@mui/material'
+import { UploadFile, ViewSidebarOutlined } from '@mui/icons-material'
+import { Button, Stack } from '@mui/material'
 import { ChangeEvent, useEffect, useRef, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useDispatch, useSelector } from 'react-redux'
@@ -25,8 +25,9 @@ import { useContentQuiz } from './hooks/useContentQuiz'
 /** Project dependencies */
 import { Quiz } from '@/core/models/Quiz'
 import { Store } from '@/core/models/Store'
+import { filterQuiz, loadQuiz, openSidePanel } from '@/core/utils/quizzes'
 import { sliceQuizzesCreateQuiz } from '@/redux/sliceQuizzes'
-import { filterQuiz, loadQuiz } from '@/todo/utilities'
+import { EmptyBox } from '../common/EmptyBox'
 
 function Popup (): JSX.Element {
   const { t } = useTranslation()
@@ -112,7 +113,7 @@ function Popup (): JSX.Element {
 
   return (
     <Stack minWidth={700} minHeight={150} spacing={1}>
-      <Stack direction='row' spacing={2} justifyContent='end'>
+      <Stack direction='row' spacing={1} justifyContent='space-between'>
         <InputField
           ref={inputFileRef}
           hidden
@@ -123,10 +124,26 @@ function Popup (): JSX.Element {
         <Button
           size='small'
           variant='contained'
+          color='primary'
           startIcon={<UploadFile />}
-          onClick={() => inputFileRef.current?.click()}
+          onClick={() => {
+            inputFileRef.current?.click()
+          }}
         >
           {t('upload')}
+        </Button>
+        <Button
+          size='small'
+          variant='contained'
+          color='primary'
+          startIcon={<ViewSidebarOutlined />}
+          onClick={() => {
+            openSidePanel().catch((error) => {
+              console.log('openSidePanel error', error)
+            })
+          }}
+        >
+          {t('sidepanel')}
         </Button>
       </Stack>
       {showQuizCard && (
@@ -138,22 +155,8 @@ function Popup (): JSX.Element {
         />
       )}
       {showQuizGrid
-        ? (
-          <QuizGrid quizzes={quizzes} />
-          )
-        : (
-          <Box
-            sx={{
-              p: 5,
-              color: 'grey',
-              border: '5px dashed grey',
-              borderRadius: '5px',
-              textAlign: 'center'
-            }}
-          >
-            {t('empty')}
-          </Box>
-          )}
+        ? <QuizGrid quizzes={quizzes} />
+        : <EmptyBox>{t('empty-quizzes')}</EmptyBox>}
     </Stack>
   )
 }

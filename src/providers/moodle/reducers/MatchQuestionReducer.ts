@@ -20,7 +20,7 @@ import { QuestionReducerMap } from '@/core/parsing/QuestionReducer'
  */
 export const MatchQuestionReducer: QuestionReducerMap = {
   [QuestionType.Match]: {
-    answer: ({ node: element, correct }) => {
+    answer: ({ element, correct }) => {
       const answer: Answer[] = []
 
       if (correct === true) {
@@ -29,7 +29,7 @@ export const MatchQuestionReducer: QuestionReducerMap = {
           const control = option.querySelector('td.control')?.textContent
 
           if (text != null && control != null) {
-            answer.push({ content: text, correct: control })
+            answer.push({ value: text, correct: control })
           }
         }
       }

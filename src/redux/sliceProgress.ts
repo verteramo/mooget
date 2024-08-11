@@ -8,29 +8,54 @@
 /** External dependencies */
 import { PayloadAction, createSlice } from '@reduxjs/toolkit'
 
-/** Project dependencies */
-import { IProgress } from '@/core/models/IProgress'
-import { Quiz } from '@/core/models/Quiz'
+/** Package dependencies */
+import { storageAction } from './store'
 
-export const sliceProgressInitialState: IProgress = {
-  step: 0
+/** Project dependencies */
+import { Progress } from '@/core/models/Progress'
+import { UserAnswer } from '@/core/models/UserAnswer'
+
+export const sliceProgressInitialState: Progress = {
+  step: 0,
+  answers: []
 }
 
 export const sliceProgress = createSlice({
   name: 'progress',
   initialState: sliceProgressInitialState,
   reducers: {
-    sliceProgressSetQuiz: (state, { payload: quiz }: PayloadAction<Quiz>) => {
-      console.log('setQuiz:', quiz)
+    sliceProgressSetQuiz: (state, { payload: quiz }: PayloadAction<string>) => {
       return { ...state, quiz }
     },
     sliceProgressSetStep: (state, { payload: step }: PayloadAction<number>) => {
       return { ...state, step }
+    },
+    sliceProgressSetAnswers: (state, { payload: answers }: PayloadAction<UserAnswer[]>) => {
+      return { ...state, answers }
+    },
+    sliceProgressSetProgress: (state, { payload: progress }: PayloadAction<Progress>) => {
+      return { ...state, ...progress }
+    },
+    sliceProgressSetAnswer: (state, { payload: answer }: PayloadAction<UserAnswer>) => {
+      return {
+        ...state,
+        answers: state.answers.map(
+          (item, index) => index === state.step ? answer : item
+        )
+      }
     }
+  },
+  extraReducers: (builder) => {
+    builder.addCase(storageAction, (_state, { payload: { progress } }) => {
+      return progress
+    })
   }
 })
 
 export const {
   sliceProgressSetQuiz,
-  sliceProgressSetStep
+  sliceProgressSetStep,
+  sliceProgressSetAnswers,
+  sliceProgressSetProgress,
+  sliceProgressSetAnswer
 } = sliceProgress.actions

@@ -12,22 +12,21 @@ import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react'
 
 /** Project dependencies */
+import { initI18next } from '@/locales/initI18next'
 import { persistor, store } from '@/redux/store'
 
-import { initI18next } from '@/locales/initI18next'
-
 /** Package dependencies */
-import { ConfigProvider } from './ConfigProvider'
+import { AppLayout } from './AppLayout'
 
 export function render (page: JSX.Element): void {
   createRoot(document.getElementById('root') as HTMLElement).render(
     <Provider store={store}>
       <PersistGate persistor={persistor} onBeforeLift={initI18next}>
-        <ConfigProvider>
+        <AppLayout>
           <ConfirmProvider>
             {page}
           </ConfirmProvider>
-        </ConfigProvider>
+        </AppLayout>
       </PersistGate>
     </Provider>
   )

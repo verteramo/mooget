@@ -11,6 +11,7 @@ import saveAs from 'file-saver'
 
 import { Question } from '@/core/models/Question'
 import { Quiz } from '@/core/models/Quiz'
+import { Progress } from '../models/Progress'
 
 /**
  * Prompt user to download quiz
@@ -89,6 +90,20 @@ export function filterQuiz (quizzes: Quiz[], quiz: Quiz): Quiz {
 }
 
 /**
+ * Compare quizzes
+ *
+ * @param a Quiz[]
+ * @param b Quiz[]
+ * @returns boolean
+ */
+export function equalQuizzes (a: Quiz[], b: Quiz[]): boolean {
+  return (
+    a.length === b.length &&
+    a.every(({ id: currentId }) => b.some(({ id }) => id === currentId))
+  )
+}
+
+/**
  * Open side panel
  */
 export async function openSidePanel (): Promise<void> {
@@ -96,5 +111,13 @@ export async function openSidePanel (): Promise<void> {
 
   if (tab !== undefined) {
     await chrome.sidePanel.open({ tabId: tab.id as number })
+  }
+}
+
+export function createProgress (quiz: Quiz): Progress {
+  return {
+    quiz: quiz.id,
+    step: 0,
+    answers: quiz.questions.map((_, index) => ({ index }))
   }
 }

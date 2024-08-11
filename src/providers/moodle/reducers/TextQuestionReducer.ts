@@ -29,14 +29,30 @@ import { QuestionReducerMap } from '@/core/parsing/QuestionReducer'
  * Provides the option of answering by uploading one or more files and/or entering text online.
  * @see https://docs.moodle.org/en/Essay_question_type
  */
-export const qhText: QuestionReducerMap = {
+export const TextQuestionReducer: QuestionReducerMap = {
   [QuestionType.Text]: {
-    answer: ({ node: element, rightanswer }) => {
-      return (
-        rightanswer ??
-        element.querySelector('input[type=text]')?.nodeValue ??
-        element.querySelector('div.answer > div[role=textbox]')?.innerHTML
-      )
+    answer: ({ element, rightanswer }) => {
+      let value: string | undefined
+
+      if (rightanswer !== undefined) {
+        value = rightanswer
+      }
+
+      const input = element.querySelector<HTMLInputElement>('input[type="text"]')
+
+      if (input != null) {
+        value = input.value
+      }
+
+      const div = element.querySelector<HTMLDivElement>('div > div[role="textbox"]')
+
+      if (div != null) {
+        value = div.innerHTML
+      }
+
+      if (value !== undefined) {
+        return [{ value }]
+      }
     }
   }
 }

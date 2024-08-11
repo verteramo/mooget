@@ -18,6 +18,10 @@ import { QuizParser } from '@/core/parsing/QuizParser'
 import { MultichoiceQuestionReducer } from '../reducers/MultichoiceQuestionReducer'
 import { MoodleQuestionParser } from './MoodleQuestionParser'
 import { TrueFalseQuestionReducer } from '../reducers/TrueFalseQuestionReducer'
+import { DragAndDropQuestionReducer } from '../reducers/DragAndDropQuestionReducer'
+import { MatchQuestionReducer } from '../reducers/MatchQuestionReducer'
+import { MultianswerQuestionReducer } from '../reducers/MultianswerQuestionReducer'
+import { TextQuestionReducer } from '../reducers/TextQuestionReducer'
 
 /**
  * DOM quiz extractor
@@ -136,7 +140,11 @@ export class MoodleQuizParser extends QuizParser {
    */
   get reducers (): QuestionReducerMap {
     return {
+      ...DragAndDropQuestionReducer,
+      ...MatchQuestionReducer,
+      ...MultianswerQuestionReducer,
       ...MultichoiceQuestionReducer,
+      ...TextQuestionReducer,
       ...TrueFalseQuestionReducer
     }
   }

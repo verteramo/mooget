@@ -35,14 +35,14 @@ export const MultichoiceQuestionReducer: QuestionReducerMap = {
         const checked = $(option).find('input').attr('checked') === 'checked'
 
         let text: string
-        let content: string
+        let value: string
 
         // Version 4.1.3
         const contentElement = $(option).find('div > div')
 
         if (contentElement.length > 0) {
           text = contentElement.text().trim()
-          content = contentElement.html().trim()
+          value = contentElement.html().trim()
         } else {
           // Version 3.7.7
           const label = $(option).find('label').clone()
@@ -50,7 +50,7 @@ export const MultichoiceQuestionReducer: QuestionReducerMap = {
           // Remove the answernumber span and get the remaining HTML content
           label.find('span.answernumber').remove()
           text = label.text().trim()
-          content = label.html().trim()
+          value = label.html().trim()
         }
 
         // Check if the answer is correct
@@ -65,17 +65,17 @@ export const MultichoiceQuestionReducer: QuestionReducerMap = {
 
         // Push the answer with its correctness and feedback if it exists
         if (feedback.length > 0) {
-          answer.push({ content, correct: isCorrect, feedback: feedback.html() })
+          answer.push({ value, correct: isCorrect, feedback: feedback.html() })
         } else {
-          answer.push({ content, correct: isCorrect })
+          answer.push({ value, correct: isCorrect })
         }
       }
 
       // If some answer is correct, put to false the undefined ones
       if (answer.some(({ correct }) => correct === true)) {
-        return answer.map(({ content, correct, feedback }) => {
+        return answer.map(({ value, correct, feedback }) => {
           return {
-            content,
+            value,
             correct: correct ?? false,
             feedback
           }

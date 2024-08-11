@@ -13,9 +13,9 @@ import { Answer } from '@/core/models/Answer'
 import { QuestionType } from '@/core/models/QuestionType'
 import { QuestionReducerMap } from '@/core/parsing/QuestionReducer'
 
-export const qhMultianswer: QuestionReducerMap = {
+export const MultianswerQuestionReducer: QuestionReducerMap = {
   [QuestionType.Multianswer]: {
-    answer: ({ node: element, correct }) => {
+    answer: ({ element, correct }) => {
       const answer: Answer[] = []
 
       // If the question is correct
@@ -29,7 +29,7 @@ export const qhMultianswer: QuestionReducerMap = {
           if (!$(content).is('span.subquestion')) {
             answerContent.push($(content).prop('outerHTML') ?? $(content).text())
           } else {
-            answer.push({ content: answerContent.join('') })
+            answer.push({ value: answerContent.join('') })
             answerContent = []
           }
         }

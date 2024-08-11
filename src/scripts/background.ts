@@ -65,5 +65,7 @@ bgFetchImagesAsBase64Observer.subscribe(([element,,sendResponse]) => {
  * Exports
  */
 export {
-  bgFetchImagesAsBase64, bgFetchMoodleVersion, bgSetBadgeText
+  bgFetchImagesAsBase64,
+  bgFetchMoodleVersion,
+  bgSetBadgeText
 }

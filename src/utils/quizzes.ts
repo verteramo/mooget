@@ -7,11 +7,17 @@
  * @link https://github.com/verteramo/mooget
  */
 
+/** External dependencies */
 import saveAs from 'file-saver'
 
+/** Package dependencies */
+import { shuffle } from './native'
+
+/** Project dependencies */
+import { Progress } from '@/core/models/Progress'
 import { Question } from '@/core/models/Question'
+import { QuestionType } from '@/core/models/QuestionType'
 import { Quiz } from '@/core/models/Quiz'
-import { Progress } from '../models/Progress'
 
 /**
  * Prompt user to download quiz
@@ -35,12 +41,16 @@ export async function loadQuiz (file: File): Promise<Quiz | undefined> {
     const reader = new FileReader()
     reader.onload = (e) => {
       try {
-        // const data = JSON.parse(e.target?.result as string)
-        // const quiz = convertQuiz(data)
+        const data = JSON.parse(e.target?.result as string)
 
-        // if (quiz !== undefined) {
-        //   resolve(quiz)
-        // }
+        if (
+          typeof data.name === 'string' &&
+          typeof data.category === 'string' &&
+          typeof data.questions !== 'undefined' &&
+          Array.isArray(data.questions)
+        ) {
+          resolve(data as Quiz)
+        }
       } catch (error) {
         reject(error)
       }
@@ -118,6 +128,20 @@ export function createProgress (quiz: Quiz): Progress {
   return {
     quiz: quiz.id,
     step: 0,
-    answers: quiz.questions.map((_, index) => ({ index }))
+    answers: shuffle(quiz.questions.map((question, index) => ({
+      index,
+      answer: question.answer?.map((currentAnswer) => {
+        console.log('currentAnswer type', index, question.type)
+        return (
+          question.type !== QuestionType.TrueFalse
+            ? typeof currentAnswer.value === 'string'
+              ? currentAnswer.correct === 'string'
+                ? ''
+                : false
+              : false
+            : undefined
+        )
+      }) ?? []
+    })))
   }
 }

@@ -7,8 +7,8 @@
 
 /** Package dependencies */
 import { Config } from './Config'
-import { Quiz } from './Quiz'
 import { Progress } from './Progress'
+import { Quiz } from './Quiz'
 
 /**
  * Store interface

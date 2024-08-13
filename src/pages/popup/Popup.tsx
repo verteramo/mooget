@@ -6,17 +6,14 @@
  ******************************************************************************/
 
 /** External dependencies */
-import { UploadFile, ViewSidebarOutlined } from '@mui/icons-material'
-import { Button, Stack } from '@mui/material'
-import { ChangeEvent, useEffect, useRef, useState } from 'react'
+import { Stack } from '@mui/material'
+import { useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useDispatch, useSelector } from 'react-redux'
 import { Md5 } from 'ts-md5'
 
 /** Package dependencies */
-import { render } from '../common/render'
+import { render } from '../layout/render'
 
-import { InputField } from '../common/InputField'
 import { QuizCard } from './components/QuizCard'
 import { QuizGrid } from './components/QuizGrid'
 import { useBadge } from './hooks/useBadge'
@@ -24,16 +21,17 @@ import { useContentQuiz } from './hooks/useContentQuiz'
 
 /** Project dependencies */
 import { Quiz } from '@/core/models/Quiz'
-import { Store } from '@/core/models/Store'
-import { filterQuiz, loadQuiz, openSidePanel } from '@/core/utils/quizzes'
+import { useAppDispatch, useAppSelector } from '@/redux/hooks'
 import { sliceQuizzesCreateQuiz } from '@/redux/sliceQuizzes'
+import { filterQuiz } from '@/utils/quizzes'
 import { EmptyBox } from '../common/EmptyBox'
+import { Actionbar } from './components/Actionbar'
 
 function Popup (): JSX.Element {
   const { t } = useTranslation()
 
-  const dispatch = useDispatch()
-  const quizzes = useSelector((store: Store) => store.quizzes)
+  const dispatch = useAppDispatch()
+  const quizzes = useAppSelector(store => store.quizzes)
 
   const setBadge = useBadge()
   const contentQuiz = useContentQuiz()
@@ -44,8 +42,6 @@ function Popup (): JSX.Element {
     filteredQuiz !== undefined && filteredQuiz.questions.length > 0
 
   const showQuizGrid = quizzes.length > 0
-
-  const inputFileRef = useRef<HTMLInputElement>(null)
 
   /**
    * Set the quiz name
@@ -81,18 +77,8 @@ function Popup (): JSX.Element {
     }
   }
 
-  function handleQuizUpload (e: ChangeEvent<HTMLInputElement>): void {
-    const file = e.target.files?.item(0) ?? undefined
-
-    if (file !== undefined) {
-      loadQuiz(file).then((loadedQuiz) => {
-        setQuiz(loadedQuiz)
-      }).catch((error) => {
-        console.log('handleQuizUpload', error)
-      })
-
-      e.target.value = ''
-    }
+  function handleQuizDismiss (): void {
+    setFilteredQuiz(undefined)
   }
 
   useEffect(() => {
@@ -103,7 +89,8 @@ function Popup (): JSX.Element {
   }, [contentQuiz])
 
   useEffect(() => {
-    if (quiz !== undefined && contentQuiz !== undefined) {
+    if (quiz !== undefined) {
+      console.log('setting quiz')
       const filteredQuiz = filterQuiz(quizzes, quiz)
 
       setFilteredQuiz(filteredQuiz)
@@ -113,45 +100,14 @@ function Popup (): JSX.Element {
 
   return (
     <Stack minWidth={700} minHeight={150} spacing={1}>
-      <Stack direction='row' spacing={1} justifyContent='space-between'>
-        <InputField
-          ref={inputFileRef}
-          hidden
-          type='file'
-          accept='.json'
-          onChange={handleQuizUpload}
-        />
-        <Button
-          size='small'
-          variant='contained'
-          color='primary'
-          startIcon={<UploadFile />}
-          onClick={() => {
-            inputFileRef.current?.click()
-          }}
-        >
-          {t('upload')}
-        </Button>
-        <Button
-          size='small'
-          variant='contained'
-          color='primary'
-          startIcon={<ViewSidebarOutlined />}
-          onClick={() => {
-            openSidePanel().catch((error) => {
-              console.log('openSidePanel error', error)
-            })
-          }}
-        >
-          {t('sidepanel')}
-        </Button>
-      </Stack>
+      <Actionbar onLoadQuiz={setQuiz} />
       {showQuizCard && (
         <QuizCard
           quiz={filteredQuiz}
           onNameChange={setQuizName}
           onCategoryChange={setQuizCategory}
-          onSaveClick={handleQuizSave}
+          onSave={handleQuizSave}
+          onDismiss={handleQuizDismiss}
         />
       )}
       {showQuizGrid

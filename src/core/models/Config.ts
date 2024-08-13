@@ -19,10 +19,20 @@ export interface Config {
   /**
    * Current primary color
    */
-  primary: string
+  primaryColor: string
 
   /**
    * Current language
    */
   language: string
+
+  /**
+   * Reveal answers flag
+   */
+  revealAnswers: boolean
+
+  /**
+   * Clipboard enabled flag
+   */
+  clipboardEnabled: boolean
 }

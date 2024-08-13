@@ -18,21 +18,23 @@ import { QuestionReducerMap } from '@/core/parsing/QuestionReducer'
  * must be correctly matched against another list of names or statements.
  * @see https://docs.moodle.org/en/Matching_question_type
  */
-export const MatchQuestionReducer: QuestionReducerMap = {
-  [QuestionType.Match]: {
+export const MatchingQuestionReducer: QuestionReducerMap = {
+  [QuestionType.Matching]: {
     answer: ({ element, correct }) => {
       const answer: Answer[] = []
 
       if (correct === true) {
         for (const option of element.querySelectorAll('table.answer > tbody > tr')) {
           const text = option.querySelector('td.text')?.textContent
-          const control = option.querySelector('td.control')?.textContent
+          const control = option.querySelector('td.control > select > option[selected]')?.textContent
 
           if (text != null && control != null) {
             answer.push({ value: text, correct: control })
           }
         }
       }
+
+      console.log('MatchingQuestionReducer', answer)
 
       return answer
     }

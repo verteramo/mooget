@@ -13,20 +13,15 @@ import { storageAction } from './store'
 
 /** Project dependencies */
 import { Config } from '@/core/models/Config'
+import { Colors } from '@/utils/colors'
 import { PaletteMode } from '@mui/material'
-
-export const Colors = [
-  '#4caf50',
-  '#03a9f4',
-  '#ba68c8',
-  '#ef5350',
-  '#ff9800'
-]
 
 export const sliceConfigInitialState: Config = {
   mode: 'light',
-  primary: Colors[0],
-  language: 'es'
+  primaryColor: Colors.Blue,
+  language: 'es',
+  revealAnswers: false,
+  clipboardEnabled: false
 }
 
 export const sliceConfig = createSlice({
@@ -37,12 +32,20 @@ export const sliceConfig = createSlice({
       return { ...state, mode }
     },
 
-    sliceConfigSetPrimary: (state, { payload: primary }: PayloadAction<string>) => {
-      return { ...state, primary }
+    sliceConfigSetPrimary: (state, { payload: primaryColor }: PayloadAction<string>) => {
+      return { ...state, primaryColor }
     },
 
     sliceConfigSetLanguage: (state, { payload: language }: PayloadAction<string>) => {
       return { ...state, language }
+    },
+
+    sliceConfigSetRevealAnswers: (state, { payload: revealAnswers }: PayloadAction<boolean>) => {
+      return { ...state, revealAnswers }
+    },
+
+    sliceConfigSetClipboardEnabled: (state, { payload: clipboardEnabled }: PayloadAction<boolean>) => {
+      return { ...state, clipboardEnabled }
     }
   },
   extraReducers: (builder) => {
@@ -55,5 +58,7 @@ export const sliceConfig = createSlice({
 export const {
   sliceConfigSetMode,
   sliceConfigSetPrimary,
-  sliceConfigSetLanguage
+  sliceConfigSetLanguage,
+  sliceConfigSetRevealAnswers,
+  sliceConfigSetClipboardEnabled
 } = sliceConfig.actions

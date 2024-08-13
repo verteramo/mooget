@@ -17,18 +17,20 @@ import { store } from '@/redux/store'
 
 // Initialize i18next
 export async function initI18next (): Promise<void> {
-  await i18n
-    .use(initReactI18next)
-    .init({
-      resources: {
-        en: { translation: en },
-        es: { translation: es }
-      },
-      lng: store.getState().config.language,
-      fallbackLng: ['en', 'es'],
-      debug: true,
-      interpolation: {
-        escapeValue: false
-      }
-    })
+  if (!i18n.isInitialized) {
+    await i18n
+      .use(initReactI18next)
+      .init({
+        resources: {
+          en: { translation: en },
+          es: { translation: es }
+        },
+        lng: store.getState().config.language,
+        fallbackLng: ['en', 'es'],
+        debug: true,
+        interpolation: {
+          escapeValue: false
+        }
+      })
+  }
 }

@@ -11,7 +11,7 @@
 export enum QuestionType {
   Description = 'description',
   DragAndDrop = 'draganddrop',
-  Match = 'matching',
+  Matching = 'matching',
   Multianswer = 'multianswer',
   Multichoice = 'multichoice',
   Text = 'text',

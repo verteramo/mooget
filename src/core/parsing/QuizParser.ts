@@ -10,7 +10,7 @@
 /** Package dependencies */
 import { Question } from '../models/Question'
 import { Quiz } from '../models/Quiz'
-import { partial } from '../utils/native'
+import { partial } from '@/utils/native'
 import { QuestionParserConstructor } from './QuestionParser'
 import { QuestionReducerMap, reduce } from './QuestionReducer'
 

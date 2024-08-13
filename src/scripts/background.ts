@@ -9,25 +9,72 @@
 import { getMessage } from '@extend-chrome/messages'
 
 /** Project dependencies */
-import { fetchImagesAsBase64 } from '@/core/utils/images'
 import { fetchMoodleVersion } from '@/providers/moodle/utils/fetchMoodleVersion'
+import { fetchImagesAsBase64 } from '@/utils/images'
 
 /**
- * Message observer to set the badge
- * It is called from the content script
+ * Message observer to set the badge text
  */
 const [
   bgSetBadgeText,
   bgSetBadgeTextObserver
 ] = getMessage<string>('bgSetBadgeText')
 
+async function setBadgeText (text: string): Promise<void> {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+
+  if (tab !== undefined) {
+    await chrome.action.setBadgeText({ text, tabId: tab.id })
+  }
+}
+
 bgSetBadgeTextObserver.subscribe(([text]) => {
-  chrome.tabs.query({ active: true, currentWindow: true }, ([tab]) => {
-    if (tab !== undefined) {
-      chrome.action.setBadgeText({ text, tabId: tab.id }).catch((error) => {
-        console.log('setBadgeText error', error)
-      })
-    }
+  setBadgeText(text).catch((error) => {
+    console.log('setBadgeText', error)
+  })
+})
+
+/**
+ * Message observer to set the badge text color
+ */
+const [
+  bgSetBadgeTextColor,
+  bgSetBadgeTextColorObserver
+] = getMessage<string>('bgSetBadgeTextColor')
+
+async function setBadgeTextColor (color: string): Promise<void> {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+
+  if (tab !== undefined) {
+    await chrome.action.setBadgeTextColor({ color, tabId: tab.id })
+  }
+}
+
+bgSetBadgeTextColorObserver.subscribe(([color]) => {
+  setBadgeTextColor(color).catch((error) => {
+    console.log('setBadgeTextColor', error)
+  })
+})
+
+/**
+ * Message observer to set the badge background color
+ */
+const [
+  bgSetBadgeBackgroundColor,
+  bgSetBadgeBackgroundColorObserver
+] = getMessage<string>('bgSetBadgeColor')
+
+async function setBadgeBackgroundColor (color: string): Promise<void> {
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true })
+
+  if (tab !== undefined) {
+    await chrome.action.setBadgeBackgroundColor({ color, tabId: tab.id })
+  }
+}
+
+bgSetBadgeBackgroundColorObserver.subscribe(([color]) => {
+  setBadgeBackgroundColor(color).catch((error) => {
+    console.log('setBadgeBackgroundColor', error)
   })
 })
 
@@ -42,7 +89,7 @@ const [
 
 bgFetchMoodleVersionObserver.subscribe(([url,,sendResponse]) => {
   fetchMoodleVersion(url).then(sendResponse).catch((error) => {
-    console.log('getVersion error', error)
+    console.log('fetchMoodleVersion', error)
   })
 })
 
@@ -57,7 +104,7 @@ const [
 
 bgFetchImagesAsBase64Observer.subscribe(([element,,sendResponse]) => {
   fetchImagesAsBase64(element).then(sendResponse).catch((error) => {
-    console.log('getImages error', error)
+    console.log('fetchImagesAsBase64', error)
   })
 })
 
@@ -65,7 +112,7 @@ bgFetchImagesAsBase64Observer.subscribe(([element,,sendResponse]) => {
  * Exports
  */
 export {
-  bgFetchImagesAsBase64,
-  bgFetchMoodleVersion,
-  bgSetBadgeText
+  bgFetchImagesAsBase64, bgFetchMoodleVersion, bgSetBadgeBackgroundColor, bgSetBadgeText,
+  bgSetBadgeTextColor
 }
+

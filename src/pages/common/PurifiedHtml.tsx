@@ -1,13 +1,18 @@
 /*******************************************************************************
- * InputField.tsx
+ * PurifiedHtml.tsx
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
 /** External dependencies */
-import { forwardRef, InputHTMLAttributes } from 'react'
+import DOMPurify from 'dompurify'
+import parse from 'html-react-parser'
 
-export const InputField = forwardRef<HTMLInputElement, InputHTMLAttributes<HTMLInputElement>>(
-  (props, ref) => <input ref={ref} {...props} />
-)
+interface Props {
+  content: string
+}
+
+export function PurifiedHtml ({ content }: Props): JSX.Element {
+  return <>{parse(DOMPurify.sanitize(content))}</>
+}

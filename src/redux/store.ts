@@ -42,12 +42,8 @@ const storageListenerMiddleware = createListenerMiddleware<Store>()
 storageListenerMiddleware.startListening({
   actionCreator: storageAction,
   effect: async ({ payload: { config: { language } } }) => {
-    try {
-      if (i18n.isInitialized && language !== i18n.language) {
-        await i18n.changeLanguage(language)
-      }
-    } catch (error) {
-      console.log('store.ts > i18n.changeLanguage', error)
+    if (i18n.isInitialized && language !== i18n.language) {
+      await i18n.changeLanguage(language)
     }
   }
 })
@@ -102,3 +98,9 @@ export const store = configureStore({
 })
 
 export const persistor = persistStore(store)
+
+// Infer the `RootState` and `AppDispatch` types from the store itself
+export type RootState = ReturnType<typeof store.getState>
+
+// Inferred type: {posts: PostsState, comments: CommentsState, users: UsersState}
+export type AppDispatch = typeof store.dispatch

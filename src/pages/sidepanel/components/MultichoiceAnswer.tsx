@@ -1,4 +1,6 @@
 /** External dependencies */
+import { ReactNode } from 'react'
+
 import {
   Checkbox,
   FormControl,
@@ -14,50 +16,63 @@ import { useTranslation } from 'react-i18next'
 /** Package dependencies */
 
 /** Project dependencies */
-import { RawContent } from '@/pages/common/RawContent'
 
 interface Props {
   single: boolean
-  contents: string[]
+
+  choices: Array<{
+    content: string
+    checked: boolean
+  }>
+
+  onChange: (value: boolean[]) => void
 }
 
-export function MultichoiceAnswer ({ single, contents }: Props): JSX.Element {
+function useComponents (single: boolean): [
+  (props: any) => JSX.Element,
+  (props: any) => ReactNode,
+  string
+] {
+  return single
+    ? [RadioGroup, Radio, 'choose-one']
+    : [FormGroup, Checkbox, 'choose-one-or-more']
+}
+
+export function MultichoiceAnswer ({ single, choices, onChange }: Props): JSX.Element {
   const { t } = useTranslation()
+  const [Group, Control, label] = useComponents(single)
+
   return (
     <FormControl>
-      {single
-        ? (
-          <>
-            <FormLabel>{t('choose-one')}</FormLabel>
-            <RadioGroup>
-              {contents.map((content, index) => {
-                return (
-                  <FormControlLabel
-                    key={index}
-                    label={<RawContent content={content} />}
-                    control={<Radio />}
-                  />
-                )
-              })}
-            </RadioGroup>
-          </>
+      <FormLabel>{t(label)}:</FormLabel>
+      <Group>
+        {choices.map(({ content, checked }, index) => {
+          return (
+            <FormControlLabel
+              key={index}
+              label={content}
+              control={
+                <Control
+                  checked={checked}
+                  onChange={() => {
+                    onChange(
+                      choices.map((choice, i) => {
+                        return (
+                          single
+                            ? i === index
+                            : i === index
+                              ? !choice.checked
+                              : choice.checked
+                        )
+                      })
+                    )
+                  }}
+                />
+              }
+            />
           )
-        : (
-          <>
-            <FormLabel>{t('choose-one-or-more')}</FormLabel>
-            <FormGroup>
-              {contents.map((content, index) => {
-                return (
-                  <FormControlLabel
-                    key={index}
-                    label={<RawContent content={content} />}
-                    control={<Checkbox />}
-                  />
-                )
-              })}
-            </FormGroup>
-          </>
-          )}
+        })}
+      </Group>
     </FormControl>
   )
 }

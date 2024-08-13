@@ -25,7 +25,7 @@ export class MoodleQuestionParser extends QuestionParser {
         return QuestionType.DragAndDrop
 
       case 'match':
-        return QuestionType.Match
+        return QuestionType.Matching
 
       case 'multichoice':
         return QuestionType.Multichoice

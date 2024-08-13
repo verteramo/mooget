@@ -15,13 +15,13 @@ import { Md5 } from 'ts-md5'
 import { QuestionParserConstructor } from '@/core/parsing/QuestionParser'
 import { QuestionReducerMap } from '@/core/parsing/QuestionReducer'
 import { QuizParser } from '@/core/parsing/QuizParser'
-import { MultichoiceQuestionReducer } from '../reducers/MultichoiceQuestionReducer'
-import { MoodleQuestionParser } from './MoodleQuestionParser'
-import { TrueFalseQuestionReducer } from '../reducers/TrueFalseQuestionReducer'
 import { DragAndDropQuestionReducer } from '../reducers/DragAndDropQuestionReducer'
-import { MatchQuestionReducer } from '../reducers/MatchQuestionReducer'
+import { MatchingQuestionReducer } from '../reducers/MatchingQuestionReducer'
 import { MultianswerQuestionReducer } from '../reducers/MultianswerQuestionReducer'
+import { MultichoiceQuestionReducer } from '../reducers/MultichoiceQuestionReducer'
 import { TextQuestionReducer } from '../reducers/TextQuestionReducer'
+import { TrueFalseQuestionReducer } from '../reducers/TrueFalseQuestionReducer'
+import { MoodleQuestionParser } from './MoodleQuestionParser'
 
 /**
  * DOM quiz extractor
@@ -141,7 +141,7 @@ export class MoodleQuizParser extends QuizParser {
   get reducers (): QuestionReducerMap {
     return {
       ...DragAndDropQuestionReducer,
-      ...MatchQuestionReducer,
+      ...MatchingQuestionReducer,
       ...MultianswerQuestionReducer,
       ...MultichoiceQuestionReducer,
       ...TextQuestionReducer,

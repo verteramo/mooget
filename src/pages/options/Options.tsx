@@ -6,7 +6,7 @@
  ******************************************************************************/
 
 /** Package dependencies */
-import { render } from '../common/render'
+import { render } from '../layout/render'
 
 function Options (): JSX.Element {
   return <div>Options</div>

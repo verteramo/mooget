@@ -6,16 +6,17 @@
  ******************************************************************************/
 
 /** External dependencies */
-import { SaveOutlined } from '@mui/icons-material'
+import { PlaylistRemoveRounded, SaveOutlined } from '@mui/icons-material'
+import { common } from '@mui/material/colors'
 import { useTranslation } from 'react-i18next'
 
 import {
-  Badge,
   Button,
   Card,
   CardActions,
   CardContent,
   CardMedia,
+  InputAdornment,
   Stack,
   TextField
 } from '@mui/material'
@@ -25,11 +26,12 @@ import { Quiz } from '@/core/models/Quiz'
 
 const DefaultIcon = '../assets/undefined.png'
 
-interface IProps {
+interface Props {
   quiz: Quiz
   onNameChange: (name: string) => void
   onCategoryChange: (category: string) => void
-  onSaveClick: () => void
+  onSave: () => void
+  onDismiss: () => void
 }
 
 export function QuizCard ({
@@ -42,47 +44,37 @@ export function QuizCard ({
   },
   onNameChange,
   onCategoryChange,
-  onSaveClick
-}: IProps): JSX.Element {
+  onSave,
+  onDismiss
+}: Props): JSX.Element {
   const { t } = useTranslation()
 
   return (
-    <Card variant='outlined'>
+    <Card>
       <Stack direction='row'>
         <Stack direction='column' flexGrow={1}>
           <CardContent>
-            <Stack spacing={1} direction='row'>
+            <Stack spacing={1} direction='row' alignItems='center'>
               <TextField
                 fullWidth
-                size='small'
                 label={t('category')}
                 value={category}
                 error={category.length === 0}
                 onChange={({ target: { value } }) => onCategoryChange(value)}
               />
-              <Badge color='primary' badgeContent={length}>
-                <TextField
-                  fullWidth
-                  size='small'
-                  label={t('quiz')}
-                  value={name}
-                  error={name.length === 0}
-                  onChange={({ target: { value } }) => onNameChange(value)}
-                />
-              </Badge>
+              <TextField
+                fullWidth
+                label={t('quiz')}
+                value={name}
+                error={name.length === 0}
+                onChange={({ target: { value } }) => onNameChange(value)}
+                InputProps={{ endAdornment: <InputAdornment position='end'>{length}</InputAdornment> }}
+              />
             </Stack>
           </CardContent>
           <CardActions sx={{ marginX: 1 }}>
-            <Stack spacing={1} direction='row'>
-              <Button
-                size='small'
-                variant='contained'
-                startIcon={<SaveOutlined />}
-                onClick={onSaveClick}
-              >
-                {t('save')}
-              </Button>
-            </Stack>
+            <Button startIcon={<SaveOutlined />} onClick={onSave}>{t('save')}</Button>
+            <Button startIcon={<PlaylistRemoveRounded />} onClick={onDismiss}>{t('dismiss')}</Button>
           </CardActions>
         </Stack>
         <CardMedia
@@ -90,7 +82,7 @@ export function QuizCard ({
           alt={brand}
           title={brand}
           image={icon ?? DefaultIcon}
-          sx={{ width: 128, objectFit: 'contain', backgroundColor: 'white' }}
+          sx={{ width: 128, objectFit: 'contain', backgroundColor: common.white }}
         />
       </Stack>
     </Card>

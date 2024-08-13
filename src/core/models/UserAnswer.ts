@@ -17,5 +17,5 @@ export interface UserAnswer {
   /**
    * Answer
    */
-  answer?: Array<boolean | string>
+  answer?: Array<boolean | string | undefined>
 }

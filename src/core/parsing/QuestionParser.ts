@@ -1,18 +1,24 @@
 /*******************************************************************************
- * Question.ts
+ * QuestionParser.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
 /** Package dependencies */
+import { partial } from '@/core/utilities/native'
 import { Question } from '../models/Question'
+import { QuestionType } from '../models/QuestionType'
+import { QuestionReducer, reduce } from './QuestionReducer'
 
 /**
- * Contract for external question data
+ * Question parser optional properties
  */
-export interface QuestionParser
-  extends Partial<Omit<Question, 'id'>> {
+export interface QuestionParser {
+  /**
+   * Correctness, if it can be determined
+   */
+  correct?: boolean
 
   /**
    * Right answer, if any
@@ -20,22 +26,54 @@ export interface QuestionParser
   rightanswer?: string
 
   /**
-   * Correctness, if it can be determined
+   * Feedback, if any
    */
-  correct?: boolean
-}
-
-export abstract class QuestionParser {
-  /**
-   * @param element Question root element
-   */
-  constructor (
-    readonly element: HTMLElement
-  ) {}
+  feedback?: string
 }
 
 /**
- * Question parser constructor
+ * Contract for external question data
  */
-export type QuestionParserConstructor =
-  new (element: HTMLElement) => QuestionParser
+export abstract class QuestionParser {
+  /**
+   * Type
+   */
+  abstract get type (): QuestionType | undefined
+
+  /**
+   * Content
+   */
+  abstract get content (): string | undefined
+
+  /**
+   * @param element Question root element
+   */
+  constructor (readonly element: HTMLElement) {}
+
+  /**
+   * Get the question as a model
+   *
+   * @param hash Hashing function
+   * @param reducer Question reducer
+   */
+  async getQuestion (hash: (value: string) => string, reducer: QuestionReducer): Promise<Question | undefined> {
+    const type = this.type
+    const content = this.content
+
+    if (
+      type !== undefined &&
+      content !== undefined
+    ) {
+      return {
+        id: hash(content),
+        type,
+        content,
+        answers: [],
+        ...await reduce(type, this, reducer),
+        ...partial<Question>({
+          feedback: this.feedback
+        })
+      }
+    }
+  }
+}

@@ -5,35 +5,33 @@
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-/** External dependencies */
+// External dependencies
 import { useEffect, useState } from 'react'
 
-/** Project dependencies */
-import { Quiz } from '@/core/models/Quiz'
+// Project dependencies
+import { Quiz } from '@/core/models'
 import { csRequestQuiz } from '@/scripts/content'
 
 /**
- * Get the quiz from the content script
+ * Request quiz from the content script
  */
 export function useContentQuiz (): Quiz | undefined {
   const [quiz, setQuiz] = useState<Quiz>()
 
-  async function initialize (): Promise<void> {
+  async function requestQuiz (callback: (quiz: Quiz) => void): Promise<void> {
     const [tab] = await chrome.tabs.query({ active: true, lastFocusedWindow: true })
 
     if (tab !== undefined) {
       const quiz = await csRequestQuiz(undefined, { tabId: tab.id })
 
       if (quiz !== undefined) {
-        setQuiz(quiz)
+        callback(quiz)
       }
     }
   }
 
   useEffect(function () {
-    initialize().catch((error: Error) => {
-      console.log('useContentQuiz.ts > initialize', error)
-    })
+    requestQuiz(setQuiz).catch(console.error)
   }, [])
 
   return quiz

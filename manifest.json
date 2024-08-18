@@ -1,0 +1,46 @@
+{
+  "name": "Mooget",
+  "{{chrome}}.manifest_version": 3,
+  "{{firefox}}.manifest_version": 2,
+  "icons": {
+    "16": "assets/logo.png",
+    "32": "assets/logo.png",
+    "48": "assets/logo.png",
+    "96": "assets/logo.png",
+    "128": "assets/logo.png"
+  },
+  "{{chrome}}.action": {
+    "default_popup": "src/pages/popup/index.html"
+  },
+  "{{firefox}}.browser_action": {
+    "default_popup": "src/pages/popup/index.html"
+  },
+  "side_panel": {
+    "default_path": "src/pages/sidepanel/index.html"
+  },
+  "content_scripts": [
+    {
+      "matches": [
+        "<all_urls>"
+      ],
+      "js": [
+        "src/scripts/content.ts"
+      ]
+    }
+  ],
+  "background": {
+    "{{chrome}}.service_worker": "src/scripts/background.ts",
+    "{{firefox}}.scripts": [
+      "src/scripts/background.ts"
+    ]
+  },
+  "permissions": [
+    "tabs",
+    "storage",
+    "sidePanel",
+    "webRequest"
+  ],
+  "optional_host_permissions": [
+    "https://*/*"
+  ]
+}

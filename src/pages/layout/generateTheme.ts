@@ -6,19 +6,19 @@
  ******************************************************************************/
 
 /** External dependencies */
-import { DarkBackgroundColor, LightBackgroundColor } from '@/utils/colors'
+import { Color } from '@/core/utilities/colors'
 import { createTheme, PaletteMode, Theme } from '@mui/material'
 import { common } from '@mui/material/colors'
 
-export function generateTheme (mode: PaletteMode, primaryColor: string): Theme {
+export function generateTheme (mode: PaletteMode, color: string): Theme {
   return createTheme({
     palette: {
       mode,
       background: {
-        default: mode === 'light' ? LightBackgroundColor : DarkBackgroundColor
+        default: mode === 'light' ? Color.Light : Color.Dark
       },
       primary: {
-        main: primaryColor,
+        main: color,
         contrastText: common.white
       }
     },

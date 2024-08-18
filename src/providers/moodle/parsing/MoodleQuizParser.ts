@@ -12,49 +12,46 @@ import { Md5 } from 'ts-md5'
 /** Package dependencies */
 
 /** Project dependencies */
-import { QuestionParserConstructor } from '@/core/parsing/QuestionParser'
-import { QuestionReducerMap } from '@/core/parsing/QuestionReducer'
-import { QuizParser } from '@/core/parsing/QuizParser'
-import { DragAndDropQuestionReducer } from '../reducers/DragAndDropQuestionReducer'
-import { MatchingQuestionReducer } from '../reducers/MatchingQuestionReducer'
-import { MultianswerQuestionReducer } from '../reducers/MultianswerQuestionReducer'
-import { MultichoiceQuestionReducer } from '../reducers/MultichoiceQuestionReducer'
-import { TextQuestionReducer } from '../reducers/TextQuestionReducer'
-import { TrueFalseQuestionReducer } from '../reducers/TrueFalseQuestionReducer'
-import { MoodleQuestionParser } from './MoodleQuestionParser'
+import { QuizParser } from '@/core/parsing'
+import { bgFetchMoodleVersion } from '@/scripts/background'
 
 /**
  * DOM quiz extractor
  */
 export class MoodleQuizParser extends QuizParser {
-  /**
-   * Base URL of the site;
-   * could be a subdirectory like 'site.com/path/to/moodle'
-   */
-  private get home (): string | undefined {
-    return this.url?.replace(/\/mod\/quiz.*/, '')
+  get canHandleDocument (): boolean {
+    return [
+      'page-mod-quiz-attempt',
+      'page-mod-quiz-review'
+    ].includes(document.body.id)
   }
 
   /**
    * Last breadcrumb-item
    */
-  get name (): string | undefined {
-    const text = $('li.breadcrumb-item').last().text().replace(/\s+/g, ' ').trim()
-
-    if (text.length > 0) {
-      return text
-    }
+  get name (): string {
+    return $('li.breadcrumb-item').last().text().replace(/\s+/g, ' ').trim()
   }
 
   /**
    * First breadcrumb-item with title
    */
   get category (): string | undefined {
-    const text = $('li.breadcrumb-item a[title]').first().attr('title')?.replace(/\s+/g, ' ').trim()
+    return $('li.breadcrumb-item a[title]').first().attr('title')?.replace(/\s+/g, ' ').trim()
+  }
 
-    if (text !== undefined && text.length > 0) {
-      return text
-    }
+  /**
+   * Question elements
+   */
+  get questions (): NodeListOf<HTMLElement> {
+    return document.querySelectorAll('div.que')
+  }
+
+  /**
+   * Hash function
+   */
+  get hash (): (value: string) => string {
+    return (value: string) => Md5.hashStr(value)
   }
 
   /**
@@ -78,6 +75,14 @@ export class MoodleQuizParser extends QuizParser {
         return `${origin}${pathname}?attempt=${attempt}`
       }
     }
+  }
+
+  /**
+   * Base URL of the site;
+   * could be a subdirectory like 'site.com/path/to/moodle'
+   */
+  private get home (): string | undefined {
+    return this.url?.replace(/\/mod\/quiz.*/, '')
   }
 
   /**
@@ -107,59 +112,19 @@ export class MoodleQuizParser extends QuizParser {
   /**
    * Navbar brand img alt or text
    */
-  get owner (): string | undefined {
-    const value = (
+  get owner (): string {
+    return (
       $('a.navbar-brand img').attr('alt') ??
       $('a.navbar-brand').text().trim()
     )
+  }
 
-    if (value.length > 0) {
-      return value
+  /**
+   * Version of the site
+   */
+  get version (): Promise<string | undefined> | undefined {
+    if (this.home !== undefined) {
+      return bgFetchMoodleVersion(this.home)
     }
-  }
-
-  /**
-   * Question elements
-   */
-  get questions (): NodeListOf<HTMLElement> {
-    return document.querySelectorAll('div.que')
-  }
-
-  /**
-   * Validity
-   */
-  get valid (): boolean {
-    return [
-      'page-mod-quiz-review',
-      'page-mod-quiz-attempt'
-    ].includes(document.body.id)
-  }
-
-  /**
-   * Reducers
-   */
-  get reducers (): QuestionReducerMap {
-    return {
-      ...DragAndDropQuestionReducer,
-      ...MatchingQuestionReducer,
-      ...MultianswerQuestionReducer,
-      ...MultichoiceQuestionReducer,
-      ...TextQuestionReducer,
-      ...TrueFalseQuestionReducer
-    }
-  }
-
-  /**
-   * Hash function
-   */
-  get hash (): (value: string) => string {
-    return (value: string) => Md5.hashStr(value)
-  }
-
-  /**
-   * Parser
-   */
-  get Parser (): QuestionParserConstructor {
-    return MoodleQuestionParser
   }
 }

@@ -9,8 +9,8 @@
 import { getMessage } from '@extend-chrome/messages'
 
 /** Project dependencies */
-import { fetchMoodleVersion } from '@/providers/moodle/utils/fetchMoodleVersion'
-import { fetchImagesAsBase64 } from '@/utils/images'
+import { fetchMoodleVersion } from '@/providers/moodle'
+import { fetchImagesAsBase64 } from '@/core/utilities/images'
 
 /**
  * Message observer to set the badge text
@@ -115,4 +115,3 @@ export {
   bgFetchImagesAsBase64, bgFetchMoodleVersion, bgSetBadgeBackgroundColor, bgSetBadgeText,
   bgSetBadgeTextColor
 }
-

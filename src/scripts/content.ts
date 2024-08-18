@@ -17,11 +17,11 @@ import {
 } from './background'
 
 /** Project dependencies */
-import { Quiz } from '@/core/models/Quiz'
-import { parseQuiz } from '@/core/parsing/QuizParser'
-import { MoodleQuizParser } from '@/providers/moodle/parsing/MoodleQuizParser'
-import { store } from '@/redux/store'
-import { equalQuizzes, filterQuiz } from '@/utils/quizzes'
+import { Quiz } from '@/core/models'
+import { parse } from '@/core/parsing'
+import { useConfigStore, useQuizCollectionStore } from '@/core/stores'
+import { filterQuiz } from '@/core/utilities/quizzes'
+import { moodleProvider } from '@/providers/moodle'
 
 const [
   csRequestQuiz,
@@ -30,46 +30,8 @@ const [
   /* eslint-disable-next-line @typescript-eslint/no-invalid-void-type */
   getMessage<void, Quiz | undefined>('requestQuiz', { async: true })
 
-const [
-  csAnswerQuiz,
-  csAnswerQuizObserver
-] =
-  /* eslint-disable-next-line @typescript-eslint/no-invalid-void-type */
-  getMessage<void, void>('answerQuiz', { async: true })
-
-let currentPrimaryColor: string = ''
-
-async function listenPrimaryColor (): Promise<void> {
-  const primaryColor = store.getState().config.primaryColor
-
-  if (primaryColor !== currentPrimaryColor) {
-    currentPrimaryColor = primaryColor
-    await bgSetBadgeBackgroundColor(currentPrimaryColor)
-  }
-}
-
-let currentQuizzes: Quiz[] = []
-
-async function listenQuizzesChange (quiz: Quiz): Promise<void> {
-  const quizzes = store.getState().quizzes
-
-  if (quizzes.length === 0 || !equalQuizzes(quizzes, currentQuizzes)) {
-    currentQuizzes = quizzes
-    const filteredQuiz = filterQuiz(currentQuizzes, quiz)
-    const length = filteredQuiz.questions.length
-
-    if (length > 0) {
-      await bgSetBadgeText(length.toString())
-    }
-  }
-}
-
 async function main (): Promise<void> {
-  store.subscribe(() => {
-    listenPrimaryColor().catch(console.error)
-  })
-
-  const quiz = await parseQuiz([MoodleQuizParser])
+  const quiz = await parse([moodleProvider])
 
   console.log('Welcome', quiz)
 
@@ -78,19 +40,21 @@ async function main (): Promise<void> {
       sendResponse(quiz)
     })
 
-    csAnswerQuizObserver.subscribe(() => {
-    })
+    useQuizCollectionStore.subscribe(({ items }) => items, (items) => {
+      const length = filterQuiz(items, quiz).questions.length
+      const text = length === 0 ? '' : length.toString()
 
-    store.subscribe(() => {
-      listenQuizzesChange(quiz).catch(console.error)
-    })
+      bgSetBadgeText(text).catch(console.error)
+    }, { fireImmediately: true })
   }
 }
 
-export {
-  csAnswerQuiz, csRequestQuiz
-}
+export { csRequestQuiz }
 
 bgSetBadgeTextColor(common.white).catch(console.error)
+
+useConfigStore.subscribe(({ color }) => color, (color) => {
+  bgSetBadgeBackgroundColor(color).catch(console.error)
+}, { fireImmediately: true })
 
 main().catch(console.error)

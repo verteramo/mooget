@@ -13,7 +13,7 @@ import { useTranslation } from 'react-i18next'
 import {
   Box,
   Checkbox,
-  Paper
+  Link
 } from '@mui/material'
 
 import {
@@ -50,27 +50,32 @@ import {
 } from './QuizGridProps'
 
 /** Project dependencies */
-import { Question } from '@/core/models/Question'
-import { Quiz } from '@/core/models/Quiz'
-import { Colors } from '@/utils/colors'
-import { createProgress, openSidePanel, promptQuizDownload } from '@/utils/quizzes'
-import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import { sliceProgressSetProgress } from '@/redux/sliceProgress'
-import { sliceQuizzesRemoveQuiz, sliceQuizzesUpdateQuiz } from '@/redux/sliceQuizzes'
+import { Question, Quiz } from '@/core/models'
+import { useProgressStore, useQuizCollectionStore } from '@/core/stores'
+import { Color } from '@/core/utilities/colors'
+import { createProgress, openSidePanel, promptQuizDownload } from '@/core/utilities/quizzes'
 
-interface IProps {
-  quizzes: Quiz[]
-}
-
-export function QuizGrid ({ quizzes }: IProps): JSX.Element {
+export function QuizGrid (): JSX.Element {
   const { t } = useTranslation()
-  const dispatch = useAppDispatch()
   const confirm = useConfirm()
   const [rowModesModel, setRowModesModel] = useState<GridRowModesModel>({})
-  const { quiz: currentQuizId } = useAppSelector(store => store.progress)
+
+  const items = useQuizCollectionStore((state) => state.items)
+  const removeQuiz = useQuizCollectionStore((state) => state.removeQuiz)
+  const toggleFavorite = useQuizCollectionStore((state) => state.toggleFavorite)
+
+  const setProgress = useProgressStore((state) => state.setProgress)
+
+  const quizId = useProgressStore((state) => state.quizId)
+  const updateQuiz = useQuizCollectionStore((state) => state.updateQuiz)
+
+  const handleFavoriteChange = (id: string) => () => {
+    toggleFavorite(id)
+  }
 
   const processRowUpdate = (quiz: GridRowModel<Quiz>): Quiz => {
-    return dispatch(sliceQuizzesUpdateQuiz(quiz)).payload
+    updateQuiz(quiz)
+    return quiz
   }
 
   const handleRowEditStop: GridEventListener<'rowEditStop'> = (
@@ -79,16 +84,6 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
   ) => {
     if (params.reason === GridRowEditStopReasons.rowFocusOut) {
       event.defaultMuiPrevented = true
-    }
-  }
-
-  const toggleFavorite = (id: string) => () => {
-    const quiz = quizzes.find(({ id: currentId }) => currentId === id)
-
-    if (quiz !== undefined) {
-      dispatch(
-        sliceQuizzesUpdateQuiz({ ...quiz, favorite: !(quiz.favorite ?? false) })
-      )
     }
   }
 
@@ -114,8 +109,13 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
   }
 
   const handleQuizDelete = ({ id, name }: Quiz) => () => {
-    confirm({ title: t('delete'), content: name })
-      .then(() => dispatch(sliceQuizzesRemoveQuiz(id)))
+    confirm({
+      title: t('delete'),
+      content: name,
+      cancellationText: t('cancel'),
+      confirmationText: t('accept')
+    })
+      .then(() => removeQuiz(id))
       .catch(console.error)
   }
 
@@ -124,8 +124,9 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
   }
 
   const handleQuizPlay = (quiz: Quiz) => () => {
-    if (currentQuizId !== quiz.id) {
-      dispatch(sliceProgressSetProgress(createProgress(quiz)))
+    if (quizId !== quiz.id) {
+      console.log('Setting progress for quiz', quiz)
+      setProgress(createProgress(quiz))
     }
 
     openSidePanel().catch((error: Error) => {
@@ -144,13 +145,13 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
       width: 52,
       align: 'left',
       cellClassName: 'favorite-cell',
-      renderCell: ({ value, row: { id } }: GridCellParams<Quiz, boolean>) => (
+      renderCell: ({ row: { id }, value }: GridCellParams<Quiz, boolean>) => (
         <Checkbox
           color='error'
           icon={<FavoriteBorder />}
           checkedIcon={<Favorite />}
           checked={value ?? false}
-          onChange={toggleFavorite(id)}
+          onChange={handleFavoriteChange(id)}
         />
       )
     },
@@ -160,7 +161,8 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
       field: 'category',
       headerName: t('category'),
       width: 180,
-      editable: true
+      editable: true,
+      hideable: true
     },
 
     {
@@ -168,7 +170,18 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
       field: 'name',
       headerName: t('quiz'),
       width: 180,
-      editable: true
+      editable: true,
+      renderCell: ({ row: { url }, value }: GridCellParams<Quiz, string>) => (
+        <Link
+          href={url}
+          fontWeight='bold'
+          underline='hover'
+          target='_blank'
+          rel='noreferrer'
+        >
+          {value}
+        </Link>
+      )
     },
 
     {
@@ -177,10 +190,10 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
       headerName: t('questions'),
       align: 'center',
       type: 'number',
-      renderCell: ({ value }: GridCellParams<any, Question[]>) =>
+      renderCell: ({ value }: GridCellParams<Quiz, Question[]>) =>
         value?.length,
-      sortComparator: (v1: Question[], v2: Question[]) =>
-        v1.length - v2.length
+      sortComparator: (a: Question[], b: Question[]) =>
+        a.length - b.length
     },
 
     {
@@ -199,7 +212,7 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
         if (isInEditMode) {
           return [
             <GridActionsCellItem
-              sx={cellItemHoverColor(Colors.Green)}
+              sx={cellItemHoverColor(Color.Donatello)}
               key='save'
               label={t('save')}
               title={t('save')}
@@ -207,7 +220,7 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
               onClick={handleQuizEditSave(id)}
             />,
             <GridActionsCellItem
-              sx={cellItemHoverColor(Colors.Red)}
+              sx={cellItemHoverColor(Color.Raphael)}
               key='cancel'
               label={t('cancel')}
               title={t('cancel')}
@@ -219,7 +232,7 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
 
         return [
           <GridActionsCellItem
-            sx={cellItemHoverColor(Colors.Orange)}
+            sx={cellItemHoverColor(Color.Michelangelo)}
             key='edit'
             label={t('edit')}
             title={t('edit')}
@@ -227,7 +240,7 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
             onClick={handleQuizEdit(id)}
           />,
           <GridActionsCellItem
-            sx={cellItemHoverColor(Colors.Red)}
+            sx={cellItemHoverColor(Color.Raphael)}
             key='delete'
             label={t('delete')}
             title={t('delete')}
@@ -235,7 +248,7 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
             onClick={handleQuizDelete(quiz)}
           />,
           <GridActionsCellItem
-            sx={cellItemHoverColor(Colors.Blue)}
+            sx={cellItemHoverColor(Color.Donatello)}
             key='download'
             label={t('download')}
             title={t('download')}
@@ -243,7 +256,7 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
             onClick={handleQuizDownload(quiz)}
           />,
           <GridActionsCellItem
-            sx={cellItemHoverColor(Colors.Green)}
+            sx={cellItemHoverColor(Color.Leonardo)}
             key='play'
             label={t('play')}
             title={t('play')}
@@ -256,29 +269,27 @@ export function QuizGrid ({ quizzes }: IProps): JSX.Element {
   ]
 
   return (
-    <Paper>
-      <Box sx={{ width: '100%' }}>
-        <DataGrid
-          autoHeight
-          disableColumnSelector
-          disableRowSelectionOnClick
-          editMode='row'
-          density='compact'
-          rows={quizzes}
-          columns={columns}
-          rowSelection={false}
-          rowModesModel={rowModesModel}
-          autosizeOptions={{ includeOutliers: true }}
-          processRowUpdate={processRowUpdate}
-          onRowModesModelChange={setRowModesModel}
-          onRowEditStop={handleRowEditStop}
-          pageSizeOptions={[5, 10, 20]}
+    <Box sx={{ width: '100%' }}>
+      <DataGrid
+        autoHeight
+        disableColumnSelector
+        disableRowSelectionOnClick
+        editMode='row'
+        density='compact'
+        rows={items}
+        columns={columns}
+        rowSelection={false}
+        rowModesModel={rowModesModel}
+        autosizeOptions={{ includeOutliers: true }}
+        processRowUpdate={processRowUpdate}
+        onRowModesModelChange={setRowModesModel}
+        onRowEditStop={handleRowEditStop}
+        pageSizeOptions={[5, 10, 20]}
           // Come from TestsGridProps.ts
-          sx={dataGridStyles}
-          initialState={initialState}
-          localeText={localeText(t)}
-        />
-      </Box>
-    </Paper>
+        sx={dataGridStyles}
+        initialState={initialState}
+        localeText={localeText(t)}
+      />
+    </Box>
   )
 }

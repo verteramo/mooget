@@ -5,10 +5,9 @@
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-/** External dependencies */
+// External dependencies
 import { ThemeProvider } from '@mui/material/styles'
 import { PropsWithChildren, useMemo } from 'react'
-import { useTranslation } from 'react-i18next'
 
 import {
   AppBar,
@@ -21,19 +20,13 @@ import {
   Typography
 } from '@mui/material'
 
-/** Package dependencies */
+// Package dependencies
+import { generateTheme } from './generateTheme'
 import { LanguageSelect } from './LanguageSelect'
 import { PalettePopover } from './PalettePopover'
-import { generateTheme } from './generateTheme'
 
-/** Project dependencies */
-import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import {
-  sliceConfigSetLanguage,
-  sliceConfigSetMode,
-  sliceConfigSetPrimary
-} from '@/redux/sliceConfig'
-import { ColorArray } from '@/utils/colors'
+// Project dependencies
+import { useConfigStore } from '@/core/stores'
 import { DarkMode, LightMode } from '@mui/icons-material'
 
 /**
@@ -42,25 +35,14 @@ import { DarkMode, LightMode } from '@mui/icons-material'
 export function AppLayout ({
   children
 }: PropsWithChildren): JSX.Element {
-  const dispatch = useAppDispatch()
-  const { mode, primaryColor, language } = useAppSelector(store => store.config)
-  const { t, i18n: { languages } } = useTranslation()
+  const mode = useConfigStore((state) => state.mode)
+  const color = useConfigStore((state) => state.color)
+  const toggleMode = useConfigStore((state) => state.toggleMode)
+
   const theme = useMemo(
-    () => generateTheme(mode, primaryColor),
-    [mode, primaryColor]
+    () => generateTheme(mode, color),
+    [mode, color]
   )
-
-  const handlePrimaryChange = (color: string): void => {
-    dispatch(sliceConfigSetPrimary(color))
-  }
-
-  const handleLanguageChange = (language: string): void => {
-    dispatch(sliceConfigSetLanguage(language))
-  }
-
-  const handleModeChange = (): void => {
-    dispatch(sliceConfigSetMode(mode === 'light' ? 'dark' : 'light'))
-  }
 
   return (
     <ThemeProvider theme={theme}>
@@ -69,23 +51,15 @@ export function AppLayout ({
         <Toolbar disableGutters>
           <Stack direction='row' m={1} flexGrow={1}>
             <Stack direction='row' spacing={1} flexGrow={1} alignItems='center'>
-              <Avatar variant='square' src='../assets/logo.png' />
-              <Typography variant='h6' fontWeight={400}>
+              <Avatar variant='square' src='../../../assets/logo.png' />
+              <Typography variant='h6' fontWeight='bold'>
                 {document.title}
               </Typography>
             </Stack>
             <Stack direction='row' spacing={1}>
-              <LanguageSelect
-                language={language}
-                languages={languages.map((language) => [language, t(language)])}
-                onChange={handleLanguageChange}
-              />
-              <PalettePopover
-                color={primaryColor}
-                colors={ColorArray}
-                onChange={handlePrimaryChange}
-              />
-              <IconButton color='inherit' onClick={handleModeChange}>
+              <LanguageSelect />
+              <PalettePopover />
+              <IconButton color='inherit' onClick={toggleMode}>
                 {mode === 'light' ? <DarkMode /> : <LightMode />}
               </IconButton>
             </Stack>

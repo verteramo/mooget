@@ -5,29 +5,28 @@
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-/** External dependencies */
-import { Palette } from '@mui/icons-material'
-import { IconButton, Popover } from '@mui/material'
-import { ColorResult } from '@uiw/color-convert'
-import Circle from '@uiw/react-color-circle'
+// External dependencies
+import { Check, Palette } from '@mui/icons-material'
+import { alpha, Box, IconButton, Popover, Stack } from '@mui/material'
 import { MouseEvent, useState } from 'react'
 
-interface Props {
-  color: string
-  colors: string[]
-  onChange: (color: string) => void
-  title?: string
-}
+// Project dependencies
+import { useConfigStore } from '@/core/stores'
+import { Color, PaletteColor } from '@/core/utilities/colors'
+import { common } from '@mui/material/colors'
 
-export function PalettePopover ({
-  color,
-  colors,
-  onChange,
-  title
-}: Props): JSX.Element {
+export function PalettePopover (): JSX.Element {
   const [anchor, setAnchor] = useState<HTMLButtonElement | null>(null)
   const opened = anchor !== null
   const id = opened ? 'simple-popover' : undefined
+  const colors = Object.values(PaletteColor)
+  const selectedColor = useConfigStore((state) => state.color)
+
+  const setColor = useConfigStore((state) => state.setColor)
+
+  function getColorName (color: Color): string | undefined {
+    return Object.keys(Color).find((key) => Color[key as keyof typeof Color] === color)
+  }
 
   function handleOpen ({ currentTarget }: MouseEvent<HTMLButtonElement>): void {
     setAnchor(currentTarget)
@@ -37,14 +36,14 @@ export function PalettePopover ({
     setAnchor(null)
   }
 
-  function handleColorChange ({ hex }: ColorResult): void {
+  function handleColorChange (color: Color): void {
     setAnchor(null)
-    onChange(hex)
+    setColor(color)
   }
 
   return (
     <>
-      <IconButton color='inherit' title={title} onClick={handleOpen}>
+      <IconButton color='inherit' onClick={handleOpen}>
         <Palette />
       </IconButton>
       <Popover
@@ -54,22 +53,33 @@ export function PalettePopover ({
         onClose={handleClose}
         anchorOrigin={{
           vertical: 'bottom',
-          horizontal: 'right'
+          horizontal: 'center'
         }}
       >
-        <Circle
-          colors={colors}
-          color={color}
-          onChange={handleColorChange}
-          pointProps={{
-            style: {
-              marginLeft: 5,
-              marginTop: 5,
-              width: 32,
-              height: 32
-            }
-          }}
-        />
+        <Stack direction='row' p={0.5} spacing={0.5}>
+          {colors.map((color) => (
+            <Box
+              component={IconButton}
+              key={color}
+              bgcolor={color}
+              width={30}
+              height={30}
+              title={getColorName(color)}
+              sx={{
+                borderRadius: 0.5,
+                ...(color === selectedColor && {
+                  bgcolor: alpha(color, 0.75)
+                }),
+                '&:hover': {
+                  bgcolor: alpha(color, 0.75)
+                }
+              }}
+              onClick={() => handleColorChange(color)}
+            >
+              {color === selectedColor && <Check sx={{ color: common.white }} />}
+            </Box>
+          ))}
+        </Stack>
       </Popover>
     </>
   )

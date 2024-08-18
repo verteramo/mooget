@@ -5,6 +5,15 @@
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-import { QuestionParser } from '@/core/parsing/QuestionParser'
+import { QuestionType } from '@/core/models'
+import { QuestionParser } from '@/core/parsing'
 
-export class DaypoQuestionParser extends QuestionParser {}
+export class DaypoQuestionParser extends QuestionParser {
+  get type (): QuestionType | undefined {
+    throw new Error('Method not implemented.')
+  }
+
+  get content (): string | undefined {
+    throw new Error('Method not implemented.')
+  }
+}

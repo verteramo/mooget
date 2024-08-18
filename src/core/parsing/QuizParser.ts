@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Quiz.ts
+ * QuizParser.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
@@ -10,18 +10,56 @@
 /** Package dependencies */
 import { Question } from '../models/Question'
 import { Quiz } from '../models/Quiz'
-import { partial } from '@/utils/native'
-import { QuestionParserConstructor } from './QuestionParser'
-import { QuestionReducerMap, reduce } from './QuestionReducer'
+import { Constructor } from './Constructor'
+import { Provider } from './Provider'
+import { QuestionParser } from './QuestionParser'
+import { QuestionReducer } from './QuestionReducer'
 
-export interface QuizParser
-  extends Partial<Omit<Quiz, 'id' | 'questions' | 'favorite'>> {}
+/** Project dependencies */
 
+/**
+ * Quiz parser optional properties
+ */
+export interface QuizParser {
+  /**
+   * URL
+   */
+  url?: string
+
+  /**
+   * Icon URL
+   */
+  icon?: string
+
+  /**
+   * Owner, site, author...
+   */
+  owner?: string
+
+  /**
+   * Version
+   */
+  version?: string | Promise<string | undefined> | undefined
+}
+
+/**
+ * Contract for external quiz data
+ */
 export abstract class QuizParser {
   /**
-   * Validity
+   * Check if the current page can be handled
    */
-  abstract get valid (): boolean
+  abstract get canHandleDocument (): boolean
+
+  /**
+   * Name
+   */
+  abstract get name (): string | undefined
+
+  /**
+   * Category
+   */
+  abstract get category (): string | undefined
 
   /**
    * Questions
@@ -29,86 +67,59 @@ export abstract class QuizParser {
   abstract get questions (): NodeListOf<HTMLElement>
 
   /**
-   * Reducers
+   * Hash function for generating unique IDs
    */
-  abstract get reducers (): QuestionReducerMap
-
   abstract get hash (): (value: string) => string
 
-  abstract get Parser (): QuestionParserConstructor
-
-  async * genQuestions (): AsyncIterable<Question> {
+  /**
+   * Generations of questions
+   *
+   * @param Parser QuestionParser constructor
+   * @param reducer QuestionReducer
+   */
+  async * genQuestions (Parser: Constructor<typeof QuestionParser>, reducer: QuestionReducer): AsyncIterable<Question> {
     for (const element of this.questions) {
-      const parser = new this.Parser(element)
+      const parser = new Parser(element)
+      const question = await parser.getQuestion(this.hash, reducer)
 
-      if (
-        parser.type !== undefined &&
-        parser.content !== undefined
-      ) {
-        yield {
-          id: this.hash(parser.content),
-          type: parser.type,
-          content: parser.content,
-          ...partial<Question>({
-            feedback: parser.feedback,
-            ...await reduce(parser.type, parser, this.reducers)
-          })
-        }
+      if (question !== undefined) {
+        yield question
       }
     }
   }
 }
 
 /**
- * QuizParser constructor signature
- */
-export type QuizParserConstructor = new () => QuizParser
-
-/**
  * Create QuizParser instance
  * @param constructors QuizParser constructors
  */
-function createQuizParserInstance (constructors: QuizParserConstructor[]): QuizParser | undefined {
-  for (const Constructor of constructors) {
-    const instance = new Constructor()
+export async function parse (providers: Provider[]): Promise<Quiz | undefined> {
+  for (const { QuizParser, QuestionParser, reducers } of providers) {
+    const parser = new QuizParser()
+    const { name, category } = parser
 
     if (
-      instance.name !== undefined &&
-      instance.category !== undefined
+      parser.canHandleDocument &&
+      name !== undefined &&
+      category !== undefined
     ) {
-      return instance
-    }
-  }
-}
+      const questions: Question[] = []
 
-/**
- * Get quiz from the DOM
- */
-export async function parseQuiz (constructors: QuizParserConstructor[]): Promise<Quiz | undefined> {
-  const parser = createQuizParserInstance(constructors)
+      for await (const question of parser.genQuestions(QuestionParser, reducers)) {
+        questions.push(question)
+      }
 
-  if (
-    parser?.name !== undefined &&
-    parser?.category !== undefined
-  ) {
-    const questions: Question[] = []
-
-    for await (const question of parser.genQuestions()) {
-      questions.push(question)
-    }
-
-    if (questions.length > 0) {
-      const { name, category } = parser
-
-      return {
-        id: parser.hash(name + category),
-        name,
-        category,
-        questions,
-        url: parser.url,
-        icon: parser.icon,
-        owner: parser.owner,
-        version: parser.version
+      if (questions.length > 0) {
+        return {
+          id: parser.hash(name + category),
+          name,
+          category,
+          questions,
+          url: parser.url,
+          icon: parser.icon,
+          owner: parser.owner,
+          version: await parser.version
+        }
       }
     }
   }

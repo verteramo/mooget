@@ -2,7 +2,7 @@
 import { ReactNode } from 'react'
 
 /** Project dependencies */
-import { QuestionType } from '@/core/models/QuestionType'
+import { QuestionType } from '@/core/models'
 
 type Props = {
   type: QuestionType

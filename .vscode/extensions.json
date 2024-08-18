@@ -1,7 +1,6 @@
 {
   "recommendations": [
     "standard.vscode-standard",
-    "autoBarrel.auto-barrel",
-    "reactCreateComponent.react-create-component",
+    "autoBarrel.auto-barrel"
   ]
 }

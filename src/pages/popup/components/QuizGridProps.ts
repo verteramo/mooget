@@ -41,7 +41,8 @@ export const dataGridStyles = {
   },
   '& .favorite-cell': {
     textOverflow: 'clip'
-  }
+  },
+  boxShadow: 2
 }
 
 /**

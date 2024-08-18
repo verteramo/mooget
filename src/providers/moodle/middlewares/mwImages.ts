@@ -9,14 +9,13 @@
 import $ from 'jquery'
 
 /** Project dependencies */
-import { QuestionMiddleware } from '@/core/parsing/Question'
 import { bgFetchImagesAsBase64 } from '@/scripts/background'
 
 /**
  * Middleware to replace images src in HTML content
  */
-export const mwImages: QuestionMiddleware = {
-  content: async (content) => {
+export const mwImages = {
+  content: async (content: any) => {
     return (await bgFetchImagesAsBase64($($.parseHTML(content)))).html()
   }
 }

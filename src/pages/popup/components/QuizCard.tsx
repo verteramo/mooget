@@ -6,7 +6,7 @@
  ******************************************************************************/
 
 /** External dependencies */
-import { PlaylistRemoveRounded, SaveOutlined } from '@mui/icons-material'
+import { SaveOutlined } from '@mui/icons-material'
 import { common } from '@mui/material/colors'
 import { useTranslation } from 'react-i18next'
 
@@ -22,7 +22,7 @@ import {
 } from '@mui/material'
 
 /** Project dependencies */
-import { Quiz } from '@/core/models/Quiz'
+import { Quiz } from '@/core/models'
 
 const DefaultIcon = '../assets/undefined.png'
 
@@ -31,7 +31,6 @@ interface Props {
   onNameChange: (name: string) => void
   onCategoryChange: (category: string) => void
   onSave: () => void
-  onDismiss: () => void
 }
 
 export function QuizCard ({
@@ -44,8 +43,7 @@ export function QuizCard ({
   },
   onNameChange,
   onCategoryChange,
-  onSave,
-  onDismiss
+  onSave
 }: Props): JSX.Element {
   const { t } = useTranslation()
 
@@ -74,7 +72,6 @@ export function QuizCard ({
           </CardContent>
           <CardActions sx={{ marginX: 1 }}>
             <Button startIcon={<SaveOutlined />} onClick={onSave}>{t('save')}</Button>
-            <Button startIcon={<PlaylistRemoveRounded />} onClick={onDismiss}>{t('dismiss')}</Button>
           </CardActions>
         </Stack>
         <CardMedia

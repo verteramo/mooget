@@ -6,6 +6,7 @@
  ******************************************************************************/
 
 /** External dependencies */
+import { useConfigStore } from '@/core/stores'
 import { Translate } from '@mui/icons-material'
 import {
   FormControl,
@@ -15,6 +16,7 @@ import {
   SelectChangeEvent
 } from '@mui/material'
 import { common } from '@mui/material/colors'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Styles
@@ -37,29 +39,17 @@ const style = {
   }
 }
 
-interface Props {
-  language: string
-  languages: Array<[string, string]>
-  onChange: (language: string) => void
-  title?: string
-}
+export function LanguageSelect (): JSX.Element {
+  const setLanguage = useConfigStore((state) => state.setLanguage)
+  const { t, i18n: { language, languages } } = useTranslation()
 
-export function LanguageSelect ({
-  language,
-  languages,
-  onChange,
-  title
-}: Props): JSX.Element {
-  function handleChange ({
-    target: { value }
-  }: SelectChangeEvent<string>): void {
-    onChange(value)
+  function handleChange (event: SelectChangeEvent<string>): void {
+    setLanguage(event.target.value)
   }
 
   return (
     <FormControl>
       <Select
-        title={title}
         sx={style}
         startAdornment={
           <InputAdornment position='start'>
@@ -69,9 +59,9 @@ export function LanguageSelect ({
         value={language}
         onChange={handleChange}
       >
-        {languages.map(([key, name]) => (
-          <MenuItem key={key} value={key}>
-            {name}
+        {languages.map((language) => (
+          <MenuItem key={language} value={language}>
+            {t(language)}
           </MenuItem>
         ))}
       </Select>

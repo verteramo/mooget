@@ -1,8 +1,7 @@
-import { Quiz } from '@/core/models/Quiz'
+import { Quiz } from '@/core/models'
+import { useConfigStore } from '@/core/stores'
+import { loadQuiz, openSidePanel } from '@/core/utilities/quizzes'
 import { InputFile } from '@/pages/common/InputFile'
-import { useAppDispatch, useAppSelector } from '@/redux/hooks'
-import { sliceConfigSetClipboardEnabled, sliceConfigSetRevealAnswers } from '@/redux/sliceConfig'
-import { loadQuiz, openSidePanel } from '@/utils/quizzes'
 import { ContentPasteOffRounded, ContentPasteRounded, UploadFileRounded, ViewSidebarRounded, VisibilityOffRounded, VisibilityRounded } from '@mui/icons-material'
 import { IconButton, Paper, Stack } from '@mui/material'
 import { t } from 'i18next'
@@ -12,9 +11,10 @@ interface Props {
 }
 
 export function Actionbar ({ onLoadQuiz }: Props): JSX.Element {
-  const dispatch = useAppDispatch()
-  const visibility = useAppSelector(store => store.config.revealAnswers)
-  const clipboard = useAppSelector(store => store.config.clipboardEnabled)
+  const visibility = useConfigStore((state) => state.visibility)
+  const clipboard = useConfigStore((state) => state.clipboard)
+  const toggleVisibility = useConfigStore((state) => state.toggleVisibility)
+  const toggleClipboard = useConfigStore((state) => state.toggleClipboard)
 
   function handleFileChange ([file]: FileList): void {
     loadQuiz(file).then((quiz) => {
@@ -26,14 +26,6 @@ export function Actionbar ({ onLoadQuiz }: Props): JSX.Element {
 
   function handleSidePanelClick (): void {
     openSidePanel().catch(console.error)
-  }
-
-  function handleVisibilityClick (): void {
-    dispatch(sliceConfigSetRevealAnswers(!visibility))
-  }
-
-  function handleClipboardClick (): void {
-    dispatch(sliceConfigSetClipboardEnabled(!clipboard))
   }
 
   return (
@@ -60,16 +52,15 @@ export function Actionbar ({ onLoadQuiz }: Props): JSX.Element {
 
       <IconButton
         color='inherit'
-        onClick={handleVisibilityClick}
+        onClick={toggleVisibility}
         title={t('reveal-answers')}
       >
         {visibility ? <VisibilityRounded /> : <VisibilityOffRounded />}
       </IconButton>
 
       <IconButton
-        disabled
         color='inherit'
-        onClick={handleClipboardClick}
+        onClick={toggleClipboard}
         title={t('enable-clipboard')}
       >
         {clipboard ? <ContentPasteRounded /> : <ContentPasteOffRounded />}

@@ -6,7 +6,7 @@
  ******************************************************************************/
 
 /**
- * User progress interface
+ * User answer interface
  */
 export interface UserAnswer {
   /**
@@ -17,5 +17,5 @@ export interface UserAnswer {
   /**
    * Answer
    */
-  answer?: Array<boolean | string | undefined>
+  answer: Array<boolean | string | undefined>
 }

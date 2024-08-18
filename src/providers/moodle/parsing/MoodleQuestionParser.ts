@@ -6,8 +6,8 @@
  ******************************************************************************/
 
 /** Project dependencies */
-import { QuestionType } from '@/core/models/QuestionType'
-import { QuestionParser } from '@/core/parsing/QuestionParser'
+import { QuestionType } from '@/core/models'
+import { QuestionParser } from '@/core/parsing'
 
 /**
  * Extracts information from the DOM div.que element
@@ -49,20 +49,6 @@ export class MoodleQuestionParser extends QuestionParser {
   }
 
   /**
-   * HTML content of the div.generalfeedback element
-   */
-  get feedback (): string | undefined {
-    return this.element.querySelector('div.generalfeedback')?.innerHTML
-  }
-
-  /**
-   * Second part of the div.rightanswer text (split by ': ')
-   */
-  get rightanswer (): string | undefined {
-    return this.element.querySelector('div.rightanswer')?.textContent?.split(/:\s/)[1]
-  }
-
-  /**
    * Correctness, if it can be determined
    */
   get correct (): boolean | undefined {
@@ -96,5 +82,19 @@ export class MoodleQuestionParser extends QuestionParser {
     if (state?.startsWith('incorrect') === true) {
       return false
     }
+  }
+
+  /**
+   * HTML content of the div.generalfeedback element
+   */
+  get feedback (): string | undefined {
+    return this.element.querySelector('div.generalfeedback')?.innerHTML
+  }
+
+  /**
+   * Second part of the div.rightanswer text (split by ': ')
+   */
+  get rightanswer (): string | undefined {
+    return this.element.querySelector('div.rightanswer')?.textContent?.split(/:\s/)[1]
   }
 }

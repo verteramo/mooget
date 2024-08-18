@@ -1,5 +1,5 @@
 /*******************************************************************************
- * IStore.ts
+ * Store.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
@@ -20,12 +20,12 @@ export interface Store {
   config: Config
 
   /**
-   * Quizzes
-   */
-  quizzes: Quiz[]
-
-  /**
    * User progress
    */
   progress: Progress
+
+  /**
+   * Quizzes
+   */
+  quizzes: Quiz[]
 }

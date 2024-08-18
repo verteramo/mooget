@@ -1,3 +1,10 @@
+/*******************************************************************************
+ * InputFile.tsx
+ *
+ * @license GPL-3.0-or-later
+ * @link https://github.com/verteramo/mooget
+ ******************************************************************************/
+
 /** External dependencies */
 import { ButtonBaseProps } from '@mui/material'
 import React, { ChangeEvent, ReactElement, useRef } from 'react'
@@ -9,7 +16,12 @@ interface Props {
   children: ReactElement<ButtonBaseProps>
 }
 
-export function InputFile ({ accept, multiple = false, onChange, children }: Props): JSX.Element {
+export function InputFile ({
+  accept,
+  multiple = false,
+  onChange,
+  children
+}: Props): JSX.Element {
   const ref = useRef<HTMLInputElement>(null)
 
   function handleChange (event: ChangeEvent<HTMLInputElement>): void {

@@ -15,17 +15,17 @@ import { QuestionParser } from './QuestionParser'
  *
  * @example Reducers will look like:
  * ```typescript
- * const reducers: ReducerMap<MyEnumType, SourceType, TargetType> = {
+ * const reducer: Reducer<MyEnumType, SourceType, TargetType> = {
  *   [MyEnumType.MyEnumValue]: {
- *     target_property: (source: SourceType) => {
+ *     property: (source: SourceType): TargetType['property'] => {
  *       // do something with source
- *       // and return some data as target_property type
+ *       // and return some data as property type
  *     }
  *   },
  *   ...
  * ```
  */
-type ReducerMap<Enum extends string | number, Source, Target> = {
+type Reducer<Enum extends string | number, Source, Target> = {
   [Member in Enum]?: {
     [Property in keyof Target]?: (
       source: Source
@@ -34,21 +34,21 @@ type ReducerMap<Enum extends string | number, Source, Target> = {
 }
 
 /**
- * Reduce source to target
+ * Reduce source to target properties
  */
 export async function reduce<Enum extends string | number, Source, Target> (
   member: Enum,
   source: Source,
-  map: ReducerMap<Enum, Source, Target>
+  reducer: Reducer<Enum, Source, Target>
 ): Promise<Partial<Target>> {
   const target: Partial<Target> = {}
 
-  if (map[member] !== undefined) {
-    for (const key in map[member]) {
+  if (reducer[member] !== undefined) {
+    for (const key in reducer[member]) {
       const property = key as keyof Target
-      const reducer = map[member][property]
-      if (reducer !== undefined) {
-        target[property] = await reducer(source)
+      const propertyReducer = reducer[member][property]
+      if (propertyReducer !== undefined) {
+        target[property] = await propertyReducer(source)
       }
     }
   }
@@ -59,4 +59,4 @@ export async function reduce<Enum extends string | number, Source, Target> (
 /**
  * Question reducer
  */
-export type QuestionReducerMap = ReducerMap<QuestionType, QuestionParser, Question>
+export type QuestionReducer = Reducer<QuestionType, QuestionParser, Question>

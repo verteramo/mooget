@@ -1,5 +1,5 @@
 /*******************************************************************************
- * IQuestion.ts
+ * Question.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
@@ -29,13 +29,12 @@ export interface Question {
   content: string
 
   /**
+   * Answers
+   */
+  answers: Answer[]
+
+  /**
    * Feedback, if any
    */
   feedback?: string
-
-  /**
-   * Answer, if it can be determined;
-   * it could be a boolean, a string or an array of IAnswer if there are multiple answers
-   */
-  answer?: Answer[]
 }

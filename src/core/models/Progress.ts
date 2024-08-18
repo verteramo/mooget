@@ -15,7 +15,7 @@ export interface Progress {
   /**
    * Quiz answers
    */
-  quiz?: string
+  quizId?: string
 
   /**
    * Current step

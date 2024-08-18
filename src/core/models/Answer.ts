@@ -1,37 +1,43 @@
 /*******************************************************************************
- * IAnswer.ts
+ * Answer.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
 /**
- * Answers like multichoice or match, where there are multiple answers
+ * It can represent a single answer or a set of answers:
  *
- * @example Multichoice answers (there could be multiple correct answers):
+ * @example Single answers:
  * ```json
- * { "value": "Answer 1", "correct": true, },
- * { "value": "Answer 2", "correct": false },
- * { "value": "Answer 4", "correct": false, "feedback": "Optional feedback" }
+ * { "value": true },
+ * { "value": "Answer text" },
  * ```
  *
- * @example Match answers (in this case, correct is the match string):
+ * @example Multichoice answers (match could be a boolean
  * ```json
- * { "value": "Answer 1", "correct": "Match 1" },
- * { "value": "Answer 2", "correct": "Match 2" },
- * { "value": "Answer 3", "correct": "Match 3", "feedback": "Optional feedback" }
+ * { "value": "Answer 1", "match": true, },
+ * { "value": "Answer 2", "match": false },
+ * { "value": "Answer 4", "match": false, "feedback": "Optional feedback" }
+ * ```
+ *
+ * @example Match answers (in this case, match is a string):
+ * ```json
+ * { "value": "Answer 1", "match": "Match 1" },
+ * { "value": "Answer 2", "match": "Match 2" },
+ * { "value": "Answer 3", "match": "Match 3", "feedback": "Optional feedback" }
  * ```
  */
 export interface Answer {
   /**
-   * value
+   * Value
    */
   value: boolean | string
 
   /**
-   * Correctness, if it can be determined
+   * Match value, if any
    */
-  correct?: boolean | string
+  match?: boolean | string
 
   /**
    * Feedback, if any

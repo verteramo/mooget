@@ -1,4 +1,3 @@
-export * from './middlewares/mwImages'
 export * from './parsing/MoodleProvider'
 export * from './parsing/MoodleQuestionParser'
 export * from './parsing/MoodleQuestionReducerMap'

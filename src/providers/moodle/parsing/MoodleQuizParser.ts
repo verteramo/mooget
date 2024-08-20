@@ -1,19 +1,17 @@
 /*******************************************************************************
- * MoodleQuizProvider.ts
+ * MoodleQuizParser.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-/** External dependencies */
+// External dependencies
 import $ from 'jquery'
 import { Md5 } from 'ts-md5'
 
-/** Package dependencies */
-
-/** Project dependencies */
-import { QuizParser } from '@/core/parsing'
-import { bgFetchMoodleVersion } from '@/scripts/background'
+// Project dependencies
+import { QuizParser } from '@/parsing'
+import { sendMessage } from '@/utilities/messaging'
 
 /**
  * DOM quiz extractor
@@ -124,7 +122,7 @@ export class MoodleQuizParser extends QuizParser {
    */
   get version (): Promise<string | undefined> | undefined {
     if (this.home !== undefined) {
-      return bgFetchMoodleVersion(this.home)
+      return sendMessage('getMoodleVersion', this.home)
     }
   }
 }

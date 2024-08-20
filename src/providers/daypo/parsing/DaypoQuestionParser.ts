@@ -5,8 +5,9 @@
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-import { QuestionType } from '@/core/models'
-import { QuestionParser } from '@/core/parsing'
+// Project dependencies
+import { QuestionType } from '@/models'
+import { QuestionParser } from '@/parsing'
 
 export class DaypoQuestionParser extends QuestionParser {
   get type (): QuestionType | undefined {

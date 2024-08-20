@@ -1,26 +1,7 @@
 {
+  "extends": "./.wxt/tsconfig.json",
   "compilerOptions": {
-    "target": "ESNext",
-    "module": "ESNext",
-    "moduleResolution": "Node",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
-    "jsx": "react-jsx",
-    "strict": true,
-    "noEmit": true,
-    "allowJs": false,
-    "skipLibCheck": true,
-    "isolatedModules": true,
-    "esModuleInterop": false,
-    "resolveJsonModule": true,
-    "useDefineForClassFields": true,
-    "allowSyntheticDefaultImports": true,
-    "forceConsistentCasingInFileNames": true,
-    
-    "baseUrl": "./",
-    "paths": {
-      "@/*": ["src/*"]
-    },
-  },
-  "include": ["src/**/*"],
-  "exclude": ["node_modules", "build", "dist"]
+    "allowImportingTsExtensions": true,
+    "jsx": "react-jsx"
+  }
 }

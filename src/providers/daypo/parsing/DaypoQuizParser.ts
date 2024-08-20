@@ -5,12 +5,12 @@
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-/** External dependencies */
+// External dependencies
 import $ from 'jquery'
 import { Md5 } from 'ts-md5'
 
-/** Project dependencies */
-import { QuizParser } from '@/core/parsing'
+// Project dependencies
+import { QuizParser } from '@/parsing'
 
 export class DaypoQuizParser extends QuizParser {
   get name (): string | undefined {

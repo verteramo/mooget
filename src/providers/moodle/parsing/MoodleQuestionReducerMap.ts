@@ -1,16 +1,16 @@
 /*******************************************************************************
- * qhDragAndDrop.ts
+ * MoodleQuestionReducerMap.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-/** External dependencies */
+// External dependencies
 import $ from 'jquery'
 
-/** Project dependencies */
-import { Answer } from '@/core/models'
-import { QuestionReducer } from '@/core/parsing'
+// Project dependencies
+import { Answer } from '@/models'
+import { QuestionReducer } from '@/parsing'
 
 export const MoodleQuestionReducerMap: QuestionReducer = {
   /**
@@ -31,16 +31,16 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
    * @see https://docs.moodle.org/en/Matching_question_type
    */
   matching: {
-    answer: ({ element, correct }) => {
+    answers: ({ element, correct }) => {
       const answer: Answer[] = []
 
       if (correct === true) {
         for (const option of element.querySelectorAll('table.answer > tbody > tr')) {
-          const text = option.querySelector('td.text')?.textContent
-          const control = option.querySelector('td.control > select > option[selected]')?.textContent
+          const value = option.querySelector('td.text')?.textContent
+          const match = option.querySelector('td.control > select > option[selected]')?.textContent
 
-          if (text != null && control != null) {
-            answer.push({ value: text, correct: control })
+          if (value != null && match != null) {
+            answer.push({ value, match })
           }
         }
       }
@@ -76,24 +76,24 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
 
         // Loop through inputs and selects and save the
         // correct answer in its corresponding index
-        formulation?.querySelectorAll('span.subquestion input,select').forEach(function (index) {
-          switch ($(this).prop('tagName').toLowerCase()) {
-            case 'input':{
-              answer[index].correct = $(this).val()?.toString()
-              break
-            }
+        // formulation?.querySelectorAll('span.subquestion input,select').forEach(function (index) {
+        //   switch ($(this).prop('tagName').toLowerCase()) {
+        //     case 'input':{
+        //       answer[index].correct = $(this).val()?.toString()
+        //       break
+        //     }
 
-            case 'select':{
-              answer[index].correct = $(this).find('option:selected').text()
-              // answer[index].options = $(this).find(
-              //   'option:not(:selected):not([value=""])'
-              // ).map(function () {
-              //   return $(this).html()
-              // }).get()
-              break
-            }
-          }
-        })
+        //     case 'select':{
+        //       answer[index].correct = $(this).find('option:selected').text()
+        //       // answer[index].options = $(this).find(
+        //       //   'option:not(:selected):not([value=""])'
+        //       // ).map(function () {
+        //       //   return $(this).html()
+        //       // }).get()
+        //       break
+        //     }
+        //   }
+        // })
       }
 
       return answer
@@ -142,7 +142,7 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
         // Check if the answer is correct
         // If the question is correct, if it is checked, it is correct
         // Otherwise, if it is in the right answer, it is correct
-        const isCorrect = correct === true
+        const match = correct === true
           ? checked
         // Here check if the right answer includes the text (not html content)
           : rightanswer?.includes(text) ?? false
@@ -151,18 +151,18 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
 
         // Push the answer with its correctness and feedback if it exists
         if (feedback.length > 0) {
-          answer.push({ value, correct: isCorrect, feedback: feedback.html() })
+          answer.push({ value, match, feedback: feedback.html() })
         } else {
-          answer.push({ value, correct: isCorrect })
+          answer.push({ value, match })
         }
       }
 
       // If some answer is correct, put to false the undefined ones
-      if (answer.some(({ correct }) => correct === true)) {
-        return answer.map(({ value, correct, feedback }) => {
+      if (answer.some(({ match }) => match === true)) {
+        return answer.map(({ value, match, feedback }) => {
           return {
             value,
-            correct: correct ?? false,
+            match: match ?? false,
             feedback
           }
         })

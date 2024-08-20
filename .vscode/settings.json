@@ -12,5 +12,5 @@
   "autoBarrel.formatting.excludeSemiColonAtEndOfLine": true,
   "files.associations": {
     "*.json": "jsonc"
-  },
+  }
 }

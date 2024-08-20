@@ -5,9 +5,9 @@
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-/** Project dependencies */
-import { QuestionType } from '@/core/models'
-import { QuestionParser } from '@/core/parsing'
+// Project dependencies
+import { QuestionType } from '@/models'
+import { QuestionParser } from '@/parsing'
 
 /**
  * Extracts information from the DOM div.que element

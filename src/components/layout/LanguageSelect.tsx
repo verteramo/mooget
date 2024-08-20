@@ -6,7 +6,6 @@
  ******************************************************************************/
 
 // External dependencies
-import { useConfigStore } from '@/stores'
 import { Translate } from '@mui/icons-material'
 import {
   FormControl,
@@ -17,6 +16,9 @@ import {
 } from '@mui/material'
 import { common } from '@mui/material/colors'
 import { useTranslation } from 'react-i18next'
+
+// Project dependencies
+import { useConfigStore } from '@/stores'
 
 /**
  * Styles

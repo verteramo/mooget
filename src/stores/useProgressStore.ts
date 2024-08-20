@@ -10,8 +10,10 @@ import { create } from 'zustand'
 import { persist } from 'zustand/middleware'
 
 // Package dependencies
-import { Progress, UserAnswer } from '../models'
 import { webextStorage } from './storages/webextStorage'
+
+// Project dependencies
+import { Progress, UserAnswer } from '@/models'
 
 interface ProgressState extends Progress {
   setQuiz: (quiz: string) => void

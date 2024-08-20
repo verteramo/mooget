@@ -8,12 +8,12 @@
 // External dependencies
 import { Check, Palette } from '@mui/icons-material'
 import { alpha, Box, IconButton, Popover, Stack } from '@mui/material'
+import { common } from '@mui/material/colors'
 import { MouseEvent, useState } from 'react'
 
 // Project dependencies
 import { useConfigStore } from '@/stores'
 import { Palette as AppPalette } from '@/utilities/colors'
-import { common } from '@mui/material/colors'
 
 export function PalettePopover (): JSX.Element {
   const [anchor, setAnchor] = useState<HTMLButtonElement | null>(null)

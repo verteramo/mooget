@@ -12,5 +12,8 @@
   "autoBarrel.formatting.excludeSemiColonAtEndOfLine": true,
   "files.associations": {
     "*.json": "jsonc"
-  }
+  },
+  "i18n-ally.localesPaths": [
+    "src/locales"
+  ]
 }

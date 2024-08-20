@@ -13,9 +13,9 @@ import { Quiz } from '@/models'
 
 interface ProtocolMap {
   getQuiz: () => Quiz
-  setBadgeBackgroundColor: (color: string) => void
-  setBadgeTextColor: (color: string) => void
   setBadgeText: (text: string) => void
+  setBadgeTextColor: (color: string) => void
+  setBadgeBackgroundColor: (color: string) => void
   getMoodleVersion: (url: string) => string | undefined
   getImageAsBase64: (src: string) => string | undefined
 }

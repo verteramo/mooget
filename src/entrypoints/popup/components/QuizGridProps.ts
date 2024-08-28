@@ -35,7 +35,8 @@ export const dataGridStyles = {
   '& .favorite-cell': {
     textOverflow: 'clip'
   },
-  boxShadow: 2
+  boxShadow: 2,
+  '--DataGrid-overlayHeight': '250px'
 }
 
 /**
@@ -50,55 +51,53 @@ export const cellItemHoverColor = (color: string): any => ({ '&:hover': { color 
  * @param t Translation function
  * @returns localeText object
  */
-export function localeText (t: TFunction): Partial<GridLocaleText> {
-  return {
-    noRowsLabel: t('no-rows-label'),
+export const localeText = (t: TFunction): Partial<GridLocaleText> => ({
+  noRowsLabel: t('no-rows-label'),
 
-    columnMenuLabel: t('column-menu-label'),
-    columnMenuShowColumns: t('column-menu-show-columns'),
-    columnMenuManageColumns: t('column-menu-manage-columns'),
-    columnMenuFilter: t('column-menu-filter'),
-    columnMenuHideColumn: t('column-menu-hide-column'),
-    columnMenuUnsort: t('column-menu-unsort'),
-    columnMenuSortAsc: t('column-menu-sort-asc'),
-    columnMenuSortDesc: t('column-menu-sort-desc'),
+  columnMenuLabel: t('column-menu-label'),
+  columnMenuShowColumns: t('column-menu-show-columns'),
+  columnMenuManageColumns: t('column-menu-manage-columns'),
+  columnMenuFilter: t('column-menu-filter'),
+  columnMenuHideColumn: t('column-menu-hide-column'),
+  columnMenuUnsort: t('column-menu-unsort'),
+  columnMenuSortAsc: t('column-menu-sort-asc'),
+  columnMenuSortDesc: t('column-menu-sort-desc'),
 
-    filterPanelAddFilter: t('filter-panel-add-filter'),
-    filterPanelRemoveAll: t('filter-panel-remove-all'),
-    filterPanelDeleteIconLabel: t('filter-panel-delete-icon-label'),
-    filterPanelLogicOperator: t('filter-panel-logic-operator'),
-    filterPanelOperator: t('filter-panel-operator'),
-    filterPanelOperatorAnd: t('filter-panel-operator-and'),
-    filterPanelOperatorOr: t('filter-panel-operator-or'),
-    filterPanelColumns: t('filter-panel-columns'),
-    filterPanelInputLabel: t('filter-panel-input-label'),
-    filterPanelInputPlaceholder: t('filter-panel-input-placeholder'),
+  filterPanelAddFilter: t('filter-panel-add-filter'),
+  filterPanelRemoveAll: t('filter-panel-remove-all'),
+  filterPanelDeleteIconLabel: t('filter-panel-delete-icon-label'),
+  filterPanelLogicOperator: t('filter-panel-logic-operator'),
+  filterPanelOperator: t('filter-panel-operator'),
+  filterPanelOperatorAnd: t('filter-panel-operator-and'),
+  filterPanelOperatorOr: t('filter-panel-operator-or'),
+  filterPanelColumns: t('filter-panel-columns'),
+  filterPanelInputLabel: t('filter-panel-input-label'),
+  filterPanelInputPlaceholder: t('filter-panel-input-placeholder'),
 
-    filterOperatorContains: t('filter-operator-contains'),
-    filterOperatorEquals: t('filter-operator-equals'),
-    filterOperatorStartsWith: t('filter-operator-starts-with'),
-    filterOperatorEndsWith: t('filter-operator-ends-with'),
-    filterOperatorIs: t('filter-operator-is'),
-    filterOperatorNot: t('filter-operator-not'),
-    filterOperatorAfter: t('filter-operator-after'),
-    filterOperatorOnOrAfter: t('filter-operator-on-or-after'),
-    filterOperatorBefore: t('filter-operator-before'),
-    filterOperatorOnOrBefore: t('filter-operator-on-or-before'),
-    filterOperatorIsEmpty: t('filter-operator-is-empty'),
-    filterOperatorIsNotEmpty: t('filter-operator-is-not-empty'),
-    filterOperatorIsAnyOf: t('filter-operator-is-any-of'),
+  filterOperatorContains: t('filter-operator-contains'),
+  filterOperatorEquals: t('filter-operator-equals'),
+  filterOperatorStartsWith: t('filter-operator-starts-with'),
+  filterOperatorEndsWith: t('filter-operator-ends-with'),
+  filterOperatorIs: t('filter-operator-is'),
+  filterOperatorNot: t('filter-operator-not'),
+  filterOperatorAfter: t('filter-operator-after'),
+  filterOperatorOnOrAfter: t('filter-operator-on-or-after'),
+  filterOperatorBefore: t('filter-operator-before'),
+  filterOperatorOnOrBefore: t('filter-operator-on-or-before'),
+  filterOperatorIsEmpty: t('filter-operator-is-empty'),
+  filterOperatorIsNotEmpty: t('filter-operator-is-not-empty'),
+  filterOperatorIsAnyOf: t('filter-operator-is-any-of'),
 
-    columnHeaderSortIconLabel: t('column-header-sort-icon-label'),
+  columnHeaderSortIconLabel: t('column-header-sort-icon-label'),
 
-    MuiTablePagination: {
-      labelRowsPerPage: t('rows-per-page'),
-      labelDisplayedRows: ({ from, to, count }: {
-        from: number
-        to: number
-        count: number
-      }) =>
+  MuiTablePagination: {
+    labelRowsPerPage: t('rows-per-page'),
+    labelDisplayedRows: ({ from, to, count }: {
+      from: number
+      to: number
+      count: number
+    }) =>
               `${from} - ${to} de ${count === -1 ? `más de ${to}` : count}`
 
-    }
   }
-}
+})

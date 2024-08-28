@@ -6,17 +6,18 @@
  ******************************************************************************/
 
 // External dependencies
-import { ReactNode } from "react";
+import { ReactNode } from 'react'
 
 // Project dependencies
-import { QuestionType } from "@/models";
+import { DashedBox } from '@/components/common/DashedBox'
+import { QuestionType } from '@/models'
 
 type Props = {
-  type: QuestionType;
+  type: QuestionType
 } & {
   [key in QuestionType]?: ReactNode;
-};
+}
 
-export function QuestionAnswer(props: Props): ReactNode {
-  return props[props.type] ?? <></>;
+export function AnswerComponent (props: Props): ReactNode {
+  return props[props.type] ?? <DashedBox>Not implemented yet</DashedBox>
 }

@@ -12,35 +12,33 @@ import { common } from '@mui/material/colors'
 import { parse } from '@/parsing'
 import { moodleProvider } from '@/providers/moodle'
 import { useConfigStore, useQuizCollectionStore } from '@/stores'
-import { onMessage, sendMessage } from '@/utilities/messaging'
-import { filterQuiz } from '@/utilities/quizzes'
 
 export default defineContentScript({
   matches: ['<all_urls>'],
   async main () {
-    console.log('Content script loaded')
-
-    async function main (): Promise<void> {
-      const quiz = await parse([moodleProvider])
-
-      console.log('Welcome', quiz)
-
-      if (quiz !== undefined) {
-        onMessage('getQuiz', () => quiz)
-
-        useQuizCollectionStore.subscribe(({ items }) => items, (items) => {
-          const length = filterQuiz(items, quiz).questions.length
-          const text = length === 0 ? '' : length.toString()
-
-          sendMessage('setBadgeText', text).catch(console.error)
-        }, { fireImmediately: true })
-      }
-    }
+    // Set badge text color
     await sendMessage('setBadgeTextColor', common.white)
+
+    // Listen and update the badge background color
     useConfigStore.subscribe(({ color }) => color, (color) => {
-      sendMessage('setBadgeBackgroundColor', color).catch(console.error)
+      const colorKey = color as keyof typeof Colors
+      sendMessage('setBadgeBackgroundColor', Colors[colorKey]).catch(console.error)
     }, { fireImmediately: true })
 
-    main().catch(console.error)
+    const quiz = await parse([moodleProvider])
+    onMessage('getQuiz', () => quiz)
+
+    // Welcome message
+    console.log('Welcome', quiz)
+
+    if (quiz !== undefined) {
+      // Listen and update the badge text with the number of questions
+      useQuizCollectionStore.subscribe(({ items }) => items, (items) => {
+        const length = filterQuiz(items, quiz).questions.length
+        const text = length === 0 ? '' : length.toString()
+
+        sendMessage('setBadgeText', text).catch(console.error)
+      }, { fireImmediately: true })
+    }
   }
 })

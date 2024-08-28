@@ -33,6 +33,11 @@ export interface Quiz {
   questions: Question[]
 
   /**
+   * The quiz is sequential
+   */
+  sequential?: boolean
+
+  /**
    * URL
    */
   url?: string

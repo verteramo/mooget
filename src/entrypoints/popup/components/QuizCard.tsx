@@ -8,7 +8,6 @@
 // External dependencies
 import { SaveOutlined } from '@mui/icons-material'
 import { common } from '@mui/material/colors'
-import { useTranslation } from 'react-i18next'
 
 import {
   Button,
@@ -23,6 +22,7 @@ import {
 
 // Package dependencies
 import { Quiz } from '@/models'
+import { useTranslation } from 'react-i18next'
 
 const DefaultIcon = 'img/undefined.png'
 
@@ -30,17 +30,11 @@ interface Props {
   quiz: Quiz
   onNameChange: (name: string) => void
   onCategoryChange: (category: string) => void
-  onSave: () => void
+  onSave: (quiz: Quiz) => void
 }
 
 export function QuizCard ({
-  quiz: {
-    name,
-    category,
-    questions: { length },
-    icon,
-    owner: brand
-  },
+  quiz,
   onNameChange,
   onCategoryChange,
   onSave
@@ -56,29 +50,40 @@ export function QuizCard ({
               <TextField
                 fullWidth
                 label={t('category')}
-                value={category}
-                error={category.length === 0}
+                value={quiz.category}
+                error={quiz.category.length === 0}
                 onChange={({ target: { value } }) => onCategoryChange(value)}
               />
               <TextField
                 fullWidth
                 label={t('quiz')}
-                value={name}
-                error={name.length === 0}
+                value={quiz.name}
+                error={quiz.name.length === 0}
                 onChange={({ target: { value } }) => onNameChange(value)}
-                InputProps={{ endAdornment: <InputAdornment position='end'>{length}</InputAdornment> }}
+                InputProps={{
+                  endAdornment: (
+                    <InputAdornment position='end'>
+                      {length}
+                    </InputAdornment>
+                  )
+                }}
               />
             </Stack>
           </CardContent>
           <CardActions sx={{ marginX: 1 }}>
-            <Button startIcon={<SaveOutlined />} onClick={onSave}>{t('save')}</Button>
+            <Button
+              startIcon={<SaveOutlined />}
+              onClick={() => onSave(quiz)}
+            >
+              {t('save')}
+            </Button>
           </CardActions>
         </Stack>
         <CardMedia
           component='img'
-          alt={brand}
-          title={brand}
-          image={icon ?? DefaultIcon}
+          alt={quiz.owner}
+          title={quiz.owner}
+          image={quiz.icon ?? DefaultIcon}
           sx={{ width: 128, objectFit: 'contain', backgroundColor: common.white }}
         />
       </Stack>

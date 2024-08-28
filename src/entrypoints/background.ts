@@ -7,35 +7,26 @@
 
 // Project dependencies
 import { fetchMoodleVersion } from '@/providers/moodle'
-import { fetchImageAsBase64 } from '@/utilities/images'
-import { onMessage } from '@/utilities/messaging'
+// import { fetchImageAsBase64 } from '@/utils/images'
 
 export default defineBackground(() => {
   // Message observer to set the badge text
   onMessage('setBadgeText', async ({ data: text }) => {
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true })
 
-    if (tab !== undefined) {
+    if (tab?.id !== undefined) {
       await browser.action.setBadgeText({ text, tabId: tab.id })
     }
   })
 
   // Message observer to set the badge text color
   onMessage('setBadgeTextColor', async ({ data: color }) => {
-    const [tab] = await browser.tabs.query({ active: true, currentWindow: true })
-
-    if (tab !== undefined) {
-      await browser.action.setBadgeTextColor({ color, tabId: tab.id })
-    }
+    browser.action.setBadgeTextColor({ color })
   })
 
   // Message observer to set the badge background color
   onMessage('setBadgeBackgroundColor', async ({ data: color }) => {
-    const [tab] = await browser.tabs.query({ active: true, currentWindow: true })
-
-    if (tab !== undefined) {
-      await browser.action.setBadgeBackgroundColor({ color, tabId: tab.id })
-    }
+    await browser.action.setBadgeBackgroundColor({ color })
   })
 
   // Message observer to get the Moodle version

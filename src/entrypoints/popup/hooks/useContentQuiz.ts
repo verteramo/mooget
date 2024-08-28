@@ -6,29 +6,25 @@
  ******************************************************************************/
 
 // External dependencies
-import { useEffect, useState } from 'react'
 
 // Project dependencies
 import { Quiz } from '@/models'
-import { sendMessage } from '@/utilities/messaging'
+
+const getQuiz = async (): Promise<Quiz | undefined> => {
+  const [tab] = await browser.tabs.query({ active: true, currentWindow: true })
+  const quiz = await sendMessage('getQuiz', undefined, tab.id)
+
+  return quiz
+}
 
 /**
  * Request quiz from the content script
  */
-export function useContentQuiz (): Quiz | undefined {
+export const useContentQuiz = (): Quiz | undefined => {
   const [quiz, setQuiz] = useState<Quiz>()
 
-  async function getQuiz (callback: (quiz: Quiz) => void): Promise<void> {
-    const [tab] = await browser.tabs.query({ active: true, currentWindow: true })
-
-    if (tab?.id !== undefined) {
-      const quiz = await sendMessage('getQuiz', undefined, tab.id)
-      callback(quiz)
-    }
-  }
-
-  useEffect(function () {
-    getQuiz(setQuiz).catch(console.error)
+  useEffect(() => {
+    getQuiz().then(setQuiz).catch(console.error)
   }, [])
 
   return quiz

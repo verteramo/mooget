@@ -10,7 +10,7 @@ import { Box } from '@mui/material'
 import { PropsWithChildren } from 'react'
 
 // Project dependencies
-import { Color } from '@/utilities/colors'
+import { UIColors } from '@/utils/colors'
 
 interface Props extends PropsWithChildren {
   color?: string
@@ -19,16 +19,18 @@ interface Props extends PropsWithChildren {
 /**
  * It provides a box with a dashed border to indicate that it is empty
  */
-export function DashedBox ({ children, color = Color.Grey }: Props): JSX.Element {
+export function DashedBox ({ children, color = UIColors.muted }: Props): JSX.Element {
   return (
     <Box
+      p={5}
       sx={{
-        p: 5,
         color,
         border: `5px dashed ${color}`,
         borderRadius: '5px',
-        textAlign: 'center'
+        textAlign: 'center',
+        alignContent: 'center'
       }}
+      flexGrow={1}
     >
       {children}
     </Box>

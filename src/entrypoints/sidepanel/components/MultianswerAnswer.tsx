@@ -5,6 +5,6 @@
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-export function MultianswerAnswer(): JSX.Element {
-  return <></>;
+export function MultianswerAnswer (): JSX.Element {
+  return <></>
 }

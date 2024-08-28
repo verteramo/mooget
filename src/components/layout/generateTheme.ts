@@ -10,17 +10,17 @@ import { createTheme, PaletteMode, Theme } from '@mui/material'
 import { common } from '@mui/material/colors'
 
 // Project dependencies
-import { Color } from '@/utilities/colors'
+import { Colors, UIColors } from '@/utils/colors'
 
 export function generateTheme (mode: PaletteMode, color: string): Theme {
   return createTheme({
     palette: {
       mode,
       background: {
-        default: mode === 'light' ? Color.Light : Color.Dark
+        default: mode === 'light' ? UIColors.light : UIColors.dark
       },
       primary: {
-        main: color,
+        main: color ?? Colors.turtle,
         contrastText: common.white
       }
     },

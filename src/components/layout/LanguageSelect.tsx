@@ -6,7 +6,7 @@
  ******************************************************************************/
 
 // External dependencies
-import { Translate } from '@mui/icons-material'
+import { Language } from '@mui/icons-material'
 import {
   FormControl,
   InputAdornment,
@@ -15,10 +15,10 @@ import {
   SelectChangeEvent
 } from '@mui/material'
 import { common } from '@mui/material/colors'
-import { useTranslation } from 'react-i18next'
 
 // Project dependencies
 import { useConfigStore } from '@/stores'
+import { useTranslation } from 'react-i18next'
 
 /**
  * Styles
@@ -42,8 +42,12 @@ const style = {
 }
 
 export function LanguageSelect (): JSX.Element {
-  const setLanguage = useConfigStore((state) => state.setLanguage)
-  const { t, i18n: { language, languages } } = useTranslation()
+  const { t, i18n: { languages } } = useTranslation()
+
+  const [language, setLanguage] = useConfigStore((state) => [
+    state.language,
+    state.setLanguage
+  ])
 
   function handleChange (event: SelectChangeEvent<string>): void {
     setLanguage(event.target.value)
@@ -57,7 +61,7 @@ export function LanguageSelect (): JSX.Element {
         onChange={handleChange}
         startAdornment={
           <InputAdornment position='start'>
-            <Translate sx={{ color: common.white }} />
+            <Language sx={{ color: common.white }} />
           </InputAdornment>
         }
       >

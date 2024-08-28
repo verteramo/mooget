@@ -5,13 +5,14 @@
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-// External dependencies
 import { defineConfig } from 'wxt'
 
 const permissions = [
   'tabs',
   'storage',
-  'webRequest'
+  'unlimitedStorage',
+  'webRequest',
+  'userScripts'
 ]
 
 const manifest: Record<string, any> = {
@@ -31,8 +32,8 @@ const manifest: Record<string, any> = {
 
 // See https://wxt.dev/api/config.html
 export default defineConfig({
-  srcDir: 'src',
   modules: ['@wxt-dev/module-react'],
+  srcDir: 'src',
   runner: { disabled: true },
   manifest: ({ browser }) => ({
     name: 'Mooget',

@@ -12,7 +12,10 @@ import { defineExtensionMessaging } from '@webext-core/messaging'
 import { Quiz } from '@/models'
 
 interface ProtocolMap {
+  // Popup -> Content
   getQuiz: () => Quiz
+
+  // Content -> Background
   setBadgeText: (text: string) => void
   setBadgeTextColor: (color: string) => void
   setBadgeBackgroundColor: (color: string) => void

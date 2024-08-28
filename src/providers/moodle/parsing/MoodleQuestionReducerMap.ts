@@ -9,7 +9,7 @@
 import $ from 'jquery'
 
 // Project dependencies
-import { Answer } from '@/models'
+import { Answer, QuestionType } from '@/models'
 import { QuestionReducer } from '@/parsing'
 
 export const MoodleQuestionReducerMap: QuestionReducer = {
@@ -19,9 +19,50 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
    * @see https://docs.moodle.org/en/Drag_and_drop_into_text_question_type
    */
   draganddrop: {
-    answers: (parser) => [{
-      value: 'DragAndDropQuestionReducer answer'
-    }]
+    content: ({ element }) => {
+      const qtext = $(element).find('div.qtext').clone()
+
+      for (const drop of qtext.find('span.drop')) {
+        const place = $(drop).attr('class')?.split(' ').filter((c) => c.startsWith('place'))[0]
+
+        if (place !== undefined) {
+          $(drop).replaceWith(`{{${place}}}`)
+        }
+      }
+
+      for (const drag of qtext.find('span.draghome')) {
+        $(drag).remove()
+      }
+
+      return qtext.html().replace(/\s+/g, ' ').trim()
+    },
+
+    answers: ({ element, correct }) => {
+      const answers: Answer[] = []
+
+      if (correct === true) {
+        const qtext = $(element).find('div.qtext').clone()
+
+        for (const drop of qtext.find('span.drop, span.draghome')) {
+          if ($(drop).is('span.drop')) {
+            const place = $(drop).attr('class')?.split(' ').filter((c) => c.startsWith('place'))[0]
+
+            if (place !== undefined) {
+              answers.push({ value: place })
+            }
+          } else if ($(drop).is('span.draghome')) {
+            answers[answers.length - 1] = {
+              ...answers[answers.length - 1],
+              match: $(drop).html()
+            }
+          }
+        }
+      }
+
+      return answers
+    },
+
+    type: () => QuestionType.Matching
   },
 
   /**
@@ -32,22 +73,20 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
    */
   matching: {
     answers: ({ element, correct }) => {
-      const answer: Answer[] = []
+      const answers: Answer[] = []
 
       if (correct === true) {
-        for (const option of element.querySelectorAll('table.answer > tbody > tr')) {
-          const value = option.querySelector('td.text')?.textContent
-          const match = option.querySelector('td.control > select > option[selected]')?.textContent
+        for (const option of $(element).find('table.answer > tbody > tr')) {
+          const value = $(option).find('td.text').html()
+          const match = $(option).find('td.control > select > option[selected]').html()
 
           if (value != null && match != null) {
-            answer.push({ value, match })
+            answers.push({ value, match })
           }
         }
       }
 
-      console.log('MatchingQuestionReducer', answer)
-
-      return answer
+      return answers
     }
   },
 
@@ -56,20 +95,19 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
    */
   multianswer: {
     answers: ({ element, correct }) => {
-      const answer: Answer[] = []
+      const answers: Answer[] = []
 
-      // If the question is correct
       if (correct === true) {
-        const formulation = element.querySelector('div.formulation > p')
+        const formulation = $(element).find('div.formulation > p')
 
         // Loop through the text content nodes
         let answerContent: string[] = []
-        for (const content of formulation?.childNodes ?? []) {
+        for (const content of formulation.children()) {
           // All content that is not a span.subquestion is content
           if (!$(content).is('span.subquestion')) {
             answerContent.push($(content).prop('outerHTML') ?? $(content).text())
           } else {
-            answer.push({ value: answerContent.join('') })
+            answers.push({ value: answerContent.join('') })
             answerContent = []
           }
         }
@@ -96,7 +134,7 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
         // })
       }
 
-      return answer
+      return answers
     }
   },
 
@@ -113,10 +151,10 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
    */
   multichoice: {
     answers: async ({ element, correct, rightanswer }) => {
-      const answer: Answer[] = []
+      const answers: Answer[] = []
 
       // Loop through options
-      for (const option of element.querySelectorAll('div.answer > div')) {
+      for (const option of $(element).find('div.answer > div')) {
       // Check if the option is checked
         const checked = $(option).find('input').attr('checked') === 'checked'
 
@@ -151,15 +189,15 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
 
         // Push the answer with its correctness and feedback if it exists
         if (feedback.length > 0) {
-          answer.push({ value, match, feedback: feedback.html() })
+          answers.push({ value, match, feedback: feedback.html() })
         } else {
-          answer.push({ value, match })
+          answers.push({ value, match })
         }
       }
 
       // If some answer is correct, put to false the undefined ones
-      if (answer.some(({ match }) => match === true)) {
-        return answer.map(({ value, match, feedback }) => {
+      if (answers.some(({ match }) => match === true)) {
+        return answers.map(({ value, match, feedback }) => {
           return {
             value,
             match: match ?? false,
@@ -168,7 +206,7 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
         })
       }
 
-      return answer
+      return answers
     }
   },
 
@@ -194,25 +232,13 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
    */
   text: {
     answers: ({ element, rightanswer }) => {
-      let value: string = ''
-
-      if (rightanswer !== undefined) {
-        value = rightanswer
-      }
-
-      const input = element.querySelector<HTMLInputElement>('input[type="text"]')
-
-      if (input != null) {
-        value = input.value
-      }
-
-      const div = element.querySelector<HTMLDivElement>('div > div[role="textbox"]')
-
-      if (div != null) {
-        value = div.innerHTML
-      }
-
-      return [{ value }]
+      return [{
+        value: (
+          rightanswer ??
+          $(element).find('input[type=text]').val()?.toString() ??
+          $(element).find('textarea').val()?.toString() ?? ''
+        )
+      }]
     }
   },
 
@@ -224,14 +250,14 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
    */
   truefalse: {
     answers: ({ element, correct }) => {
-      const value = (
-        correct === true &&
-        element.querySelector('input[type=radio]')
-          ?.attributes.getNamedItem('checked')
-          ?.value === 'checked'
-      )
-
-      return [{ value }]
+      return [{
+        value: (
+          correct === true &&
+          $(element)
+            .find('input[type=radio]')
+            .attr('checked') === 'checked'
+        )
+      }]
     }
   }
 }

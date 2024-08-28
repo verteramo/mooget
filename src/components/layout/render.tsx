@@ -16,15 +16,19 @@ import { AppLayout } from './AppLayout'
 // Project dependencies
 import { initI18next } from '@/locales/initI18next'
 
-export function render (page: JSX.Element): void {
+export function render (page: JSX.Element, layout: boolean = true): void {
   initI18next().catch(console.error)
   createRoot(document.getElementById('root') as HTMLElement).render(
     <React.StrictMode>
-      <ConfirmProvider>
-        <AppLayout>
-          {page}
-        </AppLayout>
-      </ConfirmProvider>
+      {layout
+        ? (
+          <AppLayout>
+            <ConfirmProvider>
+              {page}
+            </ConfirmProvider>
+          </AppLayout>
+          )
+        : page}
     </React.StrictMode>
   )
 }

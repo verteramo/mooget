@@ -6,49 +6,54 @@
  ******************************************************************************/
 
 // External dependencies
-import { ArrowBack, ArrowForward, Done } from "@mui/icons-material";
-import { IconButton, MobileStepper } from "@mui/material";
+import { ArrowBack, ArrowForward, Done } from '@mui/icons-material'
+import { IconButton, MobileStepper } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
-  steps: number;
-  current: number;
-  onBackClick: () => void;
-  onNextClick: () => void;
-  onFinished: () => void;
+  steps: number
+  current: number
+  onBackClick: () => void
+  onNextClick: () => void
+  onFinished: () => void
 }
 
-export function QuizStepper({
+export function QuizStepper ({
   steps,
   current,
   onBackClick,
   onNextClick,
-  onFinished,
+  onFinished
 }: Props): JSX.Element {
-  const isFirstStep = current === 0;
-  const isLastStep = current === steps - 1;
+  const { t } = useTranslation()
+
+  const isFirstStep = current === 0
+  const isLastStep = current === steps - 1
 
   return (
     <MobileStepper
-      variant="text"
-      position="static"
+      variant='text'
+      position='static'
       steps={steps}
       activeStep={current}
       backButton={
-        <IconButton disabled={isFirstStep} onClick={onBackClick}>
+        <IconButton disabled={isFirstStep} onClick={onBackClick} title={t('back')}>
           <ArrowBack />
         </IconButton>
       }
       nextButton={
-        isLastStep ? (
-          <IconButton onClick={onFinished}>
-            <Done />
-          </IconButton>
-        ) : (
-          <IconButton onClick={onNextClick}>
-            <ArrowForward />
-          </IconButton>
-        )
+        isLastStep
+          ? (
+            <IconButton onClick={onFinished} title={t('finish')}>
+              <Done />
+            </IconButton>
+            )
+          : (
+            <IconButton onClick={onNextClick} title={t('next')}>
+              <ArrowForward />
+            </IconButton>
+            )
       }
     />
-  );
+  )
 }

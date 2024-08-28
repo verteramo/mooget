@@ -9,8 +9,8 @@
 import { QuestionReducer, reduce } from './QuestionReducer'
 
 // Project dependencies
-import { partial } from '@/utilities/native'
 import { Question, QuestionType } from '@/models'
+import { partial } from '@/utils/native'
 
 /**
  * Question parser optional properties

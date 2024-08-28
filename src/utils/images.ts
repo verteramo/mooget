@@ -20,15 +20,20 @@ export async function fetchImageAsBase64 (src: string): Promise<string | undefin
     return await new Promise((resolve, reject) => {
       const reader = new FileReader()
 
-      reader.onload = function () {
-        const base64 = (this.result as string).split(',')?.[1]
+      reader.onerror = function () {
+        reject(this.error)
+      }
 
-        if (base64 !== undefined) {
-          resolve(`data:${blob.type};base64,${base64}`)
+      reader.onload = function () {
+        if (typeof this.result === 'string') {
+          const base64 = this.result.split(',')[1]
+
+          if (base64 !== undefined) {
+            resolve(`data:${blob.type};base64,${base64}`)
+          }
         }
       }
 
-      reader.onerror = reject
       reader.readAsDataURL(blob)
     })
   }

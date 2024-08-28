@@ -6,27 +6,27 @@
  ******************************************************************************/
 
 // External dependencies
-import { FormControl, Grid, MenuItem, Select } from "@mui/material";
-import { useTranslation } from "react-i18next";
+import { FormControl, Grid, MenuItem, Select } from '@mui/material'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   choices: Array<{
-    value: string;
-    correct: string;
-  }>;
+    value: string
+    correct: string
+  }>
 
-  onChange?: (value: string[]) => void;
+  onChange?: (value: string[]) => void
 }
 
-export function MatchingAnswer({ choices, onChange }: Props): JSX.Element {
-  const { t } = useTranslation();
+export function MatchingAnswer ({ choices, onChange }: Props): JSX.Element {
+  const { t } = useTranslation()
 
-  const emptyOption = <em>{t("none")}</em>;
+  const emptyOption = <em>{t('none')}</em>
 
   const options = (
     <FormControl fullWidth>
       <Select>
-        <MenuItem key={-1} value="">
+        <MenuItem key={-1} value=''>
           {emptyOption}
         </MenuItem>
         {choices
@@ -36,17 +36,17 @@ export function MatchingAnswer({ choices, onChange }: Props): JSX.Element {
               <MenuItem key={index} value={option}>
                 {option}
               </MenuItem>
-            );
+            )
           })}
       </Select>
     </FormControl>
-  );
+  )
 
   return (
     <>
       {choices.map(({ value }, index) => {
         return (
-          <Grid container rowSpacing={1} key={index} alignItems="center">
+          <Grid container rowSpacing={1} key={index} alignItems='center'>
             <Grid item xs={4}>
               {value}
             </Grid>
@@ -54,8 +54,8 @@ export function MatchingAnswer({ choices, onChange }: Props): JSX.Element {
               {options}
             </Grid>
           </Grid>
-        );
+        )
       })}
     </>
-  );
+  )
 }

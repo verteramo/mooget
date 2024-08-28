@@ -11,40 +11,46 @@ import { create } from 'zustand'
 import { persist, subscribeWithSelector } from 'zustand/middleware'
 
 // Package dependencies
-import { webextStorage } from './storages/webextStorage'
+import { wxtStorage } from './wxtStorage'
 
 // Project dependencies
 import { Config } from '@/models'
-import { Palette } from '@/utilities/colors'
+import { Color, getPreferredMode } from '@/utils/colors'
 
 interface ConfigState extends Config {
   toggleMode: () => void
-  setColor: (color: Palette) => void
+  setColor: (color: Color) => void
   setLanguage: (language: string) => void
-  toggleVisibility: () => void
   toggleClipboard: () => void
+  toggleVisibility: () => void
+  setPrintQuizId: (quizId: string) => void
 }
+
+const initialMode = getPreferredMode()
 
 export const useConfigStore = create<ConfigState>()(
   subscribeWithSelector(persist((set) => ({
-    mode: 'light',
-    color: Palette.Turtle,
+    mode: initialMode,
+    color: 'turtle',
     language: 'en',
-    visibility: false,
     clipboard: false,
+    visibility: false,
+    printQuizId: '',
 
     toggleMode: () => set(({ mode }) => ({ mode: mode === 'light' ? 'dark' : 'light' })),
 
-    setColor: (color: Palette) => set(() => ({ color })),
+    setColor: (color) => set(() => ({ color })),
 
-    setLanguage: (language: string) => set(() => ({ language })),
+    setLanguage: (language) => set(() => ({ language })),
+
+    toggleClipboard: () => set(({ clipboard }) => ({ clipboard: !clipboard })),
 
     toggleVisibility: () => set(({ visibility }) => ({ visibility: !visibility })),
 
-    toggleClipboard: () => set(({ clipboard }) => ({ clipboard: !clipboard }))
+    setPrintQuizId: (printQuizId) => set(() => ({ printQuizId }))
   }), {
     name: 'config',
-    storage: webextStorage('sync')
+    storage: wxtStorage('sync')
   }))
 )
 

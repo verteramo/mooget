@@ -5,10 +5,9 @@
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-// External dependencie
-import { t } from "i18next";
+// External dependencies
 
-import { IconButton, Paper, Stack } from "@mui/material";
+import { IconButton, Paper, Stack } from '@mui/material'
 
 import {
   ContentPasteOffRounded,
@@ -16,70 +15,74 @@ import {
   UploadFileRounded,
   ViewSidebarRounded,
   VisibilityOffRounded,
-  VisibilityRounded,
-} from "@mui/icons-material";
+  VisibilityRounded
+} from '@mui/icons-material'
 
 // Project dependencies
-import { InputFile } from "@/components/common/InputFile";
-import { Quiz } from "@/models";
-import { useConfigStore } from "@/stores";
-import { loadQuiz } from "@/utilities/quizzes";
+import { InputFile } from '@/components/common/InputFile'
+import { Quiz } from '@/models'
+import { useConfigStore } from '@/stores'
+import { openSidePanel } from '@/utils/native'
+import { readQuiz } from '@/utils/quizzes'
+import { useTranslation } from 'react-i18next'
 
 interface Props {
-  onLoadQuiz: (quiz: Quiz) => void;
+  onReadQuiz: (quiz: Quiz) => void
 }
 
-export function Actionbar({ onLoadQuiz }: Props): JSX.Element {
-  const visibility = useConfigStore((state) => state.visibility);
-  const clipboard = useConfigStore((state) => state.clipboard);
-  const toggleVisibility = useConfigStore((state) => state.toggleVisibility);
-  const toggleClipboard = useConfigStore((state) => state.toggleClipboard);
+export function Actionbar ({ onReadQuiz }: Props): JSX.Element {
+  const { t } = useTranslation()
 
-  function handleFileChange([file]: FileList): void {
-    loadQuiz(file)
-      .then((quiz) => {
-        if (quiz !== undefined) {
-          onLoadQuiz(quiz);
-        }
-      })
-      .catch(console.error);
+  const [visibility, clipboard, toggleVisibility, toggleClipboard] = useConfigStore((state) => [
+    state.visibility,
+    state.clipboard,
+    state.toggleVisibility,
+    state.toggleClipboard
+  ])
+
+  function handleFileChange ([file]: FileList): void {
+    readQuiz(file).then((quiz) => {
+      if (quiz !== undefined) {
+        onReadQuiz(quiz)
+      }
+    }).catch(console.error)
   }
 
-  function handleSidePanelClick(): void {
-    browser.sidebarAction.open().catch(console.error);
+  function handleSidePanelClick (): void {
+    openSidePanel().catch(console.error)
   }
 
   return (
-    <Paper component={Stack} direction="row" flexGrow={1} spacing={1} p={1}>
-      <InputFile onChange={handleFileChange} accept=".json">
-        <IconButton color="inherit" title={t("upload")}>
+    <Paper component={Stack} direction='row' spacing={1} p={1}>
+      <InputFile onChange={handleFileChange} accept='.json'>
+        <IconButton color='inherit' title={t('upload')}>
           <UploadFileRounded />
         </IconButton>
       </InputFile>
 
       <IconButton
-        color="inherit"
+        color='inherit'
         onClick={handleSidePanelClick}
-        title={t("sidepanel")}
+        title={t('sidepanel')}
       >
         <ViewSidebarRounded />
       </IconButton>
 
       <IconButton
-        color="inherit"
+        color='inherit'
         onClick={toggleVisibility}
-        title={t("reveal-answers")}
+        title={t('reveal-answers')}
       >
         {visibility ? <VisibilityRounded /> : <VisibilityOffRounded />}
       </IconButton>
 
       <IconButton
-        color="inherit"
+        color='inherit'
         onClick={toggleClipboard}
-        title={t("enable-clipboard")}
+        title={t('enable-clipboard')}
       >
         {clipboard ? <ContentPasteRounded /> : <ContentPasteOffRounded />}
       </IconButton>
     </Paper>
-  );
+  )
 }

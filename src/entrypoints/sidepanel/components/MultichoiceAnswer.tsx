@@ -7,8 +7,8 @@
 
 // External dependencies
 import { ReactNode } from 'react'
-import { useTranslation } from 'react-i18next'
 
+import { Html } from '@/components/common/Html'
 import {
   Checkbox,
   FormControl,
@@ -18,7 +18,7 @@ import {
   Radio,
   RadioGroup
 } from '@mui/material'
-
+import { useTranslation } from 'react-i18next'
 
 interface Props {
   single: boolean
@@ -43,6 +43,7 @@ function useComponents (single: boolean): [
 
 export function MultichoiceAnswer ({ single, choices, onChange }: Props): JSX.Element {
   const { t } = useTranslation()
+
   const [Group, Control, label] = useComponents(single)
 
   return (
@@ -53,7 +54,7 @@ export function MultichoiceAnswer ({ single, choices, onChange }: Props): JSX.El
           return (
             <FormControlLabel
               key={index}
-              label={content}
+              label={<Html content={content} />}
               control={
                 <Control
                   checked={checked}
@@ -63,9 +64,7 @@ export function MultichoiceAnswer ({ single, choices, onChange }: Props): JSX.El
                         return (
                           single
                             ? i === index
-                            : i === index
-                              ? !choice.checked
-                              : choice.checked
+                            : choice.checked
                         )
                       })
                     )

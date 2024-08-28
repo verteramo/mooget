@@ -67,5 +67,10 @@
   "filter-operator-is-not-empty": "is not empty",
   "filter-operator-is-any-of": "is any of",
   "column-header-sort-icon-label": "Sort",
-  "rows-per-page": "Rows per page"
+  "rows-per-page": "Rows per page",
+  "more": "Más",
+  "solve": "Solution",
+  "finish": "Finish",
+  "sequential": "Sequential",
+  "question": "Question {{number}}"
 }

@@ -39,12 +39,14 @@ import { useConfigStore } from '@/stores'
 export function AppLayout ({
   children
 }: PropsWithChildren): JSX.Element {
-  const mode = useConfigStore((state) => state.mode)
-  const color = useConfigStore((state) => state.color)
-  const toggleMode = useConfigStore((state) => state.toggleMode)
+  const [mode, color, toggleMode] = useConfigStore(
+    (state) => [state.mode, state.color, state.toggleMode]
+  )
+
+  const colorKey = color as keyof typeof Colors
 
   const theme = useMemo(
-    () => generateTheme(mode, color), [mode, color]
+    () => generateTheme(mode, Colors[colorKey]), [mode, color]
   )
 
   return (
@@ -53,7 +55,12 @@ export function AppLayout ({
       <AppBar position='static' enableColorOnDark>
         <Toolbar disableGutters>
           <Stack direction='row' m={1} flexGrow={1}>
-            <Stack direction='row' spacing={1} flexGrow={1} alignItems='center'>
+            <Stack
+              direction='row'
+              spacing={1}
+              flexGrow={1}
+              alignItems='center'
+            >
               <Avatar variant='square' src='icon/128.png' />
               <Typography variant='h6' fontWeight='bold'>
                 {document.title}
@@ -70,7 +77,7 @@ export function AppLayout ({
         </Toolbar>
       </AppBar>
       <Box m={1}>
-        <Box marginTop={1}>{children}</Box>
+        <Box>{children}</Box>
       </Box>
     </ThemeProvider>
   )

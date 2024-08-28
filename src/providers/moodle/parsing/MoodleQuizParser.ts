@@ -11,7 +11,7 @@ import { Md5 } from 'ts-md5'
 
 // Project dependencies
 import { QuizParser } from '@/parsing'
-import { sendMessage } from '@/utilities/messaging'
+import { sendMessage } from '@/utils/messaging'
 
 /**
  * DOM quiz extractor

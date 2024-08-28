@@ -1,5 +1,5 @@
 /*******************************************************************************
- * webextStorage.ts
+ * wxtStorage.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
@@ -9,22 +9,24 @@
 import { StorageArea } from 'wxt/storage'
 import { createJSONStorage, StateStorage } from 'zustand/middleware'
 
-const webextApi = (area: StorageArea): StateStorage => ({
-  getItem: async function (name: string): Promise<string> {
+const wxtStorageApi = (area: StorageArea): StateStorage => ({
+  getItem: async (name: string): Promise<string> => {
     return JSON.stringify(await storage.getItem(`${area}:${name}`))
   },
 
-  setItem: async function (name: string, value: string): Promise<void> {
+  setItem: async (name: string, value: string): Promise<void> => {
+    // It is saved parsed to see it in
+    // storage as an object and not as a string
     await storage.setItem(`${area}:${name}`, JSON.parse(value))
   },
 
-  removeItem: async function (name: string): Promise<void> {
+  removeItem: async (name: string): Promise<void> => {
     await storage.removeItem(`${area}:${name}`)
   }
 })
 
-const webextStorage =
+const wxtStorage =
   (area: StorageArea): ReturnType<typeof createJSONStorage> =>
-    createJSONStorage(() => webextApi(area))
+    createJSONStorage(() => wxtStorageApi(area))
 
-export { webextStorage }
+export { wxtStorage }

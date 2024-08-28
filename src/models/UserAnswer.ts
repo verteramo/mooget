@@ -10,6 +10,11 @@
  */
 export interface UserAnswer {
   /**
+   * Answer type
+   */
+  type: string
+
+  /**
    * Question index
    */
   index: number
@@ -17,5 +22,5 @@ export interface UserAnswer {
   /**
    * Answer
    */
-  answer: Array<boolean | string | undefined>
+  value?: Array<boolean | string | undefined>
 }

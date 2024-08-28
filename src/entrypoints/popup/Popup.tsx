@@ -7,8 +7,7 @@
 
 // External dependencies
 import { Stack } from '@mui/material'
-import { useEffect, useState } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useEffect } from 'react'
 import { Md5 } from 'ts-md5'
 
 // Package dependencies
@@ -18,60 +17,23 @@ import { QuizGrid } from './components/QuizGrid'
 import { useContentQuiz } from './hooks/useContentQuiz'
 
 // Project dependencies
-import { DashedBox } from '@/components/common/DashedBox'
 import { render } from '@/components/layout/render'
-import { Quiz } from '@/models'
 import { useQuizCollectionStore } from '@/stores'
-import { filterQuiz } from '@/utilities/quizzes'
+import { filterQuiz } from '@/utils/quizzes'
+import { useQuiz } from './hooks/useQuiz'
 
 export function Popup (): JSX.Element {
-  const { t } = useTranslation()
-
   const items = useQuizCollectionStore((state) => state.items)
   const addQuiz = useQuizCollectionStore((state) => state.addQuiz)
 
   const contentQuiz = useContentQuiz()
-  const [quiz, setQuiz] = useState<Quiz>()
+  const [quiz, setQuiz, setQuizName, setQuizCategory] = useQuiz(
+    (str: string) => Md5.hashStr(str)
+  )
 
   const showQuizCard =
     quiz !== undefined &&
     filterQuiz(items, quiz).questions.length > 0
-
-  const showQuizGrid = items.length > 0
-
-  /**
-   * Set the quiz name
-   * @param name Quiz name
-   */
-  function setQuizName (name: string): void {
-    if (quiz !== undefined) {
-      setQuiz({
-        ...quiz,
-        name,
-        id: Md5.hashStr(name + quiz.category)
-      })
-    }
-  }
-
-  /**
-   * Set the quiz category
-   * @param category Quiz category
-   */
-  function setQuizCategory (category: string): void {
-    if (quiz !== undefined) {
-      setQuiz({
-        ...quiz,
-        category,
-        id: Md5.hashStr(quiz.name + category)
-      })
-    }
-  }
-
-  function handleQuizSave (): void {
-    if (quiz !== undefined) {
-      addQuiz(quiz)
-    }
-  }
 
   useEffect(() => {
     if (contentQuiz !== undefined) {
@@ -80,17 +42,17 @@ export function Popup (): JSX.Element {
   }, [contentQuiz, items])
 
   return (
-    <Stack minWidth={700} minHeight={150} spacing={1}>
-      <Actionbar onLoadQuiz={setQuiz} />
+    <Stack minWidth={750} minHeight={400} spacing={1}>
+      <Actionbar onReadQuiz={setQuiz} />
       {showQuizCard && (
         <QuizCard
           quiz={quiz}
           onNameChange={setQuizName}
           onCategoryChange={setQuizCategory}
-          onSave={handleQuizSave}
+          onSave={addQuiz}
         />
       )}
-      {showQuizGrid ? <QuizGrid /> : <DashedBox>{t('empty-quizzes')}</DashedBox>}
+      <QuizGrid />
     </Stack>
   )
 }

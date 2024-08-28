@@ -13,22 +13,18 @@ import { MouseEvent, useState } from 'react'
 
 // Project dependencies
 import { useConfigStore } from '@/stores'
-import { Palette as AppPalette } from '@/utilities/colors'
+import { Color, Colors } from '@/utils/colors'
+import { toTitleCase } from '@/utils/native'
 
 export function PalettePopover (): JSX.Element {
   const [anchor, setAnchor] = useState<HTMLButtonElement | null>(null)
   const opened = anchor !== null
   const id = opened ? 'simple-popover' : undefined
-  const colors = Object.values(AppPalette)
-  const selectedColor = useConfigStore((state) => state.color)
 
-  const setColor = useConfigStore((state) => state.setColor)
-
-  function getColorName (color: AppPalette): string | undefined {
-    return Object.keys(AppPalette).find(
-      (key) => AppPalette[key as keyof typeof AppPalette] === color
-    )
-  }
+  const [color, setColor] = useConfigStore((state) => [
+    state.color,
+    state.setColor
+  ])
 
   function handleOpen ({ currentTarget }: MouseEvent<HTMLButtonElement>): void {
     setAnchor(currentTarget)
@@ -38,7 +34,7 @@ export function PalettePopover (): JSX.Element {
     setAnchor(null)
   }
 
-  function handleColorChange (color: AppPalette): void {
+  function handleColorChange (color: Color): void {
     setAnchor(null)
     setColor(color)
   }
@@ -59,26 +55,26 @@ export function PalettePopover (): JSX.Element {
         }}
       >
         <Stack direction='row' p={0.5} spacing={0.5}>
-          {colors.map((color) => (
+          {Object.entries(Colors).map(([name, value]) => (
             <Box
               component={IconButton}
-              key={color}
-              bgcolor={color}
+              key={name}
+              title={toTitleCase(name)}
+              bgcolor={value}
               width={30}
               height={30}
-              title={getColorName(color)}
               sx={{
                 borderRadius: 0.5,
-                ...(color === selectedColor && {
-                  bgcolor: alpha(color, 0.75)
+                ...(name === color && {
+                  bgcolor: alpha(value, 0.75)
                 }),
                 '&:hover': {
-                  bgcolor: alpha(color, 0.75)
+                  bgcolor: alpha(value, 0.75)
                 }
               }}
-              onClick={() => handleColorChange(color)}
+              onClick={() => handleColorChange(name as Color)}
             >
-              {color === selectedColor && <Check sx={{ color: common.white }} />}
+              {name === color && <Check sx={{ color: common.white }} />}
             </Box>
           ))}
         </Stack>

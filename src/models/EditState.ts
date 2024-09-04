@@ -1,38 +1,26 @@
 /*******************************************************************************
- * Question.ts
+ * EditState.ts
  *
  * @license GPL-3.0-or-later
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-// Package dependencies
-import { Answer, AnswerType } from '.'
-
 /**
- * Question interface
+ * Edit state
  */
-export interface Question {
+export interface EditState {
   /**
-   * ID
+   * Quiz id
    */
   id: string
 
   /**
-   * Type
+   * Quiz name
    */
-  type: AnswerType
-  /**
-   * Content
-   */
-  content: string
+  name: string
 
   /**
-   * Answers
+   * Quiz category
    */
-  answers: Answer[]
-
-  /**
-   * Feedback, if any
-   */
-  feedback?: string
+  category: string
 }

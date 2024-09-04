@@ -6,7 +6,7 @@
  ******************************************************************************/
 
 // Package dependencies
-import { Question } from './Question'
+import { Question } from '.'
 
 /**
  * Quiz interface

@@ -1,152 +1,145 @@
-/*******************************************************************************
- *SidePanel.tsx
- *
- * @license GPL-3.0-or-later
- * @link https://github.com/verteramo/mooget
- ******************************************************************************/
-
-// External dependencies
-import { Close } from '@mui/icons-material'
-import { useConfirm } from 'material-ui-confirm'
-
-import {
-  Divider,
-  IconButton,
-  Paper,
-  Stack,
-  Typography
-} from '@mui/material'
-
-// Package dependencies
-import { AnswerComponent } from '../../components/common/AnswerComponent'
-import { MatchingAnswer } from './components/MatchingAnswer'
-import { MultichoiceAnswer } from './components/MultichoiceAnswer'
-import { QuizStepper } from './components/QuizStepper'
-import { TextAnswer } from './components/TextAnswer'
-import { TrueFalseAnswer } from './components/TrueFalseAnswer'
-
-// Project dependencies
-import { DashedBox } from '@/components/common/DashedBox'
-import { Html } from '@/components/common/Html'
-import { render } from '@/components/layout/render'
-import { useProgressStore, useQuizCollectionStore } from '@/stores'
+import { ConfirmDialog } from '@/components/ConfirmDialog'
+import { TopBar } from '@/components/TopBar'
+import { Button } from '@/components/ui/button'
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
+import configStore from '@/stores/configStore'
+import progressStore, { back, cancelProgress, next, setAnswer, setTab } from '@/stores/progressStore'
+import quizStore from '@/stores/quizStore'
+import { CheckCircle, ChevronLeft, ChevronRight, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
+import { useSnapshot } from 'valtio'
+import { AnswerComponent } from './components/AnswerComponent'
+import { TextAnswer } from './components/TextAnswer'
 
 function SidePanel (): JSX.Element {
   const { t } = useTranslation()
+  const [closing, setClosing] = useState(false)
 
-  const confirm = useConfirm()
+  const { mode } = useSnapshot(configStore)
+  const { list } = useSnapshot(quizStore)
+  const { quizId, step, tab, answers } = useSnapshot(progressStore)
 
-  const quizId = useProgressStore(({ quizId }) => quizId)
-  const step = useProgressStore(({ step }) => step)
-  const answers = useProgressStore(({ answers }) => answers)
-  const setQuiz = useProgressStore(({ setQuiz }) => setQuiz)
-  const addStep = useProgressStore(({ addStep }) => addStep)
-  const setAnswer = useProgressStore(({ setAnswer }) => setAnswer)
-  const quiz = useQuizCollectionStore(({ items }) =>
-    items.find(({ id }) => id === quizId)
+  const quiz = useMemo(
+    () => list.find(({ id }) => id === quizId), [list, quizId]
   )
 
   if (quiz === undefined) {
-    return <DashedBox>{t('empty-quiz')}</DashedBox>
+    return (
+      <div className={`h-screen bg-background text-foreground ${mode}`}>
+        <p>{t('empty-quiz')}</p>
+      </div>
+    )
   }
 
+  const question = quiz.questions[step]
   const answer = answers[step]
-  const question = quiz.questions[answer.index]
-  const choices = question.answers?.map(({ value }) => value) as string[]
-  const isSinglechoice =
-    question.answers?.filter(({ match }) => match === true).length === 1
 
-  const handleCloseClick = (): void => {
-    confirm({
-      title: t('close'),
-      description: quiz.name,
-      confirmationText: t('accept'),
-      cancellationText: t('cancel')
-    })
-      .then(() => setQuiz(''))
-      .catch(console.error)
-  }
-
-  const handleBackClick = (): void => {
-    addStep(-1)
-  }
-
-  const handleNextClick = (): void => {
-    addStep(+1)
-  }
-
-  const handleFinished = (): void => {
-    console.log('finished')
-    console.log(answers)
-  }
-
-  const handleTextAnswerChange = (value: string): void => {
-    setAnswer({ ...answer, value: [value] })
-  }
-
-  const handleMultichoiceAnswerChange = (value: boolean[]): void => {
-    setAnswer({ ...answer, value })
+  const handleFinish = (): void => {
+    console.log('Finish')
   }
 
   return (
-    <Paper elevation={2}>
-      <Stack divider={<Divider variant='middle' />}>
-        <Stack direction='row' p={2}>
-          <Typography variant='h6' flexGrow={1}>
-            {quiz.name}
-          </Typography>
-          <IconButton onClick={handleCloseClick} title={t('close')}>
-            <Close />
-          </IconButton>
-        </Stack>
-        <Stack p={2} spacing={2}>
-          <QuizStepper
-            steps={quiz.questions.length}
-            current={step}
-            onFinished={handleFinished}
-            onBackClick={handleBackClick}
-            onNextClick={handleNextClick}
-          />
-          <Typography align='justify'>
-            <Html content={question.content} />
-          </Typography>
-          <AnswerComponent
-            type={question.type}
-            matching={
-              <MatchingAnswer
-                choices={choices.map((content, index) => ({
-                  value: content,
-                  correct: question.answers?.[index].match as string
-                }))}
-              />
-            }
-            multichoice={
-              <MultichoiceAnswer
-                single={isSinglechoice}
-                choices={choices.map((content, index) => ({
-                  content,
-                  checked: answer.value?.[index] as boolean
-                }))}
-                onChange={handleMultichoiceAnswerChange}
-              />
-            }
-            text={
-              <TextAnswer
-                value={answer.value?.[0] as string}
-                onChange={handleTextAnswerChange}
-              />
-            }
-            truefalse={
-              <TrueFalseAnswer
-                value={answer.value?.[0] as boolean | undefined}
-                onChange={handleMultichoiceAnswerChange}
-              />
-            }
-          />
-        </Stack>
-      </Stack>
-    </Paper>
+    <div className={`h-screen bg-background text-foreground ${mode}`}>
+      <TopBar />
+
+      <div className='container mx-auto p-2'>
+        <Button
+          size='icon'
+          variant='outline'
+          aria-label={t('close')}
+          onClick={() => setClosing(true)}
+          className='float-right'
+        >
+          <X className='h-4 w-4' />
+        </Button>
+        <ConfirmDialog
+          open={closing}
+          onCancel={() => setClosing(false)}
+          onAccept={() => cancelProgress()}
+          description={t('close-quiz-description')}
+          variant='warning'
+        />
+        <h1 className='text-2xl font-bold mb-2'>{quiz.category}</h1>
+        <h2 className='text-xl font-semibold mb-4'>{quiz.name}</h2>
+        <Tabs className='w-full' defaultValue={tab} onValueChange={setTab}>
+          <TabsList className='grid grid-cols-2'>
+            <TabsTrigger value='stepper'>{t('sequential')}</TabsTrigger>
+            <TabsTrigger value='spa'>{t('complete')}</TabsTrigger>
+          </TabsList>
+          <TabsContent value='stepper' className='mt-4'>
+            <div className='space-y-4'>
+              <div className='flex justify-between items-center'>
+                <Button
+                  size='icon'
+                  variant='outline'
+                  aria-label={t('back')}
+                  onClick={back}
+                  disabled={step === 0}
+                >
+                  <ChevronLeft className='h-4 w-4' />
+                </Button>
+                <div className='text-sm font-medium'>
+                  {step + 1} / {quiz.questions.length}
+                </div>
+                {step < quiz.questions.length - 1
+                  ? (
+                    <Button
+                      size='icon'
+                      variant='outline'
+                      aria-label={t('next')}
+                      onClick={next}
+                    >
+                      <ChevronRight className='h-4 w-4' />
+                    </Button>
+                    )
+                  : (
+                    <Button
+                      size='icon'
+                      variant='outline'
+                      aria-label={t('finish')}
+                      onClick={handleFinish}
+                    >
+                      <CheckCircle className='h-4 w-4' />
+                    </Button>
+                    )}
+              </div>
+              <div className='space-y-4'>
+                <div
+                  className='text-lg font-medium mb-4 p-4 bg-muted rounded-lg'
+                  dangerouslySetInnerHTML={{
+                    __html: question.content
+                  }}
+                />
+                <AnswerComponent
+                  type={question.type}
+                  text={
+                    <TextAnswer
+                      value={answer.value?.[0] as string ?? ''}
+                      onAnswer={(value) => setAnswer(answer.index, [value])}
+                    />
+                  }
+                />
+              </div>
+            </div>
+          </TabsContent>
+          <TabsContent value='spa' className='mt-4'>
+            {/* <div className='space-y-8'>
+                      {questions.map((question) => (
+                        <div key={question.id} className='border-b pb-4 last:border-b-0'>
+                          <QuestionComponent
+                            question={question}
+                            onAnswer={(answer) => handleAnswer(question.id, answer)}
+                          />
+                        </div>
+                      ))}
+                      <Button onClick={handleFinish} className='w-full'>
+                        Finalizar cuestionario
+                      </Button>
+                    </div> */}
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
   )
 }
 

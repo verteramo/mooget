@@ -9,7 +9,7 @@
 import $ from 'jquery'
 
 // Project dependencies
-import { Answer, QuestionType } from '@/models'
+import { Answer, AnswerType } from '@/models'
 import { QuestionReducer } from '@/parsing'
 
 export const MoodleQuestionReducerMap: QuestionReducer = {
@@ -62,7 +62,7 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
       return answers
     },
 
-    type: () => QuestionType.Matching
+    type: () => AnswerType.Matching
   },
 
   /**

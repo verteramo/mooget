@@ -6,7 +6,7 @@
  ******************************************************************************/
 
 // Project dependencies
-import { QuestionType } from '@/models'
+import { AnswerType } from '@/models'
 import { QuestionParser } from '@/parsing'
 
 /**
@@ -16,28 +16,28 @@ export class MoodleQuestionParser extends QuestionParser {
   /**
    * Second class of the div.que element
    */
-  get type (): QuestionType | undefined {
+  get type (): AnswerType | undefined {
     switch (this.element.classList.item(1)) {
       case 'description':
-        return QuestionType.Description
+        return AnswerType.Description
 
       case 'ddwtos':
-        return QuestionType.DragAndDrop
+        return AnswerType.DragAndDrop
 
       case 'match':
-        return QuestionType.Matching
+        return AnswerType.Matching
 
       case 'multichoice':
-        return QuestionType.Multichoice
+        return AnswerType.Multichoice
 
       case 'essay':
       case 'numerical':
       case 'calculated':
       case 'shortanswer':
-        return QuestionType.Text
+        return AnswerType.Text
 
       case 'truefalse':
-        return QuestionType.TrueFalse
+        return AnswerType.TrueFalse
     }
   }
 

@@ -9,6 +9,7 @@
 
 // Project dependencies
 import { Quiz } from '@/models'
+import { sendMessage } from '@/utils/messaging'
 
 const getQuiz = async (): Promise<Quiz | undefined> => {
   const [tab] = await browser.tabs.query({ active: true, currentWindow: true })

@@ -1,80 +1,41 @@
-/*******************************************************************************
- * MultichoiceAnswer.tsx
- *
- * @license GPL-3.0-or-later
- * @link https://github.com/verteramo/mooget
- ******************************************************************************/
-
-// External dependencies
-import { ReactNode } from 'react'
-
-import { Html } from '@/components/common/Html'
-import {
-  Checkbox,
-  FormControl,
-  FormControlLabel,
-  FormGroup,
-  FormLabel,
-  Radio,
-  RadioGroup
-} from '@mui/material'
-import { useTranslation } from 'react-i18next'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Label } from '@/components/ui/label'
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group'
 
 interface Props {
   single: boolean
-
   choices: Array<{
     content: string
     checked: boolean
   }>
-
-  onChange: (value: boolean[]) => void
+  onAnswer: (answer: string) => void
 }
 
-function useComponents (single: boolean): [
-  (props: any) => JSX.Element,
-  (props: any) => ReactNode,
-  string
-] {
-  return single
-    ? [RadioGroup, Radio, 'choose-one']
-    : [FormGroup, Checkbox, 'choose-one-or-more']
-}
-
-export function MultichoiceAnswer ({ single, choices, onChange }: Props): JSX.Element {
-  const { t } = useTranslation()
-
-  const [Group, Control, label] = useComponents(single)
+export function MultichoiceAnswer ({ single, choices, onAnswer }: Props): JSX.Element {
+  if (single) {
+    return (
+      <RadioGroup onValueChange={onAnswer}>
+        {choices.map(({ content, checked }) => (
+          <div key={content} className='flex items-center space-x-2'>
+            <RadioGroupItem value={content} id={content} checked={checked} />
+            <Label htmlFor={content}>{content}</Label>
+          </div>
+        ))}
+      </RadioGroup>
+    )
+  }
 
   return (
-    <FormControl>
-      <FormLabel>{t(label)}:</FormLabel>
-      <Group>
-        {choices.map(({ content, checked }, index) => {
-          return (
-            <FormControlLabel
-              key={index}
-              label={<Html content={content} />}
-              control={
-                <Control
-                  checked={checked}
-                  onChange={() => {
-                    onChange(
-                      choices.map((choice, i) => {
-                        return (
-                          single
-                            ? i === index
-                            : choice.checked
-                        )
-                      })
-                    )
-                  }}
-                />
-              }
-            />
-          )
-        })}
-      </Group>
-    </FormControl>
+    <div className='space-y-2'>
+      {choices.map(({ content, checked }) => (
+        <div key={content} className='flex items-center space-x-2'>
+          <Checkbox
+            checked={checked}
+            onCheckedChange={() => onAnswer(content)}
+          />
+          <label htmlFor={content}>{content}</label>
+        </div>
+      ))}
+    </div>
   )
 }

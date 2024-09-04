@@ -1,61 +1,32 @@
-/*******************************************************************************
-  MatchingAnswer.tsx
- *
- * @license GPL-3.0-or-later
- * @link https://github.com/verteramo/mooget
- ******************************************************************************/
-
-// External dependencies
-import { FormControl, Grid, MenuItem, Select } from '@mui/material'
-import { useTranslation } from 'react-i18next'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import React from 'react'
 
 interface Props {
-  choices: Array<{
-    value: string
-    correct: string
-  }>
-
-  onChange?: (value: string[]) => void
+  contents: string[]
+  matches: string[]
+  onAnswer: (answer: string) => void
 }
 
-export function MatchingAnswer ({ choices, onChange }: Props): JSX.Element {
-  const { t } = useTranslation()
-
-  const emptyOption = <em>{t('none')}</em>
-
-  const options = (
-    <FormControl fullWidth>
-      <Select>
-        <MenuItem key={-1} value=''>
-          {emptyOption}
-        </MenuItem>
-        {choices
-          .map(({ correct }) => correct)
-          .map((option, index) => {
-            return (
-              <MenuItem key={index} value={option}>
-                {option}
-              </MenuItem>
-            )
-          })}
-      </Select>
-    </FormControl>
-  )
-
+export function MatchingAnswer ({ contents, matches, onAnswer }: Props): JSX.Element {
   return (
-    <>
-      {choices.map(({ value }, index) => {
-        return (
-          <Grid container rowSpacing={1} key={index} alignItems='center'>
-            <Grid item xs={4}>
-              {value}
-            </Grid>
-            <Grid item xs={8}>
-              {options}
-            </Grid>
-          </Grid>
-        )
-      })}
-    </>
+    <div className='grid grid-cols-2 gap-4'>
+      {contents.map((content) => (
+        <React.Fragment key={content}>
+          <div className='flex items-center'>{content}</div>
+          <Select onValueChange={onAnswer}>
+            <SelectTrigger className='w-full'>
+              <SelectValue placeholder='Selecciona una opción' />
+            </SelectTrigger>
+            <SelectContent>
+              {matches.map((match) => (
+                <SelectItem key={match} value={match}>
+                  {match}
+                </SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
+        </React.Fragment>
+      ))}
+    </div>
   )
-}
+};

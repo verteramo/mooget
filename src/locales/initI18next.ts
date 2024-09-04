@@ -8,13 +8,14 @@
 // External dependencies
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
+import { subscribeKey } from 'valtio/utils'
 
 // Package dependencies
 import en from './en.json'
 import es from './es.json'
 
 // Project dependencies
-import { useConfigStore } from '@/stores'
+import configStore from '@/stores/configStore'
 
 /**
  * Initialize the i18next library with the resources and configuration.
@@ -24,16 +25,22 @@ export async function initI18next (): Promise<void> {
     await i18n
       .use(initReactI18next)
       .init({
-        debug: true,
+        // debug: true,
         resources: {
           en: { translation: en },
           es: { translation: es }
         },
         fallbackLng: ['en', 'es'],
-        lng: useConfigStore.getState().language,
+        lng: 'en',
         interpolation: {
           escapeValue: false
         }
       })
   }
 }
+
+subscribeKey(configStore, 'language', (language) => {
+  if (i18n.isInitialized) {
+    i18n.changeLanguage(language).catch(console.error)
+  }
+})

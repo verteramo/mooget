@@ -7,7 +7,8 @@
 
 // Project dependencies
 import { fetchMoodleVersion } from '@/providers/moodle'
-// import { fetchImageAsBase64 } from '@/utils/images'
+import { fetchImageAsBase64 } from '@/utils/images'
+import { onMessage } from '@/utils/messaging'
 
 export default defineBackground(() => {
   // Message observer to set the badge text
@@ -15,6 +16,7 @@ export default defineBackground(() => {
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true })
 
     if (tab?.id !== undefined) {
+      console.log('Setting badge text:', text)
       await browser.action.setBadgeText({ text, tabId: tab.id })
     }
   })

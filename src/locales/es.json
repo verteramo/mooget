@@ -17,7 +17,7 @@
   "category": "Categoría",
   "questions": "Preguntas",
   "edit": "Editar",
-  "delete": "Eliminar",
+  "remove": "Eliminar",
   "play": "Realizar",
   "back": "Anterior",
   "next": "Siguiente",
@@ -34,6 +34,7 @@
   "light-mode": "Modo claro",
   "color-palette": "Paleta de colores",
   "reveal-answers": "Revelar respuestas",
+  "undefined-answer-type": "Tipo de respuesta no definido",
   "no-rows-label": "No hay datos",
   "column-menu-label": "Menú",
   "column-menu-show-columns": "Mostrar columnas",
@@ -72,5 +73,13 @@
   "solve": "Solución",
   "finish": "Finalizar",
   "sequential": "Secuencial",
-  "question": "Pregunta {{number}}"
+  "question": "Pregunta {{number}}",
+  "name": "Nombre",
+  "colors": "Colores",
+  "select-color": "Seleccionar color primario",
+  "remove-quiz-message": "¿Seguro que desea eliminar el cuestionario '{{name}}'?",
+  "open": "Abrir",
+  "complete": "Todas las preguntas",
+  "confirm": "Confirmar",
+  "close-quiz-description": "¿Seguro que desea cerrar el cuestionario?"
 }

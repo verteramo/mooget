@@ -5,25 +5,29 @@
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-// External dependencies
-import { common } from '@mui/material/colors'
-
 // Package dependencies
+import { Quiz } from '@/models'
 import { parse } from '@/parsing'
 import { moodleProvider } from '@/providers/moodle'
-import { useConfigStore, useQuizCollectionStore } from '@/stores'
+import quizStore, { filterQuiz } from '@/stores/quizStore'
+import { onMessage, sendMessage } from '@/utils/messaging'
+import { subscribeKey } from 'valtio/utils'
+
+async function setBadgeText (quiz: Quiz): Promise<void> {
+  const length = filterQuiz(quiz).questions.length
+  const text = length === 0 ? '' : length.toString()
+
+  await sendMessage('setBadgeText', text)
+}
 
 export default defineContentScript({
   matches: ['<all_urls>'],
   async main () {
-    // Set badge text color
-    await sendMessage('setBadgeTextColor', common.white)
+    console.log('Content script loaded')
 
-    // Listen and update the badge background color
-    useConfigStore.subscribe(({ color }) => color, (color) => {
-      const colorKey = color as keyof typeof Colors
-      sendMessage('setBadgeBackgroundColor', Colors[colorKey]).catch(console.error)
-    }, { fireImmediately: true })
+    // Set badge text and background color
+    await sendMessage('setBadgeTextColor', '#fff')
+    await sendMessage('setBadgeBackgroundColor', '#333')
 
     const quiz = await parse([moodleProvider])
     onMessage('getQuiz', () => quiz)
@@ -32,13 +36,12 @@ export default defineContentScript({
     console.log('Welcome', quiz)
 
     if (quiz !== undefined) {
-      // Listen and update the badge text with the number of questions
-      useQuizCollectionStore.subscribe(({ items }) => items, (items) => {
-        const length = filterQuiz(items, quiz).questions.length
-        const text = length === 0 ? '' : length.toString()
+      setBadgeText(quiz).catch(console.error)
 
-        sendMessage('setBadgeText', text).catch(console.error)
-      }, { fireImmediately: true })
+      subscribeKey(quizStore, 'list', () => {
+        setBadgeText(quiz).catch(console.error)
+        console.log('Quiz list updated')
+      })
     }
   }
 })

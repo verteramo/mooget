@@ -9,9 +9,9 @@ lerna-debug.log*
 
 node_modules
 .output
+.wxt
 stats.html
 stats-*.json
-.wxt
 web-ext.config.ts
 
 # Editor directories and files
@@ -25,7 +25,7 @@ web-ext.config.ts
 *.sln
 *.sw?
 
-# Lock files
-package-lock.json
-pnpm-lock.yaml
+# Package files
 yarn.lock
+package-lock.json
+pnpm-lock.json

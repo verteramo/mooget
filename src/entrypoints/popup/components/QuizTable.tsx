@@ -5,11 +5,11 @@ import { Card } from '@/components/ui/card'
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from '@/components/ui/dropdown-menu'
 import { Input } from '@/components/ui/input'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
-import { startProgress } from '@/stores/progressStore'
-import quizStore, { SortableField, downloadQuiz, removeQuiz, toggleFavorite, toggleSort, updateQuiz } from '@/stores/quizStore'
+import { startProgress } from '@/stores/useProgressStore'
+import { downloadQuiz, removeQuiz, SortableField, toggleFavorite, toggleSort, updateQuiz, useQuizStore } from '@/stores/useQuizStore'
 import { ArrowDown, ArrowUp, Braces, CodeXml, Heart, MoreHorizontal, Pencil, Play, Save, Trash, X } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useSnapshot } from 'valtio'
+import { Fragment } from 'react/jsx-runtime'
 
 export function QuizTable (): JSX.Element {
   const { t } = useTranslation()
@@ -18,7 +18,7 @@ export function QuizTable (): JSX.Element {
    * Sorting logic
    **********************************************/
 
-  const { list, sortState } = useSnapshot(quizStore)
+  const { list, sortState } = useQuizStore((state) => state)
 
   const sortedList = useMemo(
     () => sortState === undefined
@@ -46,7 +46,7 @@ export function QuizTable (): JSX.Element {
       }
     }
 
-    return <></>
+    return <Fragment />
   }
 
   /**********************************************
@@ -116,7 +116,7 @@ export function QuizTable (): JSX.Element {
   }
 
   return (
-    <>
+    <Fragment>
       <Card className='rounded-sm'>
         <Table>
           <TableHeader>
@@ -139,7 +139,9 @@ export function QuizTable (): JSX.Element {
                 onClick={() => toggleSort('name')}
               >
                 <div className='flex items-center'>
-                  <span className='text-xs font-bold mr-1'>{t('name')}</span>
+                  <span className='text-xs font-bold mr-1'>
+                    {t('name')}
+                  </span>
                   <Arrow field='name' />
                 </div>
               </TableHead>
@@ -190,7 +192,7 @@ export function QuizTable (): JSX.Element {
                         onChange={({ target: { value } }) =>
                           setEditState({ ...editState, category: value })}
                         onKeyDown={({ key }) => handleKeyDown(key)}
-                        className='h-6 text-xs'
+                        className='text-xs h-6'
                       />
                       )
                     : (
@@ -215,7 +217,7 @@ export function QuizTable (): JSX.Element {
                         onChange={({ target: { value } }) =>
                           setEditState({ ...editState, name: value })}
                         onKeyDown={({ key }) => handleKeyDown(key)}
-                        className='h-6 text-xs'
+                        className='text-xs h-6'
                       />
                       )
                     : (
@@ -233,7 +235,9 @@ export function QuizTable (): JSX.Element {
                       )}
                 </TableCell>
                 <TableCell className='py-0 px-1 w-[40px] max-w-[40px]'>
-                  <span className='text-xs'>{quiz.questions.length}</span>
+                  <span className='text-xs'>
+                    {quiz.questions.length}
+                  </span>
                 </TableCell>
                 <TableCell className='py-0 px-1'>
                   <DropdownMenu>
@@ -249,19 +253,21 @@ export function QuizTable (): JSX.Element {
                     <DropdownMenuContent align='end'>
                       {editState?.id === quiz.id
                         ? (
-                          <>
+                          <Fragment>
                             <DropdownMenuItem onClick={saveEditState}>
                               <Save className='mr-2 h-4 w-4' />
                               <span className='text-xs'>{t('save')}</span>
                             </DropdownMenuItem>
                             <DropdownMenuItem onClick={cancelEditState}>
                               <X className='mr-2 h-4 w-4' />
-                              <span className='text-xs'>{t('cancel')}</span>
+                              <span className='text-xs'>
+                                {t('cancel')}
+                              </span>
                             </DropdownMenuItem>
-                          </>
+                          </Fragment>
                           )
                         : (
-                          <>
+                          <Fragment>
                             <DropdownMenuItem
                               onClick={() =>
                                 setEditState({
@@ -295,7 +301,7 @@ export function QuizTable (): JSX.Element {
                               <Play className='mr-2 h-4 w-4' />
                               <span className='text-xs'>{t('play')}</span>
                             </DropdownMenuItem>
-                          </>
+                          </Fragment>
                           )}
                     </DropdownMenuContent>
                   </DropdownMenu>
@@ -311,8 +317,8 @@ export function QuizTable (): JSX.Element {
         onAccept={handleRemove}
         title={t('remove')}
         description={t('remove-quiz-message', { name: removingQuizName })}
-        variant='alert'
+        variant='destructive'
       />
-    </>
+    </Fragment>
   )
 }

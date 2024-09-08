@@ -82,5 +82,8 @@
   "open": "Open",
   "complete": "All questions",
   "confirm": "Confirm",
-  "close-quiz-description": "Are you sure you want to close quiz?"
+  "close-quiz-description": "Are you sure you want to close quiz?",
+  "stepper": "Stepper",
+  "single-page": "Single page",
+  "questions-count": "{{count}} questions"
 }

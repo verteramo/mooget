@@ -81,5 +81,8 @@
   "open": "Abrir",
   "complete": "Todas las preguntas",
   "confirm": "Confirmar",
-  "close-quiz-description": "¿Seguro que desea cerrar el cuestionario?"
+  "close-quiz-description": "¿Seguro que desea cerrar el cuestionario?",
+  "single-page": "Página única",
+  "stepper": "Paso a paso",
+  "questions-count": "{{count}} preguntas"
 }

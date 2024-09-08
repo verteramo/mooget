@@ -1,7 +1,6 @@
-import configStore, { setLanguage, toggleMode } from '@/stores/configStore'
+import { setLanguage, toggleMode, useConfigStore } from '@/stores/useConfigStore'
 import { Moon, Sun } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
-import { useSnapshot } from 'valtio'
 import { Button } from './ui/button'
 import {
   Select,
@@ -11,12 +10,12 @@ import {
   SelectValue
 } from './ui/select'
 
-export function TopBar (): JSX.Element {
+export function Topbar (): JSX.Element {
   const { t, i18n: { languages } } = useTranslation()
-  const { mode, language } = useSnapshot(configStore)
+  const { mode, language } = useConfigStore((state) => state)
 
   return (
-    <div className='flex items-center justify-between p-2 bg-[#09090b]'>
+    <div className='flex items-center justify-between p-2 bg-[#333]'>
       <div className='flex items-center space-x-2'>
         <img src='/icon/128.png' alt={document.title} className='h-6 w-6' />
         <h1 className='text-white font-bold text-xl'>{document.title}</h1>
@@ -24,21 +23,21 @@ export function TopBar (): JSX.Element {
       <div className='flex items-center space-x-2'>
         <Select value={language} onValueChange={setLanguage}>
           <SelectTrigger className='w-[100px] h-7 text-xs bg-background text-foreground border-input'>
-            <SelectValue placeholder='Idioma' />
+            <SelectValue placeholder={t('language')} />
           </SelectTrigger>
           <SelectContent>
             {languages.map((language) => (
-              <SelectItem key={language} value={language} className='text-xs'>
+              <SelectItem key={language} value={language}>
                 {t(language)}
               </SelectItem>
             ))}
           </SelectContent>
         </Select>
         <Button
-          variant='outline'
           size='icon'
-          className='h-7 w-7 rounded-lg p-0'
+          variant='outline'
           onClick={() => toggleMode()}
+          className='h-7 w-7 rounded-lg p-0'
         >
           {mode === 'dark'
             ? (

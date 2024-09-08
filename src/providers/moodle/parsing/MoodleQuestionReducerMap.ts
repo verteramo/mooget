@@ -1,7 +1,7 @@
 /*******************************************************************************
  * MoodleQuestionReducerMap.ts
  *
- * @license GPL-3.0-or-later
+ * @license GPL-3.0
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
@@ -9,7 +9,7 @@
 import $ from 'jquery'
 
 // Project dependencies
-import { Answer, AnswerType } from '@/models'
+import { Answer } from '@/models'
 import { QuestionReducer } from '@/parsing'
 
 export const MoodleQuestionReducerMap: QuestionReducer = {
@@ -62,7 +62,7 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
       return answers
     },
 
-    type: () => AnswerType.Matching
+    type: () => 'matching'
   },
 
   /**

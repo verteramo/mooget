@@ -10,5 +10,9 @@ type Props = {
 
 export function AnswerComponent (props: Props): ReactNode {
   const { t } = useTranslation()
-  return props[props.type] ?? <>{t('undefined-answer-type')}</>
+  return props[props.type] ?? (
+    <>
+      {t('undefined-answer-type')}
+    </>
+  )
 }

@@ -1,7 +1,7 @@
 /*******************************************************************************
  * UserAnswer.ts
  *
- * @license GPL-3.0-or-later
+ * @license GPL-3.0
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
@@ -10,11 +10,6 @@
  */
 export interface UserAnswer {
   /**
-   * Answer type
-   */
-  type: string
-
-  /**
    * Question index
    */
   index: number
@@ -22,5 +17,5 @@ export interface UserAnswer {
   /**
    * Answer
    */
-  value?: Array<boolean | string | undefined>
+  value: Array<boolean | string | undefined>
 }

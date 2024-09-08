@@ -1,16 +1,19 @@
 /*******************************************************************************
- * quizStore.ts
+ * useQuizStore.ts
  *
- * @license GPL-3.0-or-later
+ * @license GPL-3.0
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
 // External dependencies
-import { snapshot } from 'valtio'
+import { create } from 'zustand'
+import { persist, subscribeWithSelector } from 'zustand/middleware'
+
+// Package dependencies
+import { wxtStorage } from './wxtStorage'
 
 // Project dependencies
-import { Quiz } from '@/models'
-import { persistedStore } from '@/utils/store'
+import { Quiz, UserAnswer } from '@/models'
 
 /***************************************
  * Types and interface
@@ -58,11 +61,14 @@ export interface QuizStore {
 /**
  * Store instance
  */
-const store = persistedStore<QuizStore>('local:quizzes', {
-  list: []
-})
-
-export default store
+export const useQuizStore = create<QuizStore>()(
+  subscribeWithSelector(persist((_set) => ({
+    list: []
+  }), {
+    name: 'quiz-store',
+    storage: wxtStorage('local')
+  }))
+)
 
 /***************************************
  * Actions
@@ -73,7 +79,10 @@ export default store
  * @param quiz The quiz to add
  */
 export const addQuiz = (quiz: Quiz): void => {
-  store.list.push(quiz)
+  useQuizStore.setState((state) => ({
+    ...state,
+    list: [...state.list, quiz]
+  }))
 }
 
 /**
@@ -81,12 +90,16 @@ export const addQuiz = (quiz: Quiz): void => {
  * @param editState The edit state
  */
 export const updateQuiz = (id: string, category: string, name: string): void => {
-  const index = store.list.findIndex(({ id: currentId }) => currentId === id)
-  store.list[index] = {
-    ...store.list[index],
-    category,
-    name
-  }
+  useQuizStore.setState((state) => ({
+    ...state,
+    list: state.list.map((quiz) => {
+      if (quiz.id === id) {
+        return { ...quiz, category, name }
+      }
+
+      return quiz
+    })
+  }))
 }
 
 /**
@@ -94,8 +107,10 @@ export const updateQuiz = (id: string, category: string, name: string): void => 
  * @param id The id of the quiz to remove
  */
 export const removeQuiz = (id: string): void => {
-  const index = store.list.findIndex((quiz) => quiz.id === id)
-  store.list.splice(index, 1)
+  useQuizStore.setState((state) => ({
+    ...state,
+    list: state.list.filter((quiz) => quiz.id !== id)
+  }))
 }
 
 /**
@@ -103,8 +118,10 @@ export const removeQuiz = (id: string): void => {
  * @param id The id of the quiz to update
  */
 export const toggleFavorite = (id: string): void => {
-  const index = store.list.findIndex((quiz) => quiz.id === id)
-  store.list[index].favorite = !(store.list[index].favorite ?? false)
+  useQuizStore.setState((state) => ({
+    ...state,
+    list: state.list.map((quiz) => quiz.id === id ? { ...quiz, favorite: !(quiz.favorite ?? false) } : quiz)
+  }))
 }
 
 /**
@@ -112,8 +129,16 @@ export const toggleFavorite = (id: string): void => {
  * @param id The id of the quiz to update
  */
 export const toggleSequential = (id: string): void => {
-  const index = store.list.findIndex((quiz) => quiz.id === id)
-  store.list[index].sequential = !(store.list[index].sequential ?? false)
+  useQuizStore.setState((state) => ({
+    ...state,
+    list: state.list.map((quiz) => {
+      if (quiz.id === id) {
+        return { ...quiz, sequential: !(quiz.sequential ?? false) }
+      }
+
+      return quiz
+    })
+  }))
 }
 
 /**
@@ -121,27 +146,50 @@ export const toggleSequential = (id: string): void => {
  * @param field The field to sort by
  */
 export const toggleSort = (field: SortableField): void => {
-  const { sortState } = snapshot(store)
+  useQuizStore.setState((state) => {
+    const { sortState } = state
 
-  store.sortState =
-    (sortState?.field === field)
-      ? sortState.order === 'asc'
-        ? { field, order: 'desc' }
-        : undefined
-      : { field, order: 'asc' }
+    return {
+      ...state,
+      sortState: (
+        sortState?.field === field
+          ? sortState.order === 'asc'
+            ? { field, order: 'desc' }
+            : undefined
+          : { field, order: 'asc' }
+      )
+    }
+  })
 }
+
+/***************************************
+ * Rehydration
+ ***************************************/
+
+storage.watch<QuizStore>('local:quiz-store', (store) => {
+  if (store !== null) {
+    useQuizStore.persist.rehydrate()?.catch(console.error)
+  }
+})
 
 /***************************************
  * Utils
  ***************************************/
 
 /**
+ * Get a quiz by id
+ * @param id The id of the quiz to getç
+ */
+export const getQuiz = (id: string): Quiz | undefined => {
+  return useQuizStore.getState().list.find(({ id: currentId }) => currentId === id)
+}
+
+/**
  * Get the question ids
- * @returns The question ids
  */
 const getQuestionIds = (): string[] => {
   return (
-    snapshot(store).list
+    useQuizStore.getState().list
       .flatMap(({ questions }) => questions)
       .flatMap(({ id }) => id)
   )
@@ -150,7 +198,7 @@ const getQuestionIds = (): string[] => {
 /**
  * Filter quiz questions
  * @param quiz The quiz to filter
- * @returns The filtered quiz
+ * @param list The list of quizzes
  */
 export const filterQuiz = (quiz: Quiz): Quiz => {
   const ids = getQuestionIds()
@@ -163,14 +211,25 @@ export const filterQuiz = (quiz: Quiz): Quiz => {
   }
 }
 
+export const getSolution = (quiz: Quiz) => {
+  console.log('Getting solution')
+  return quiz.questions.map((question) => {
+    if (question.type === 'multichoice') {
+      return question.answers.map(({ match }) => match as boolean)
+    }
+
+    return question.answers
+  })
+}
+
 /**
  * Download a quiz
  * @param quiz The quiz to download
  */
 export const downloadQuiz = (id: string): void => {
-  const quiz = snapshot(store).list.find(({ id: currentId }) => currentId === id)
+  const quiz = useQuizStore.getState().list.find(({ id: currentId }) => currentId === id)
 
-  if (quiz) {
+  if (quiz !== undefined) {
     const element = document.createElement('a')
     element.href = `data:text/json;charset=utf-8,${encodeURIComponent(JSON.stringify(quiz, null, 2))}`
     element.download = `${quiz.name}.json`

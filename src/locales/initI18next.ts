@@ -1,21 +1,20 @@
 /*******************************************************************************
  * initI18next.ts
  *
- * @license GPL-3.0-or-later
+ * @license GPL-3.0
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
 // External dependencies
 import i18n from 'i18next'
 import { initReactI18next } from 'react-i18next'
-import { subscribeKey } from 'valtio/utils'
 
 // Package dependencies
 import en from './en.json'
 import es from './es.json'
 
 // Project dependencies
-import configStore from '@/stores/configStore'
+import { useConfigStore } from '@/stores/useConfigStore'
 
 /**
  * Initialize the i18next library with the resources and configuration.
@@ -39,8 +38,8 @@ export async function initI18next (): Promise<void> {
   }
 }
 
-subscribeKey(configStore, 'language', (language) => {
+useConfigStore.subscribe(({ language }) => language, (language) => {
   if (i18n.isInitialized) {
     i18n.changeLanguage(language).catch(console.error)
   }
-})
+}, { fireImmediately: true })

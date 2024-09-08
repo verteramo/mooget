@@ -11,7 +11,7 @@ interface Props {
   description: string
   acceptText?: string
   cancelText?: string
-  variant?: 'info' | 'warning' | 'alert'
+  variant?: 'info' | 'warning' | 'destructive'
 }
 
 export function ConfirmDialog ({
@@ -61,14 +61,14 @@ export function ConfirmDialog ({
             <Button
               variant='outline'
               onClick={onCancel}
-              className='px-3 py-1 h-8 text-sm'
+              className='px-3 py-1 h-8'
             >
               {cancelText ?? t('cancel')}
             </Button>
             <Button
               variant={variant}
               onClick={onAccept}
-              className='px-3 py-1 h-8 text-sm'
+              className='px-3 py-1 h-8'
             >
               {acceptText ?? t('accept')}
             </Button>

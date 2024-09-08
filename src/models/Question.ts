@@ -1,7 +1,7 @@
 /*******************************************************************************
  * Question.ts
  *
- * @license GPL-3.0-or-later
+ * @license GPL-3.0
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
@@ -21,8 +21,9 @@ export interface Question {
    * Type
    */
   type: AnswerType
+
   /**
-   * Content
+   * HTML content of the question
    */
   content: string
 

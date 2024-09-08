@@ -1,7 +1,7 @@
 /*******************************************************************************
  * background.ts
  *
- * @license GPL-3.0-or-later
+ * @license GPL-3.0
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
@@ -12,23 +12,19 @@ import { onMessage } from '@/utils/messaging'
 
 export default defineBackground(() => {
   // Message observer to set the badge text
-  onMessage('setBadgeText', async ({ data: text }) => {
+  onMessage('setBadgeValue', async ({ data: value }) => {
     const [tab] = await browser.tabs.query({ active: true, currentWindow: true })
 
     if (tab?.id !== undefined) {
-      console.log('Setting badge text:', text)
+      const text = value === 0 ? '' : value.toString()
       await browser.action.setBadgeText({ text, tabId: tab.id })
     }
   })
 
-  // Message observer to set the badge text color
-  onMessage('setBadgeTextColor', async ({ data: color }) => {
-    browser.action.setBadgeTextColor({ color })
-  })
-
-  // Message observer to set the badge background color
-  onMessage('setBadgeBackgroundColor', async ({ data: color }) => {
-    await browser.action.setBadgeBackgroundColor({ color })
+  // Message observer to set the badge theme
+  onMessage('setBadgeTheme', async ({ data: { color, bgcolor } }) => {
+    await browser.action.setBadgeTextColor({ color })
+    await browser.action.setBadgeBackgroundColor({ color: bgcolor })
   })
 
   // Message observer to get the Moodle version

@@ -17,6 +17,5 @@
     "src/locales"
   ],
   "i18n-ally.displayLanguage": "en",
-  "i18n-ally.keystyle": "nested",
-  "C_Cpp.default.compilerPath": "C:\\cygwin64\\bin\\gcc.exe",
+  "i18n-ally.keystyle": "nested"
 }

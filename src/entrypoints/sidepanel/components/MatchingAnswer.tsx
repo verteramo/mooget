@@ -1,19 +1,28 @@
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
-import React from 'react'
+import { Fragment } from 'react'
 
 interface Props {
   contents: string[]
   matches: string[]
-  onAnswer: (answer: string) => void
+  answer: string[]
+  onAnswer: (answer: string[]) => void
 }
 
-export function MatchingAnswer ({ contents, matches, onAnswer }: Props): JSX.Element {
+export function MatchingAnswer ({ contents, matches, answer, onAnswer }: Props): JSX.Element {
+  const handleValueChange = (index: number) => (value: string): void => {
+    onAnswer(
+      answer.map((_, i) => {
+        return i === index ? value : answer[i]
+      })
+    )
+  }
+
   return (
     <div className='grid grid-cols-2 gap-4'>
-      {contents.map((content) => (
-        <React.Fragment key={content}>
+      {contents.map((content, index) => (
+        <Fragment key={content}>
           <div className='flex items-center'>{content}</div>
-          <Select onValueChange={onAnswer}>
+          <Select value={answer[index]} onValueChange={handleValueChange(index)}>
             <SelectTrigger className='w-full'>
               <SelectValue placeholder='Selecciona una opción' />
             </SelectTrigger>
@@ -25,7 +34,7 @@ export function MatchingAnswer ({ contents, matches, onAnswer }: Props): JSX.Ele
               ))}
             </SelectContent>
           </Select>
-        </React.Fragment>
+        </Fragment>
       ))}
     </div>
   )

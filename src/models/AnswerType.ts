@@ -1,19 +1,19 @@
 /*******************************************************************************
  * AnswerType.ts
  *
- * @license GPL-3.0-or-later
+ * @license GPL-3.0
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
 /**
- * Question type
+ * Answer type
  */
-export enum AnswerType {
-  Description = 'description',
-  DragAndDrop = 'draganddrop',
-  Matching = 'matching',
-  Multianswer = 'multianswer',
-  Multichoice = 'multichoice',
-  Text = 'text',
-  TrueFalse = 'truefalse',
-}
+export type AnswerType =
+  | 'description'
+  | 'draganddrop'
+  | 'matching'
+  | 'multianswer'
+  | 'multichoice'
+  | 'text'
+  | 'essay'
+  | 'truefalse'

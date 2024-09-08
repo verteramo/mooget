@@ -1,7 +1,7 @@
 /*******************************************************************************
  * MoodleQuestionParser.ts
  *
- * @license GPL-3.0-or-later
+ * @license GPL-3.0
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
@@ -19,25 +19,27 @@ export class MoodleQuestionParser extends QuestionParser {
   get type (): AnswerType | undefined {
     switch (this.element.classList.item(1)) {
       case 'description':
-        return AnswerType.Description
+        return 'description'
 
       case 'ddwtos':
-        return AnswerType.DragAndDrop
+        return 'draganddrop'
 
       case 'match':
-        return AnswerType.Matching
+        return 'matching'
 
       case 'multichoice':
-        return AnswerType.Multichoice
+        return 'multichoice'
 
       case 'essay':
+        return 'essay'
+
       case 'numerical':
       case 'calculated':
       case 'shortanswer':
-        return AnswerType.Text
+        return 'text'
 
       case 'truefalse':
-        return AnswerType.TrueFalse
+        return 'truefalse'
     }
   }
 

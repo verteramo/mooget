@@ -1,9 +1,10 @@
 import UndefinedIcon from '@/assets/undefined-icon.png'
+import { LabeledInput } from '@/components/LabeledInput'
+import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { Card, CardTitle } from '@/components/ui/card'
-import { Input } from '@/components/ui/input'
-import { Label } from '@/components/ui/label'
 import { Quiz } from '@/models'
+import { FileQuestion } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 
 interface Props {
@@ -15,65 +16,60 @@ export function QuizCard ({ quiz: initialState, onSave }: Props): JSX.Element {
   const { t } = useTranslation()
   const [quiz, setQuiz] = useState(initialState)
 
+  const setCategory = (category: string): void => {
+    setQuiz({ ...quiz, category })
+  }
+
+  const setName = (name: string): void => {
+    setQuiz({ ...quiz, name })
+  }
+
+  const handleSave = (quiz: Quiz) => (): void => {
+    onSave(quiz)
+  }
+
   return (
-    <Card className='mb-2 rounded-sm'>
-      <div className='flex'>
-        <div className='flex-grow p-2'>
-          <CardTitle className='text-sm font-medium mb-4 ml-2 text-muted-foreground'>
+    <Card className='flex rounded-sm mb-2'>
+      <div className='flex-grow p-2'>
+        <div className='flex justify-between items-center mb-2'>
+          <CardTitle className='text-xs font-medium ml-2 text-muted-foreground'>
             {quiz.owner}
           </CardTitle>
-          <div className='flex space-x-2 mb-2'>
-            <div className='flex-1'>
-              <div className='relative'>
-                <Label
-                  htmlFor='category'
-                  className='absolute -top-2 left-2 px-1 bg-background text-[8px] text-muted-foreground uppercase tracking-widest'
-                >
-                  {t('category')}
-                </Label>
-                <Input
-                  id='category'
-                  className='h-7 text-xs pt-1'
-                  value={quiz.category}
-                  onChange={
-                    ({ target: { value } }) =>
-                      setQuiz({ ...quiz, category: value })
-                  }
-                />
-              </div>
-            </div>
-            <div className='flex-1'>
-              <div className='relative'>
-                <Label
-                  htmlFor='name'
-                  className='absolute -top-2 left-2 px-1 bg-background text-[8px] text-muted-foreground uppercase tracking-widest'
-                >
-                  {t('name')}
-                </Label>
-                <Input
-                  id='name'
-                  className='h-7 text-xs pt-1'
-                  value={quiz.name}
-                  onChange={
-                    ({ target: { value } }) =>
-                      setQuiz({ ...quiz, name: value })
-                  }
-                />
-              </div>
-            </div>
-          </div>
-          <Button className='h-7 text-xs' onClick={() => onSave(quiz)}>
+          <Badge variant='secondary' className='flex items-center gap-1'>
+            <FileQuestion className='w-3 h-3' />
+            <span>
+              {t('questions-count', { count: quiz.questions.length })}
+            </span>
+          </Badge>
+        </div>
+        <div className='flex space-x-2 mb-2'>
+          <LabeledInput
+            className='text-xs h-7 pt-1'
+            id='category'
+            label={t('category')}
+            value={quiz.category}
+            onChange={setCategory}
+          />
+          <LabeledInput
+            className='text-xs h-7 pt-1'
+            id='name'
+            label={t('name')}
+            value={quiz.name}
+            onChange={setName}
+          />
+        </div>
+        <div className='flex space-x-2'>
+          <Button size='sm' onClick={handleSave(quiz)}>
             {t('save')}
           </Button>
         </div>
-        <div className='w-24 bg-white overflow-hidden rounded-tr-lg rounded-br-lg'>
-          <img
-            src={quiz.icon ?? UndefinedIcon}
-            alt={quiz.owner}
-            title={quiz.owner}
-            className='w-full h-full object-contain'
-          />
-        </div>
+      </div>
+      <div className='w-24 bg-white overflow-hidden rounded-tr-lg rounded-br-lg'>
+        <img
+          alt={quiz.owner}
+          src={quiz.icon ?? UndefinedIcon}
+          className='w-full h-full object-contain'
+        />
       </div>
     </Card>
   )

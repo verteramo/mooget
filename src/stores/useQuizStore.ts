@@ -237,3 +237,23 @@ export const downloadQuiz = (id: string): void => {
     document.removeChild(element)
   }
 }
+
+export const uploadQuiz = async (file: File): Promise<Quiz> => {
+  return await new Promise((resolve, reject) => {
+    const reader = new FileReader()
+
+    reader.onload = (e: ProgressEvent<FileReader>) => {
+      try {
+        const result = e.target?.result as string
+        const quiz: Quiz = JSON.parse(result)
+        resolve(quiz)
+      } catch (error) {
+        reject(error)
+      }
+    }
+
+    reader.onerror = reject
+
+    reader.readAsText(file)
+  })
+}

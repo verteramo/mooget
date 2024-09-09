@@ -30,11 +30,6 @@ export interface ConfigStore {
    * Current language
    */
   language: string
-
-  /**
-   * Font size
-   */
-  font: 'xs' | 'sm'
 }
 
 /***************************************
@@ -47,8 +42,7 @@ export interface ConfigStore {
 export const useConfigStore = create<ConfigStore>()(
   subscribeWithSelector(persist((_set) => ({
     mode: 'light',
-    language: 'en',
-    font: 'xs'
+    language: 'en'
   }), {
     name: 'config-store',
     storage: wxtStorage('sync')
@@ -78,20 +72,6 @@ export const setLanguage = (language: string): void => {
     ...state,
     language
   }))
-}
-
-/**
- * Toggle the font size
- */
-export const toggleFont = (): void => {
-  useConfigStore.setState((state) => {
-    switch (state.font) {
-      case 'xs':
-        return { ...state, font: 'sm' }
-      case 'sm':
-        return { ...state, font: 'xs' }
-    }
-  })
 }
 
 /***************************************

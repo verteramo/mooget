@@ -13,7 +13,7 @@ import { persist, subscribeWithSelector } from 'zustand/middleware'
 import { wxtStorage } from './wxtStorage'
 
 // Project dependencies
-import { Quiz, UserAnswer } from '@/models'
+import { Answer, Quiz } from '@/models'
 
 /***************************************
  * Types and interface
@@ -211,7 +211,7 @@ export const filterQuiz = (quiz: Quiz): Quiz => {
   }
 }
 
-export const getSolution = (quiz: Quiz) => {
+export const getSolution = (quiz: Quiz): Array<Answer[] | boolean[] | string[]> => {
   console.log('Getting solution')
   return quiz.questions.map((question) => {
     if (question.type === 'multichoice') {

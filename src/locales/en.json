@@ -31,6 +31,7 @@
   "choose-one-or-more": "Choose one or more",
   "empty-quiz": "No quiz selected",
   "empty-quizzes": "No quizzes",
+  "empty-quizzes-description": "There are no quizzes in database",
   "dark-mode": "Dark mode",
   "light-mode": "Light mode",
   "color-palette": "Color palette",

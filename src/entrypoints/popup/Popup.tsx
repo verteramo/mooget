@@ -7,8 +7,10 @@ import { DatabaseIcon } from 'lucide-react'
 import { QuizCard } from './components/QuizCard'
 import { QuizTable } from './components/QuizTable'
 import { useContentQuiz } from './hooks/useContentQuiz'
+import { useTranslation } from 'react-i18next'
 
 function Popup (): JSX.Element {
+  const { t } = useTranslation()
   const mode = useConfigStore((state) => state.mode)
   const list = useQuizStore((state) => state.list)
   const contentQuiz = useContentQuiz()
@@ -47,8 +49,8 @@ function Popup (): JSX.Element {
           : (
             <EmptyBox
               icon={<DatabaseIcon className='w-12 h-12 text-gray-400 mb-4' />}
-              title='Base de datos vacía'
-              content='No se encontraron cuestionarios en la base de datos.'
+              title={t('empty-quizzes')}
+              content={t('empty-quizzes-description')}
             />
             )}
       </div>

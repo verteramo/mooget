@@ -30,6 +30,7 @@
   "choose-one-or-more": "Seleccione una o más de una",
   "empty-quiz": "No hay cuestionario seleccionado",
   "empty-quizzes": "No hay cuestionarios",
+  "empty-quizzes-description": "No hay cuestionarios en la base de datos",
   "dark-mode": "Modo oscuro",
   "light-mode": "Modo claro",
   "color-palette": "Paleta de colores",

@@ -1,7 +1,9 @@
+import EmptyBox from '@/components/EmptyBox'
 import { Topbar } from '@/components/Topbar'
 import { useConfigStore } from '@/stores/useConfigStore'
 import { addQuiz, filterQuiz, useQuizStore } from '@/stores/useQuizStore'
 import { render } from '@/utils/render'
+import { DatabaseIcon } from 'lucide-react'
 import { QuizCard } from './components/QuizCard'
 import { QuizTable } from './components/QuizTable'
 import { useContentQuiz } from './hooks/useContentQuiz'
@@ -38,7 +40,17 @@ function Popup (): JSX.Element {
       <Topbar />
       <div className={`${mode} bg-background text-foreground h-full p-2`}>
         {showQuizCard && <QuizCard quiz={quiz} onSave={addQuiz} />}
-        {showQuizTable && <QuizTable />}
+        {showQuizTable
+          ? (
+            <QuizTable />
+            )
+          : (
+            <EmptyBox
+              icon={<DatabaseIcon className='w-12 h-12 text-gray-400 mb-4' />}
+              title='Base de datos vacía'
+              content='No se encontraron cuestionarios en la base de datos.'
+            />
+            )}
       </div>
     </div>
   )

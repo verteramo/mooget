@@ -36,6 +36,11 @@ Puede ser interesante ir capturando y almacenando los cuestionarios, con lo que 
 - [ ] Microsoft Edge Addons (en revisión)
 
 ## Descarga e instalación manual
+Mientras la extensión permanezca en revisión y hasta su publicación, se puede descargar:
+https://github.com/verteramo/mooget/releases/tag/1.0.0
+
+Cargarla desempaquetada como se indica en la documentación oficial:
+https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world?hl=es-419#load-unpacked
 
 ## Licencia
 Este software es de código abierto realizado por y para la comunidad académica, se aplica licencia GPL v3 para que siempre pertenezca a dicho colectivo.

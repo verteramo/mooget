@@ -41,4 +41,4 @@ Puede ser interesante ir capturando y almacenando los cuestionarios, con lo que 
 - Cargarla desempaquetada como se indica en la [documentación oficial](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world?hl=es-419#load-unpacked).
 
 ## Licencia
-Este software es de código abierto realizado por y para la comunidad académica, se aplica licencia GPL v3 para que siempre pertenezca a dicho colectivo.
+Este software es de código abierto, realizado por y para la comunidad académica, se aplica licencia GPL v3 para que siempre pertenezca a dicho colectivo.

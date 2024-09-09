@@ -10,6 +10,7 @@ Notifica el número de preguntas capturadas y permite la administración de los 
 - [ ] Exportar a HTML (para poder imprimir con soluciones)
 - [x] Realización/reproducción (parcial)
 - [x] Favoritos
+
 ![Popup](https://raw.githubusercontent.com/verteramo/mooget/main/src/assets/popup-640.png?token=GHSAT0AAAAAACSUADXTC3T3XWY53B3I5WOUZW67W4Q)
 
 ## Side panel
@@ -22,6 +23,7 @@ Permite realizar/reproducir los cuestionarios:
 - [x] Preguntas cuadro de texto/essay (más de 1 línea)
 - [ ] Preguntas arrastrar y soltar (de momento adaptadas como emparejamiento)
 - [ ] Corrección (en desarrollo)
+
 ![Side panel](https://raw.githubusercontent.com/verteramo/mooget/main/src/assets/side-panel-640.png?token=GHSAT0AAAAAACSUADXTUP33YVVKB4BLUAXUZW67XGQ)
 
 La realización/reproducción está en fase de desarrollo, por lo que se aceptan pull requests.

@@ -8,7 +8,7 @@
 import { defineConfig } from 'wxt'
 
 const permissions = [
-  'tabs',
+  'activeTab',
   'storage',
   'unlimitedStorage',
   'webRequest'

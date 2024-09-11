@@ -11,8 +11,7 @@ const permissions = [
   'tabs',
   'storage',
   'unlimitedStorage',
-  'webRequest',
-  'userScripts'
+  'webRequest'
 ]
 
 const manifest: Record<string, any> = {

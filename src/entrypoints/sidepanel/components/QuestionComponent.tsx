@@ -1,59 +1,26 @@
-import { LabeledInput } from '@/components/LabeledInput'
-import { LabeledTextarea } from '@/components/LabeledTextarea'
 import { Card, CardContent, CardHeader } from '@/components/ui/card'
 import { Separator } from '@/components/ui/separator'
-import { Question, UserAnswer } from '@/models'
-import { useTranslation } from 'react-i18next'
-import { AnswerComponent } from './AnswerComponent'
-import { MatchingAnswer } from './MatchingAnswer'
-import { MultiplechoiceAnswer } from './MultiplechoiceAnswer'
-import { SinglechoiceAnswer } from './SinglechoiceAnswer'
+import { Question } from '@/models'
+import { useProgressStore } from '@/stores/useProgressStore'
 import { Fragment } from 'react/jsx-runtime'
+import { AnswerComponent } from './AnswerComponent'
+import { MultiplechoiceAnswer } from './MultiplechoiceAnswer'
+import { TextAnswer } from './TextAnswer'
+import { EssayAnswer } from './EssayAnswer'
 
 interface Props {
+  index: number
   question: Question
-  answer: UserAnswer
-  onAnswer: (value: any) => void
 }
 
 export function QuestionComponent ({
-  question: { id, type, content, answers },
-  answer: { value },
-  onAnswer
+  index,
+  question: { id, type, content, answers }
 }: Props): JSX.Element {
-  const { t } = useTranslation()
-
-  const isDescription = (
-    type === 'description'
-  )
-
-  const isSingle = (
-    answers.filter(({ match }) => match as boolean).length === 1
-  )
-
-  const choices = (
-    answers.map(({ value }) => value as string)
-  )
-
-  const stringValue = (
-    (value?.[0] as string) ?? ''
-  )
-
-  const booleanArrayValue = (
-    value as boolean[]
-  )
-
-  const contents = (
-    answers.map(({ value }) => value as string)
-  )
-
-  const matches = (
-    answers.map(({ match }) => match as string)
-  )
-
-  const stringArrayValue = (
-    value as string[]
-  )
+  const revealAnswers = useProgressStore((state) => state.revealAnswers)
+  const userAnswerValue = useProgressStore((state) => state.userAnswers[index].value)
+  // const isSingle = answers.filter(({ match }) => match as boolean).length === 1
+  const isDescription = type === 'description'
 
   return (
     <Card className='relative mb-4'>
@@ -70,49 +37,50 @@ export function QuestionComponent ({
             <AnswerComponent
               type={type}
               text={
-                <LabeledInput
-                  id={id}
-                  label={t('answer')}
-                  value={stringValue}
-                  onChange={onAnswer}
+                <TextAnswer
+                  index={index}
+                  revealAnswer={revealAnswers}
+                  userAnswer={userAnswerValue}
+                  questionAnswer={answers}
                 />
               }
               essay={
-                <LabeledTextarea
-                  id={id}
-                  label={t('answer')}
-                  value={stringValue}
-                  onChange={onAnswer}
+                <EssayAnswer
+                  index={index}
+                  revealAnswer={revealAnswers}
+                  userAnswer={userAnswerValue}
+                  questionAnswer={answers}
                 />
               }
               multichoice={
-                isSingle
-                  ? <SinglechoiceAnswer
-                      choices={choices}
-                      answer={booleanArrayValue}
-                      onAnswer={onAnswer}
-                    />
-                  : <MultiplechoiceAnswer
-                      choices={choices}
-                      answer={booleanArrayValue}
-                      onAnswer={onAnswer}
-                    />
-              }
-              truefalse={
-                <SinglechoiceAnswer
-                  choices={[t('true'), t('false')]}
-                  answer={booleanArrayValue}
-                  onAnswer={onAnswer}
+                // isSingle
+                //   ? <SinglechoiceAnswer
+                //       choices={choices}
+                //       answer={booleanArrayValue}
+                //       onAnswer={() => {}}
+                //     />
+                <MultiplechoiceAnswer
+                  index={index}
+                  revealAnswer={revealAnswers}
+                  userAnswer={userAnswerValue}
+                  questionAnswer={answers}
                 />
               }
-              matching={
-                <MatchingAnswer
-                  contents={contents}
-                  matches={matches}
-                  answer={stringArrayValue}
-                  onAnswer={onAnswer}
-                />
-              }
+              // truefalse={
+              //   <SinglechoiceAnswer
+              //     choices={[t('true'), t('false')]}
+              //     answer={booleanArrayValue}
+              //     onAnswer={() => {}}
+              //   />
+              // }
+              // matching={
+              //   <MatchingAnswer
+              //     contents={choices}
+              //     matches={matches}
+              //     answer={stringArrayValue}
+              //     onAnswer={() => {}}
+              //   />
+              // }
             />
           </CardContent>
         </Fragment>

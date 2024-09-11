@@ -6,11 +6,11 @@
  ******************************************************************************/
 
 // Project dependencies
-import { QuestionType } from '@/models'
+import { AnswerType } from '@/models'
 import { QuestionParser } from '@/parsing'
 
 export class DaypoQuestionParser extends QuestionParser {
-  get type (): QuestionType | undefined {
+  get type (): AnswerType | undefined {
     throw new Error('Method not implemented.')
   }
 

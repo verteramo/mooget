@@ -13,7 +13,7 @@ import { persist, subscribeWithSelector } from 'zustand/middleware'
 import { wxtStorage } from './wxtStorage'
 
 // Project dependencies
-import { Answer, Quiz } from '@/models'
+import { Quiz, UserAnswer, Solution } from '@/models'
 
 /***************************************
  * Types and interface
@@ -211,15 +211,36 @@ export const filterQuiz = (quiz: Quiz): Quiz => {
   }
 }
 
-export const getSolution = (quiz: Quiz): Array<Answer[] | boolean[] | string[]> => {
-  console.log('Getting solution')
-  return quiz.questions.map((question) => {
-    if (question.type === 'multichoice') {
-      return question.answers.map(({ match }) => match as boolean)
+const getCorrectAnswers = (quiz: Quiz): Array<Array<string | boolean> | undefined> => {
+  return quiz.questions.map(({ type, answers }) => {
+    switch (type) {
+      case 'multichoice':
+        return answers.map(({ match }) => match as boolean)
+
+      case 'matching':
+        return answers.map(({ match }) => match as string)
+
+      case 'text':
+        return answers.map(({ value }) => value as string)
+
+      case 'truefalse':{
+        const [answer] = answers.map(({ value }) => value as boolean)
+        return [answer, !answer]
+      }
     }
 
-    return question.answers
+    return undefined
   })
+}
+
+export const getSolutions = (quiz: Quiz, userAnswers: UserAnswer[]): Solution[] => {
+  const correctAnswers = getCorrectAnswers(quiz)
+
+  return userAnswers.map(({ index, value }) => ({
+    index,
+    userAnswer: value,
+    questionAnswer: correctAnswers[index]
+  }))
 }
 
 /**

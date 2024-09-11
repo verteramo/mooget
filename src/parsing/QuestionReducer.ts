@@ -9,7 +9,7 @@
 import { QuestionParser } from './QuestionParser'
 
 // Project dependencies
-import { Question, QuestionType } from '@/models'
+import { AnswerType, Question } from '@/models'
 
 /**
  * Reducer contract
@@ -60,4 +60,4 @@ export async function reduce<Enum extends string | number, Source, Target> (
 /**
  * Question reducer
  */
-export type QuestionReducer = Reducer<QuestionType, QuestionParser, Question>
+export type QuestionReducer = Reducer<AnswerType, QuestionParser, Question>

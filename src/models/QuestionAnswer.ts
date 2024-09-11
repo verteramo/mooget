@@ -1,5 +1,5 @@
 /*******************************************************************************
- * Answer.ts
+ * QuestionAnswer.ts
  *
  * @license GPL-3.0
  * @link https://github.com/verteramo/mooget
@@ -28,16 +28,16 @@
  * { "value": "Answer 3", "match": "Match 3", "feedback": "Optional feedback" }
  * ```
  */
-export interface Answer {
+export interface QuestionAnswer {
   /**
    * Value
    */
-  value: boolean | string
+  value: string | boolean
 
   /**
    * Match value, if any
    */
-  match?: boolean | string
+  match?: string | boolean
 
   /**
    * Feedback, if any

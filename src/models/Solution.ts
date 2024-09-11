@@ -1,21 +1,12 @@
 /*******************************************************************************
- * UserAnswer.ts
+ * Solution.ts
  *
  * @license GPL-3.0
  * @link https://github.com/verteramo/mooget
  ******************************************************************************/
 
-/**
- * User answer interface
- */
-export interface UserAnswer {
-  /**
-   * Question index
-   */
+export interface Solution {
   index: number
-
-  /**
-   * Answer
-   */
-  value: Array<string | boolean>
+  questionAnswer: Array<string | boolean> | undefined
+  userAnswer: Array<string | boolean>
 }

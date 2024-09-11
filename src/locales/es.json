@@ -85,5 +85,9 @@
   "close-quiz-description": "¿Seguro que desea cerrar el cuestionario?",
   "single-page": "Página única",
   "stepper": "Paso a paso",
-  "questions-count": "{{count}} preguntas"
+  "questions-count": "{{count}} preguntas",
+  "hide-answers": "Ocultar respuestas",
+  "empty-database": "Base de datos vacía",
+  "empty-quiz-description": "Seleccione un cuestionario desde el Popup",
+  "correct-answer": "Respuesta correcta"
 }

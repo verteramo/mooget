@@ -26,30 +26,37 @@ import { UserAnswer } from '@/models'
 export interface ProgressStore {
 
   /**
-   * Current tab
-   */
-  tab: string
-
-  /**
-   * Current answer index
-   */
-  index: number
-
-  /**
    * Quiz ID
    */
   quizId?: string
 
   /**
+   * Current tab
+   */
+  tab: string
+
+  /**
+   * Current answer step
+   */
+  step: number
+
+  /**
+   * Reveal answers
+   */
+  revealAnswers: boolean
+
+  /**
    * Answers
    */
-  answers: UserAnswer[]
+  userAnswers: UserAnswer[]
 }
 
 const initialState: ProgressStore = {
+  quizId: undefined,
   tab: 'stepper',
-  index: 0,
-  answers: []
+  step: 0,
+  revealAnswers: false,
+  userAnswers: []
 }
 
 /***************************************
@@ -84,7 +91,7 @@ export const setTab = (tab: string): void => {
 export const back = (): void => {
   useProgressStore.setState((state) => ({
     ...state,
-    index: state.index - 1
+    step: state.step - 1
   }))
 }
 
@@ -94,7 +101,7 @@ export const back = (): void => {
 export const next = (): void => {
   useProgressStore.setState((state) => ({
     ...state,
-    index: state.index + 1
+    step: state.step + 1
   }))
 }
 
@@ -105,8 +112,8 @@ export const startProgress = (id: string): void => {
   useProgressStore.setState((state) => ({
     ...state,
     quizId: id,
-    index: 0,
-    answers: shuffle(getQuiz(id)?.questions.map(({ type, answers: questionAnswers }, index) => ({
+    step: 0,
+    userAnswers: shuffle(getQuiz(id)?.questions.map(({ type, answers: questionAnswers }, index) => ({
       index,
       value: (
         type === 'truefalse'
@@ -128,7 +135,14 @@ export const resetProgress = (): void => {
 export const setAnswer = (index: number, value: any): void => {
   useProgressStore.setState((state) => ({
     ...state,
-    answers: state.answers.map((answer, i) => i === index ? { ...answer, value } : answer)
+    userAnswers: state.userAnswers.map((answer, i) => i === index ? { ...answer, value } : answer)
+  }))
+}
+
+export function toggleRevealAnswers (): void {
+  useProgressStore.setState((state) => ({
+    ...state,
+    revealAnswers: !state.revealAnswers
   }))
 }
 

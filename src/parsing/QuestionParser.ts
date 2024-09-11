@@ -9,7 +9,7 @@
 import { QuestionReducer, reduce } from './QuestionReducer'
 
 // Project dependencies
-import { Question, QuestionType } from '@/models'
+import { AnswerType, Question } from '@/models'
 import { partial } from '@/utils/native'
 
 /**
@@ -39,7 +39,7 @@ export abstract class QuestionParser {
   /**
    * Type
    */
-  abstract get type (): QuestionType | undefined
+  abstract get type (): AnswerType | undefined
 
   /**
    * Content

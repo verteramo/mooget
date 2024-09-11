@@ -1,32 +1,48 @@
 import { Checkbox } from '@/components/ui/checkbox'
+import { QuestionAnswer } from '@/models'
+import { setAnswer } from '@/stores/useProgressStore'
 
 interface Props {
-  choices: string[]
-  answer: boolean[]
-  onAnswer: (value: boolean[]) => void
+  index: number
+  revealAnswer: boolean
+  userAnswer: Array<string | boolean>
+  questionAnswer: QuestionAnswer[]
 }
 
-export function MultiplechoiceAnswer ({ choices, answer, onAnswer }: Props): JSX.Element {
-  const handleCheckedChange = (index: number) => (): void => {
-    onAnswer(answer.map((current, i) => (i === index ? !current : current)))
+export function MultiplechoiceAnswer ({
+  index,
+  revealAnswer,
+  userAnswer,
+  questionAnswer
+}: Props): JSX.Element {
+  const id = `answer-${index}`
+
+  const choices = questionAnswer.map(({ value }) => value as string)
+  const userAnswerValue = userAnswer as boolean[]
+  const questionAnswerValue = questionAnswer.map(({ match }) => match as boolean)
+
+  const handleCheckedChange = (position: number) => (): void => {
+    setAnswer(index, userAnswerValue.map((value, i) => (i === position ? !value : value)))
   }
 
   return (
     <div className='space-y-2'>
-      {choices.map((choice, index) => {
-        const uniqueKey = `${choice}-${index}`
+      {choices.map((choice, position) => {
+        const key = `${id}-${position}`
+        const isCorrect = userAnswerValue[position] !== questionAnswerValue[position]
+
         return (
-          <div key={uniqueKey} className='flex items-center space-x-2'>
+          <div key={key} className='flex items-center space-x-2'>
             <div className='flex-col'>
               <Checkbox
-                id={uniqueKey}
-                checked={answer[index] ?? false}
-                onCheckedChange={handleCheckedChange(index)}
+                id={key}
+                checked={userAnswerValue[position]}
+                onCheckedChange={handleCheckedChange(position)}
               />
             </div>
             <label
-              className='text-justify'
-              htmlFor={uniqueKey}
+              className={`text-justify ${revealAnswer && isCorrect ? 'p-2 rounded-sm bg-green-100 dark:bg-green-900' : ''}`}
+              htmlFor={key}
               dangerouslySetInnerHTML={{ __html: choice }}
             />
           </div>

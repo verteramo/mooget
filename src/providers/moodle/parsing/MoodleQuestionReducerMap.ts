@@ -9,7 +9,7 @@
 import $ from 'jquery'
 
 // Project dependencies
-import { Answer } from '@/models'
+import { QuestionAnswer } from '@/models'
 import { QuestionReducer } from '@/parsing'
 
 export const MoodleQuestionReducerMap: QuestionReducer = {
@@ -38,7 +38,7 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
     },
 
     answers: ({ element, correct }) => {
-      const answers: Answer[] = []
+      const answers: QuestionAnswer[] = []
 
       if (correct === true) {
         const qtext = $(element).find('div.qtext').clone()
@@ -73,7 +73,7 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
    */
   matching: {
     answers: ({ element, correct }) => {
-      const answers: Answer[] = []
+      const answers: QuestionAnswer[] = []
 
       if (correct === true) {
         for (const option of $(element).find('table.answer > tbody > tr')) {
@@ -95,7 +95,7 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
    */
   multianswer: {
     answers: ({ element, correct }) => {
-      const answers: Answer[] = []
+      const answers: QuestionAnswer[] = []
 
       if (correct === true) {
         const formulation = $(element).find('div.formulation > p')
@@ -151,7 +151,7 @@ export const MoodleQuestionReducerMap: QuestionReducer = {
    */
   multichoice: {
     answers: async ({ element, correct, rightanswer }) => {
-      const answers: Answer[] = []
+      const answers: QuestionAnswer[] = []
 
       // Loop through options
       for (const option of $(element).find('div.answer > div')) {

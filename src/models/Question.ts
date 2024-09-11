@@ -6,7 +6,7 @@
  ******************************************************************************/
 
 // Package dependencies
-import { Answer, AnswerType } from '.'
+import { AnswerType, QuestionAnswer } from '.'
 
 /**
  * Question interface
@@ -30,7 +30,7 @@ export interface Question {
   /**
    * Answers
    */
-  answers: Answer[]
+  answers: QuestionAnswer[]
 
   /**
    * Feedback, if any

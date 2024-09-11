@@ -1,10 +1,10 @@
-import EmptyBox from '@/components/EmptyBox'
+import { EmptyBox } from '@/components/EmptyBox'
 import { Topbar } from '@/components/Topbar'
 import { Quiz } from '@/models'
 import { useConfigStore } from '@/stores/useConfigStore'
 import { addQuiz, filterQuiz, useQuizStore } from '@/stores/useQuizStore'
 import { render } from '@/utils/render'
-import { DatabaseIcon } from 'lucide-react'
+import { Database } from 'lucide-react'
 import { useTranslation } from 'react-i18next'
 import { QuizCard } from './components/QuizCard'
 import { QuizTable } from './components/QuizTable'
@@ -63,16 +63,12 @@ function Popup (): JSX.Element {
         />
         {showQuizCard && <QuizCard quiz={quiz} onSave={addQuiz} />}
         {showQuizTable
-          ? (
-            <QuizTable />
-            )
-          : (
-            <EmptyBox
-              icon={<DatabaseIcon className='w-12 h-12 text-gray-400 mb-4' />}
-              title={t('empty-quizzes')}
-              content={t('empty-quizzes-description')}
-            />
-            )}
+          ? <QuizTable />
+          : <EmptyBox
+            icon={<Database className='w-12 h-12 text-gray-400 mb-4' />}
+            title={t('empty-database')}
+            content={t('empty-quizzes-description')}
+            />}
       </div>
     </div>
   )

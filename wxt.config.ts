@@ -10,8 +10,7 @@ import { defineConfig } from 'wxt'
 const permissions = [
   'activeTab',
   'storage',
-  'unlimitedStorage',
-  'webRequest'
+  'unlimitedStorage'
 ]
 
 const manifest: Record<string, any> = {

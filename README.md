@@ -34,9 +34,8 @@ La realización/reproducción está en fase de desarrollo, por lo que se aceptan
 Puede ser interesante ir capturando y almacenando los cuestionarios, con lo que se generan ficheros JSON que contienen toda la información de los cuestionarios, ficheros que se podrán importar más adelante y aprovechar las funcionalidades de la extensión conforme se vayan desarrollando.
 
 ## Descarga e instalación manual
-- Mientras la extensión permanezca en revisión y hasta su publicación, se puede descargar la última [release](https://github.com/verteramo/mooget/releases).
-
-- Cargarla desempaquetada como se indica en la [documentación oficial](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world?hl=es-419#load-unpacked).
+- Se puede descargar la última [release](https://github.com/verteramo/mooget/releases).
+- Se debe cargar desempaquetada como se indica en la [documentación oficial](https://developer.chrome.com/docs/extensions/get-started/tutorial/hello-world?hl=es-419#load-unpacked).
 
 ## Licencia
 Este software es de código abierto, realizado por y para la comunidad académica, se aplica licencia GPL v3 para que siempre pertenezca a dicho colectivo.

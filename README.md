@@ -1,6 +1,9 @@
 # Mooget
 Descargar, almacenar, administrar, realizar y compartir cuestionarios de LMSs (por ejemplo, Moodle).
 
+[![Chrome Web Store](https://github.com/user-attachments/assets/e622a789-0143-4c05-b436-0f90ff85b2be)](https://chromewebstore.google.com/detail/mooget/ckjakgajhaikbnpilhjdekehgfllccgp)
+
+
 ## Popup
 Notifica el número de preguntas capturadas y permite la administración de los cuestionarios:
 - [x] Guardar
@@ -29,11 +32,6 @@ Permite realizar/reproducir los cuestionarios:
 La realización/reproducción está en fase de desarrollo, por lo que se aceptan [pull requests](https://github.com/verteramo/mooget/pulls).
 
 Puede ser interesante ir capturando y almacenando los cuestionarios, con lo que se generan ficheros JSON que contienen toda la información de los cuestionarios, ficheros que se podrán importar más adelante y aprovechar las funcionalidades de la extensión conforme se vayan desarrollando.
-
-## Stores
-- [ ] Mozilla Firefox (en desarrollo)
-- [x] Chrome Web Store (en revisión)
-- [x] Microsoft Edge Addons (en revisión)
 
 ## Descarga e instalación manual
 - Mientras la extensión permanezca en revisión y hasta su publicación, se puede descargar la última [release](https://github.com/verteramo/mooget/releases).
